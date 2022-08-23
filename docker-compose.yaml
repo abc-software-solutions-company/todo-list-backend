@@ -1,0 +1,9 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13
+    container_name: todolist-db
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-thienlam}
+    ports:
+      - ${DB_PORT:-5432}:5432
