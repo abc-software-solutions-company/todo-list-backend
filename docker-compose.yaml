@@ -5,5 +5,7 @@ services:
     container_name: todolist-db
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      TZ: 'Asia/Bangkok'
+      PGTZ: 'Asia/Bangkok'
     ports:
       - ${DB_PORT:-5432}:5432
