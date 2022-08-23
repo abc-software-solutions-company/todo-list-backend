@@ -31,7 +31,7 @@ export class UsersController {
   @Post()
   async createUser(@Body() body: CreateUserDto) {
     const existUser = await this.usersService
-      .findUserByName(body.user_name)
+      .findUserByName(body.userName)
       .then((result) => {
         return result;
       });
@@ -39,6 +39,6 @@ export class UsersController {
     if (existUser !== undefined) {
       throw new BadRequestException("This user already existing");
     }
-    this.usersService.create(body.user_name);
+    this.usersService.create(body.userName);
   }
 }

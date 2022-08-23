@@ -16,8 +16,8 @@ export class UsersService {
     return this.repo.find();
   }
 
-  async create(user_name: string): Promise<User> {
-    const user = this.repo.create({ user_name });
+  async create(userName: string): Promise<User> {
+    const user = this.repo.create({ userName });
 
     return this.repo.save(user);
   }
@@ -30,10 +30,10 @@ export class UsersService {
     return firstUser;
   }
 
-  async findUserByName(user_name: string) {
+  async findUserByName(userName: string) {
     const firstUser = await this.repo
       .createQueryBuilder("user")
-      .where("user.user_name = :user_name", { user_name: user_name })
+      .where("user.userName = :userName", { userName: userName })
       .getOne();
     return firstUser;
   }

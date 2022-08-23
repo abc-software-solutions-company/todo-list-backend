@@ -14,5 +14,5 @@ export class CreateTodolistDto {
     message: "TodoList Name cannot be exceed 50 character",
   })
   @IsString()
-  list_name: string;
+  listName: string;
 }

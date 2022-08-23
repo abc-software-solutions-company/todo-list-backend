@@ -5,5 +5,5 @@ export class UpdateUserDto {
   @ApiProperty()
   @IsEmail()
   @IsOptional()
-  user_name: string;
+  userName: string;
 }

@@ -8,5 +8,5 @@ export class UpdateTaskDto {
 
   @ApiProperty()
   @IsOptional()
-  task_name: string;
+  taskName: string;
 }

@@ -45,7 +45,7 @@ export class TasksController {
     @CurrentTodoList() todoList: Todolist
   ) {
     const existTask = await this.taskService
-      .findTaskByName(body.task_name)
+      .findTaskByName(body.taskName)
       .then((result) => {
         return result;
       });
@@ -91,6 +91,6 @@ export class TasksController {
     if (!taskExisting) {
       throw new NotFoundException("Cannot update task because task not found");
     }
-    return this.taskService.updateTask(taskExisting, updateTaskDto.task_name);
+    return this.taskService.updateTask(taskExisting, updateTaskDto.taskName);
   }
 }
