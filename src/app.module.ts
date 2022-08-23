@@ -8,18 +8,20 @@ import { User } from "./users/entities/user.entity";
 import { Task } from "./task/entities/task.entity";
 import { Todolist } from "./todolist/entities/todolist.entity";
 import { TodolistModule } from "./todolist/todolist.module";
+import 'dotenv/config'
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: "localhost",
-      database: "postgres",
-      username: "postgres",
-      password: "thienlam",
-      port: 5432,
+      host: process.env.POSTGRES_HOST,
+      database: process.env.POSTGRES_DATABASE,
+      username: process.env.POSTGRES_USERNAME,
+      password: process.env.POSTGRES_PASSWORD,
+      port: process.env.POSTGRES_PORT,
       entities: [User, Task, Todolist],
       synchronize: true,
+      dropSchema: false
     }),
     UsersModule,
     TasksModule,
