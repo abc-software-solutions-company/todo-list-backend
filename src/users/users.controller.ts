@@ -18,17 +18,17 @@ import { UsersService } from "./users.service";
 import { Serialize } from "src/interceptors/serialize.interceptor";
 import { User } from "./entities/user.entity";
 
-@ApiTags("User")
-@Controller("user")
+@ApiTags("Users")
+@Controller("users")
 @Serialize(UserDto)
 export class UsersController {
   constructor(private usersService: UsersService) {}
-  @Get("/get-all")
+  @Get()
   getAllUser(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  @Post("/create")
+  @Post()
   async createUser(@Body() body: CreateUserDto) {
     const existUser = await this.usersService
       .findUserByName(body.user_name)

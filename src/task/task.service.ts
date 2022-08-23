@@ -40,7 +40,7 @@ export class TaskService {
     return this.repo.save(task);
   }
 
-  async findTaskFromLitByID(listId: number) {
+  async findTaskFromListByID(listId: number) {
     const TaskList = await this.repo
       .createQueryBuilder("task")
       .where("task.todolistId = :listId", { listId: listId })

@@ -17,17 +17,17 @@ import { TodoListDto } from "./dto/todolist.dto";
 import { Todolist } from "./entities/todolist.entity";
 import { TodolistService } from "./todolist.service";
 
-@Controller("todolist")
-@ApiTags("TodoList")
+@Controller("todoLists")
+@ApiTags("TodoLists")
 @Serialize(TodoListDto)
 export class TodolistController {
   constructor(private todoListService: TodolistService) {}
-  @Get("/get-all")
+  @Get()
   getAllUser(): Promise<Todolist[]> {
     return this.todoListService.findAll();
   }
 
-  @Post("/create")
+  @Post()
   async createUser(@Body() body: CreateTodolistDto) {
     const existTodoList = await this.todoListService
       .findTodoListByName(body.list_name)
