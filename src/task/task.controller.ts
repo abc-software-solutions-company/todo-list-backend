@@ -23,8 +23,8 @@ import { CurrentTodoList } from "src/todolist/decorators/current-todolist-decora
 import { Todolist } from "src/todolist/entities/todolist.entity";
 import { UpdateTaskDto } from "./dto/update-task-dto";
 
-@ApiTags("Task")
-@Controller("task")
+@ApiTags("Tasks")
+@Controller("tasks")
 @Serialize(TaskDto)
 export class TasksController {
   constructor(
@@ -33,12 +33,12 @@ export class TasksController {
     private userService: UsersService
   ) {}
 
-  @Get("/read/:listID")
+  @Get("/:listID")
   readTodoListByID(@Param("listID") listID: number) {
-    return this.taskService.findTaskFromLitByID(listID);
+    return this.taskService.findTaskFromListByID(listID);
   }
 
-  @Post("/create-task")
+  @Post()
   async createTask(
     @Body() body: CreateTaskDto,
     @CurrentUser() user: User,
@@ -76,16 +76,16 @@ export class TasksController {
     return this.taskService.create(body, todoList, user);
   }
 
-  @Delete("/remove-task/:id")
-  async removeUser(@Param("id") id: string) {
-    const taskExisting = await this.taskService.findTaskById(id);
+  @Delete("/:taskID")
+  async removeUser(@Param("taskID") taskID: string) {
+    const taskExisting = await this.taskService.findTaskById(taskID);
     if (!taskExisting) {
       throw new NotFoundException("Cannot remove task because task not found");
     }
     return this.taskService.remove(taskExisting);
   }
 
-  @Patch("/update-task/")
+  @Patch()
   async updateTask(@Body() updateTaskDto: UpdateTaskDto) {
     const taskExisting = await this.taskService.findTaskById(updateTaskDto.id);
     if (!taskExisting) {

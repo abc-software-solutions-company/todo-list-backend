@@ -8,7 +8,6 @@ import { User } from "./users/entities/user.entity";
 import { Task } from "./task/entities/task.entity";
 import { Todolist } from "./todolist/entities/todolist.entity";
 import { TodolistModule } from "./todolist/todolist.module";
-import { CatModule } from "./cat/cat.module";
 
 @Module({
   imports: [
@@ -25,7 +24,6 @@ import { CatModule } from "./cat/cat.module";
     UsersModule,
     TasksModule,
     TodolistModule,
-    CatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
