@@ -15,7 +15,7 @@ export class Task {
   id: string;
 
   @Column()
-  task_name: string;
+  taskName: string;
 
   @CreateDateColumn()
   createdDate: Date;

@@ -17,7 +17,7 @@ export class User {
   id: string;
 
   @Column()
-  user_name: string;
+  userName: string;
 
   @OneToMany(() => Task, (task) => task.userId)
   tasks: Task[];

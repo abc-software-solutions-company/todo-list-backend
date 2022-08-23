@@ -25,10 +25,10 @@ export class TaskService {
     return task;
   }
 
-  async findTaskByName(task_name: string) {
+  async findTaskByName(taskName: string) {
     const firstTask = await this.repo
       .createQueryBuilder("task")
-      .where("task.task_name = :task_name", { task_name: task_name })
+      .where("task.taskName = :taskName", { taskName: taskName })
       .getOne();
     return firstTask;
   }
@@ -52,8 +52,8 @@ export class TaskService {
     return this.repo.remove(task);
   }
 
-  async updateTask(task: Task, task_name: string) {
-    task.task_name = task_name;
+  async updateTask(task: Task, taskName: string) {
+    task.taskName = taskName;
     return this.repo.save(task);
   }
 }

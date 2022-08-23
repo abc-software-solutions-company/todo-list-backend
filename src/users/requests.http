@@ -3,5 +3,5 @@ POST http://localhost:3000/create-user
 content-type: application/json
 
 {
-  "user_name": "asdf@asdf.com",
+  "userName": "asdf@asdf.com",
 }

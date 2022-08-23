@@ -15,8 +15,8 @@ export class TodolistService {
     return this.repo.find();
   }
 
-  async create(list_name: string): Promise<Todolist> {
-    const todoList = this.repo.create({ list_name });
+  async create(listName: string): Promise<Todolist> {
+    const todoList = this.repo.create({ listName });
     return this.repo.save(todoList);
   }
 
@@ -28,10 +28,10 @@ export class TodolistService {
     return TodoList;
   }
 
-  async findTodoListByName(list_name: string) {
+  async findTodoListByName(listName: string) {
     const firstTodoList = await this.repo
       .createQueryBuilder("todolist")
-      .where("todolist.list_name = :list_name", { list_name: list_name })
+      .where("todolist.listName = :listName", { listName: listName })
       .getOne();
     return firstTodoList;
   }

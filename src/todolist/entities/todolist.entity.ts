@@ -19,7 +19,7 @@ export class Todolist {
   id: number;
 
   @Column()
-  list_name: string;
+  listName: string;
 
   @OneToMany(() => Task, (task) => task.todolistId)
   tasks: Task[];

@@ -8,7 +8,7 @@ export class TodoListDto {
 
   @Expose()
   @ApiProperty()
-  list_name: string;
+  listName: string;
 
   @Expose()
   @ApiProperty()

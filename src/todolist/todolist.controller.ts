@@ -17,7 +17,7 @@ import { TodoListDto } from "./dto/todolist.dto";
 import { Todolist } from "./entities/todolist.entity";
 import { TodolistService } from "./todolist.service";
 
-@Controller("todoLists")
+@Controller("todo-lists")
 @ApiTags("TodoLists")
 @Serialize(TodoListDto)
 export class TodolistController {
@@ -30,7 +30,7 @@ export class TodolistController {
   @Post()
   async createUser(@Body() body: CreateTodolistDto) {
     const existTodoList = await this.todoListService
-      .findTodoListByName(body.list_name)
+      .findTodoListByName(body.listName)
       .then((result) => {
         return result;
       });
@@ -38,6 +38,6 @@ export class TodolistController {
     if (existTodoList !== undefined) {
       throw new BadRequestException("This TodoList already existing");
     }
-    this.todoListService.create(body.list_name);
+    this.todoListService.create(body.listName);
   }
 }

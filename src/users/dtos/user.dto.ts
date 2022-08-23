@@ -8,5 +8,5 @@ export class UserDto {
 
   @Expose()
   @ApiProperty()
-  user_name: string;
+  userName: string;
 }
