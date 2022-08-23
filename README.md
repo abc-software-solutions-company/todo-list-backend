@@ -11,7 +11,7 @@ Simple Todo List Project from ABC Software Company.
 
 ## Running Postgres Server
 ```bash
-$ docker-compose up
+$ docker-compose up -d
 ```
 
 ## Installation
