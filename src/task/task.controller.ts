@@ -85,9 +85,9 @@ export class TasksController {
     return this.taskService.remove(taskExisting);
   }
 
-  @Patch()
-  async updateTask(@Body() updateTaskDto: UpdateTaskDto) {
-    const taskExisting = await this.taskService.findTaskById(updateTaskDto.id);
+  @Patch("/:taskID")
+  async updateTask(@Param("taskID") taskID: string,@Body() updateTaskDto: UpdateTaskDto) {
+    const taskExisting = await this.taskService.findTaskById(taskID);
     if (!taskExisting) {
       throw new NotFoundException("Cannot update task because task not found");
     }
