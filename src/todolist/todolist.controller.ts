@@ -38,6 +38,6 @@ export class TodolistController {
     if (existTodoList !== undefined) {
       throw new BadRequestException("This TodoList already existing");
     }
-    this.todoListService.create(body.listName);
+    return this.todoListService.create(body.listName);
   }
 }
