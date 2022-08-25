@@ -40,4 +40,15 @@ export class TodolistController {
     }
     return this.todoListService.create(body.listName);
   }
+
+  @Delete("/:listID")
+  async removeUser(@Param("listID") listID: number) {
+    const todoListExisting = await this.todoListService.findTodoListByID(listID);
+    if (!todoListExisting) {
+      throw new NotFoundException("Cannot remove list because this list not found");
+    }
+    console.log(todoListExisting[0]);
+    
+    return this.todoListService.remove(todoListExisting[0]);
+  }
 }
