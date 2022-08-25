@@ -44,15 +44,6 @@ export class TasksController {
     @CurrentUser() user: User,
     @CurrentTodoList() todoList: Todolist
   ) {
-    const existTask = await this.taskService
-      .findTaskByName(body.taskName)
-      .then((result) => {
-        return result;
-      });
-    if (existTask !== undefined) {
-      throw new BadRequestException("This task already existing");
-    }
-
     const existTodoList = await this.todoListService
       .findTodoListByID(body.todolistId)
       .then((result) => {
