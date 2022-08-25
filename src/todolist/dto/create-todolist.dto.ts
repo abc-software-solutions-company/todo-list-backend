@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateTodolistDto {
   @ApiProperty({
-    description: "TodoList name length must be from 5 to 50 character",
+    description: "TodoList Name length must be from 5 to 50 character",
     minLength: 5,
     maxLength: 50,
   })
