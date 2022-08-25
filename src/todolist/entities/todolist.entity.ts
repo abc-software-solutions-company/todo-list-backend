@@ -24,9 +24,6 @@ export class Todolist {
   @OneToMany(() => Task, (task) => task.todolistId)
   tasks: Task[];
 
-  @Column({default:true})
-  isActive: boolean
-
   @CreateDateColumn()
   createdDate: Date;
 
