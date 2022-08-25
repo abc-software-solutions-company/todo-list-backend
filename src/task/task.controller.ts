@@ -71,7 +71,6 @@ export class TasksController {
       throw new BadRequestException("Error you user id is not available");
     }
 
-    console.log(existTodoList.length);
 
     return this.taskService.create(body, todoList, user);
   }

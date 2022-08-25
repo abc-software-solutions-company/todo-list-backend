@@ -20,6 +20,10 @@ export class TodolistService {
     return this.repo.save(todoList);
   }
 
+  async remove(todoList: Todolist) {
+    return this.repo.remove(todoList);
+  }
+
   async findTodoListByID(listId: number) {
     const TodoList = await this.repo
       .createQueryBuilder("todolist")

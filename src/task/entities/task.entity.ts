@@ -29,9 +29,9 @@ export class Task {
   @Column()
   todolistId: number;
 
-  @ManyToOne(() => User, (user) => user.id, { cascade: true })
+  @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Todolist, (todolist) => todolist.id, { cascade: true })
+  @ManyToOne(() => Todolist, (todolist) => todolist.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
   todolist: Todolist;
 }
