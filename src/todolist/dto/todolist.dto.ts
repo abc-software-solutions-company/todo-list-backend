@@ -17,4 +17,8 @@ export class TodoListDto {
   @Expose()
   @ApiProperty()
   updatedDate: Date;
+
+  @Expose()
+  @ApiProperty()
+  isActive: boolean;
 }
