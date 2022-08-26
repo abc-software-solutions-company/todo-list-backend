@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 import {CreateUserDto} from './dtos/create-user.dto';
-import {UpdateUserDto} from './dtos/update-user-dto';
 import {UserDto} from './dtos/user.dto';
 import {UsersService} from './users.service';
 import {Serialize} from 'src/interceptors/serialize.interceptor';
@@ -23,6 +22,16 @@ import {User} from './entities/user.entity';
 @Serialize(UserDto)
 export class UsersController {
   constructor(private usersService: UsersService) {}
+  @Post('/:userID')
+  async checkUserLogin(@Param('userID') userID: string) {
+    const userExisting = await this.usersService.findUserById(userID);
+    console.log(userExisting);
+    if (userExisting.length == 0) {
+      throw new BadRequestException('You must registered a name before enter this page 😵');
+    }
+    return 'loggin ok 😺';
+  }
+
   @Get()
   getAllUser(): Promise<User[]> {
     return this.usersService.findAll();
