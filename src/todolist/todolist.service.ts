@@ -7,7 +7,7 @@ export class TodolistService {
   constructor(@InjectRepository(Todolist) private repo: Repository<Todolist>) {}
 
   async findAll(): Promise<Todolist[]> {
-    return this.repo.find({isActive: true});
+    return (await this.repo.find({isActive: true}));
   }
 
   async create(listName: string): Promise<Todolist> {

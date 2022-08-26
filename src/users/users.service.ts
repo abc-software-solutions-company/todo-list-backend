@@ -23,10 +23,7 @@ export class UsersService {
   }
 
   async findUserById(id: string) {
-    const firstUser = await this.repo
-      .createQueryBuilder("user")
-      .where("user.id = :id", { id: id })
-      .getOne();
+    const firstUser = await this.repo.find({id:id});
     return firstUser;
   }
 
