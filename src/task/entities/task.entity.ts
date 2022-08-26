@@ -23,6 +23,9 @@ export class Task {
   @UpdateDateColumn()
   updatedDate: Date;
 
+  @Column({default: false})
+  isDone: boolean;
+
   @Column()
   userId: string;
 

@@ -22,7 +22,7 @@ import {User} from './entities/user.entity';
 @Serialize(UserDto)
 export class UsersController {
   constructor(private usersService: UsersService) {}
-  @Post('/:userID')
+  @Get('/:userID')
   async checkUserLogin(@Param('userID') userID: string) {
     const userExisting = await this.usersService.findUserById(userID);
     if (!userExisting) {
