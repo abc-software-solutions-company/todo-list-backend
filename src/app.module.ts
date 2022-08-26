@@ -21,7 +21,7 @@ import 'dotenv/config'
       port: process.env.POSTGRES_PORT,
       entities: [User, Task, Todolist],
       synchronize: true,
-      dropSchema: true
+      dropSchema: false
     }),
     UsersModule,
     TasksModule,
