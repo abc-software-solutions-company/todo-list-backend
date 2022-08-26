@@ -29,35 +29,29 @@ export class TodolistController {
 
   @Get('/:listID')
   async getListName(@Param('listID') listID: number) {
-    console.log(listID);
-    
+    if (typeof(listID) !== 'number') {
+      throw new BadRequestException('listID must be number 👀😵')
+    }
     const listName = await this.todoListService.findTodoListByID(listID).then(result => {
       console.log(result);
       return result;
     });
     if (listName.length === 0) {
-      throw new BadRequestException('Cannot find this list');
+      throw new BadRequestException('Cannot find this list 😢');
     }
     return listName[0];
   }
 
   @Post()
   async createUser(@Body() body: CreateTodolistDto) {
-    const existTodoList = await this.todoListService.findTodoListByName(body.listName).then(result => {
-      return result;
-    });
-
-    if (existTodoList !== undefined) {
-      throw new BadRequestException('This TodoList already existing');
-    }
     return this.todoListService.create(body.listName);
   }
 
   @Delete('/:listID')
   async removeUser(@Param('listID') listID: number) {
     const todoListExisting = await this.todoListService.findTodoListByID(listID);
-    if (!todoListExisting) {
-      throw new NotFoundException('Cannot remove list because this list not found');
+    if (!todoListExisting || todoListExisting[0] === undefined) {
+      throw new NotFoundException('Cannot remove list because this list not found 😢');
     }
     console.log(todoListExisting[0]);
 

@@ -50,7 +50,7 @@ export class TasksController {
         return result;
       });
     if (existTodoList.length == 0) {
-      throw new BadRequestException("Error your list id is not available");
+      throw new BadRequestException("Error your list id is not available 😢");
     }
 
     const existUser = await this.userService
@@ -59,7 +59,7 @@ export class TasksController {
         return result;
       });
     if (existUser === undefined) {
-      throw new BadRequestException("Error you user id is not available");
+      throw new BadRequestException("Error you user id is not available 😢");
     }
 
 
@@ -70,7 +70,7 @@ export class TasksController {
   async removeUser(@Param("taskID") taskID: string) {
     const taskExisting = await this.taskService.findTaskById(taskID);
     if (!taskExisting) {
-      throw new NotFoundException("Cannot remove task because task not found");
+      throw new NotFoundException("Cannot remove task because task not found 😢");
     }
     return this.taskService.remove(taskExisting);
   }
@@ -79,7 +79,7 @@ export class TasksController {
   async updateTask(@Param("taskID") taskID: string,@Body() updateTaskDto: UpdateTaskDto) {
     const taskExisting = await this.taskService.findTaskById(taskID);
     if (!taskExisting) {
-      throw new NotFoundException("Cannot update task because task not found");
+      throw new NotFoundException("Cannot update task because task not found 😢");
     }
     return this.taskService.updateTask(taskExisting, updateTaskDto.taskName);
   }
