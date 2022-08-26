@@ -9,6 +9,7 @@ import {
   Delete,
   NotFoundException,
   BadRequestException,
+  Put,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { TaskService } from "./task.service";
@@ -73,6 +74,15 @@ export class TasksController {
       throw new NotFoundException("Cannot remove task because task not found 😢");
     }
     return this.taskService.remove(taskExisting);
+  }
+
+  @Put("/:taskID")
+  async markTaskDone(@Param("taskID") taskID: string) {
+    const taskExisting = await this.taskService.findTaskById(taskID);
+    if (!taskExisting) {
+      throw new NotFoundException("Cannot mark done this task because task not found 😢😭😭😭😭😭");
+    }
+    return this.taskService.markTaskDone(taskExisting);
   }
 
   @Patch("/:taskID")
