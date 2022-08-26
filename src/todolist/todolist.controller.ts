@@ -28,11 +28,14 @@ export class TodolistController {
   }
 
   @Get('/:listID')
-  async getListName(@Param('listID') listID: number) {
-    if (typeof(listID) !== 'number') {
+  async getListName(@Param('listID') listID: string) {
+    var numberRegex = /^\s*[+-]?(\d+|\d*\.\d+|\d+\.\d*)([Ee][+-]?\d+)?\s*$/;
+
+
+    if (!numberRegex.test(listID)) {
       throw new BadRequestException('listID must be number 👀😵')
     }
-    const listName = await this.todoListService.findTodoListByID(listID).then(result => {
+    const listName = await this.todoListService.findTodoListByID(parseInt(listID)).then(result => {
       console.log(result);
       return result;
     });

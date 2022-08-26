@@ -10,10 +10,12 @@ import {
 } from "typeorm";
 
 import { Task } from "src/task/entities/task.entity";
+import { IsUUID } from 'class-validator';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn("uuid")
+  @IsUUID()
   id: string;
 
   @Column()
