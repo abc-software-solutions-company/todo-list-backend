@@ -9,4 +9,8 @@ export class TaskDto {
   @Expose()
   @ApiProperty()
   taskName: string;
+
+  @Expose()
+  @ApiProperty()
+  isDone: boolean;
 }
