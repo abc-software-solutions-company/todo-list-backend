@@ -13,4 +13,8 @@ export class TaskDto {
   @Expose()
   @ApiProperty()
   isDone: boolean;
+
+  @Expose()
+  @ApiProperty()
+  createdDate: Date;
 }
