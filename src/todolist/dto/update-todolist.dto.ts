@@ -3,11 +3,11 @@ import { IsString, MaxLength } from 'class-validator';
 
 export class UpdateTodolistDto {
   @ApiProperty({
-    description: 'List Name must not be exceed 25 character',
-    maxLength: 25
+    description: 'List Name must not be exceed 100 character',
+    maxLength: 100
   })
-  @MaxLength(25, {
-    message: 'List Name must not be exceed 25 character'
+  @MaxLength(100, {
+    message: 'List Name must not be exceed 100 character'
   })
   @IsString()
   listName: string;
