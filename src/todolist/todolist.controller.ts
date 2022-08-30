@@ -24,7 +24,7 @@ import {TodolistService} from './todolist.service';
 export class TodolistController {
   constructor(private todoListService: TodolistService) {}
   @Get()
-  getAllUser(): Promise<Todolist[]> {
+  getAllUser() {
     return this.todoListService.findAll();
   }
 

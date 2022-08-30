@@ -3,11 +3,11 @@ import {ApiProperty} from '@nestjs/swagger';
 
 export class UpdateTaskDto {
   @ApiProperty({
-    description: 'Task name must not be exceed 25 character',
-    maxLength: 25
+    description: 'Task name must not be exceed 100 character',
+    maxLength: 100
   })
-  @MaxLength(25, {
-    message: 'Task name must not be exceed 25 character'
+  @MaxLength(100, {
+    message: 'Task name must not be exceed 100 character'
   })
   @IsString()
   taskName: string;
