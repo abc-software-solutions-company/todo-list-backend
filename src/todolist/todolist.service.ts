@@ -20,6 +20,11 @@ export class TodolistService {
     return this.repo.save(todoList);
   }
 
+  async updateList(todoList: Todolist, listName: string) {
+    todoList.listName = listName;
+    return this.repo.save(todoList);
+  }
+
   async findTodoListByID(listId: number) {
     const TodoList = await this.repo
       .createQueryBuilder('todolist')
