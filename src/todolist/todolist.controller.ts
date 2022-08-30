@@ -24,7 +24,7 @@ import {TodolistService} from './todolist.service';
 export class TodolistController {
   constructor(private todoListService: TodolistService) {}
   @Get()
-  getAllUser(): Promise<Todolist[]> {
+  getAllUser() {
     return this.todoListService.findAll();
   }
 
@@ -33,7 +33,7 @@ export class TodolistController {
     var numberRegex = /^\s*[+-]?(\d+|\d*\.\d+|\d+\.\d*)([Ee][+-]?\d+)?\s*$/;
 
     if (!numberRegex.test(listID)) {
-      throw new BadRequestException('listID must be number 👀😵')
+      throw new BadRequestException('Cannot find this list 😢');
     }
     const listName = await this.todoListService.findTodoListByID(parseInt(listID)).then(result => {
       console.log(result);

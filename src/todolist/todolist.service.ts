@@ -6,8 +6,13 @@ import {Todolist} from './entities/todolist.entity';
 export class TodolistService {
   constructor(@InjectRepository(Todolist) private repo: Repository<Todolist>) {}
 
-  async findAll(): Promise<Todolist[]> {
-    return (await this.repo.find({isActive: true}));
+  async findAll() {
+    const TodoList = await this.repo
+    .createQueryBuilder('todolist')
+    .where('todolist.isActive = :isActive', {isActive: true})
+    .orderBy('todolist.createdDate','DESC')
+    .getMany();
+    return TodoList;
   }
 
   async create(listName: string): Promise<Todolist> {
