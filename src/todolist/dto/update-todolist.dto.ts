@@ -1,4 +1,14 @@
-import { PartialType } from "@nestjs/swagger";
-import { CreateTodolistDto } from "./create-todolist.dto";
+import { ApiProperty, PartialType } from "@nestjs/swagger";
+import { IsString, MaxLength } from 'class-validator';
 
-export class UpdateTodolistDto extends PartialType(CreateTodolistDto) {}
+export class UpdateTodolistDto {
+  @ApiProperty({
+    description: 'List Name must not be exceed 25 character',
+    maxLength: 25
+  })
+  @MaxLength(25, {
+    message: 'List Name must not be exceed 25 character'
+  })
+  @IsString()
+  listName: string;
+}
