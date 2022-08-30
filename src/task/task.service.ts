@@ -38,6 +38,7 @@ export class TaskService {
     const TaskList = await this.repo
       .createQueryBuilder('task')
       .where('task.todolistId = :listId', {listId: listId})
+      .orderBy('task.createdDate','DESC')
       .getMany();
     return TaskList;
   }
