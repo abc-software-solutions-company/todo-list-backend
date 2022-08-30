@@ -52,7 +52,7 @@ export class TaskService {
   }
 
   async markTaskDone(task: Task) {
-    task.isDone = true;
+    task.isDone = !(task.isDone);
     return this.repo.save(task);
   }
 }
