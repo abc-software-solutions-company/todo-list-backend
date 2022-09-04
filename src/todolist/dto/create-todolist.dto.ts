@@ -1,4 +1,4 @@
-import { IsString, MaxLength } from "class-validator";
+import { IsString, IsUUID, MaxLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateTodolistDto {
@@ -10,5 +10,9 @@ export class CreateTodolistDto {
     message: "TodoList Name must not be exceed 100 character"
   })
   @IsString()
-  listName: string;
+  name: string;
+
+  @ApiProperty()
+  @IsUUID()
+  userId: string
 }

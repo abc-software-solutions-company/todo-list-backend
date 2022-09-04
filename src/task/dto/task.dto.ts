@@ -8,7 +8,7 @@ export class TaskDto {
 
   @Expose()
   @ApiProperty()
-  taskName: string;
+  name: string;
 
   @Expose()
   @ApiProperty()

@@ -10,7 +10,7 @@ export class CreateTaskDto {
     message: 'Task name must not be exceed 100 character'
   })
   @IsString()
-  taskName: string;
+  name: string;
 
   @ApiProperty()
   @IsUUID()

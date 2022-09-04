@@ -1,5 +1,6 @@
 import { type } from "os";
 import { Task } from "src/task/entities/task.entity";
+import { User } from 'src/users/entities/user.entity';
 import {
   AfterInsert,
   AfterRemove,
@@ -11,6 +12,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryColumn,
+  ManyToOne,
 } from "typeorm";
 
 @Entity()
@@ -19,7 +21,7 @@ export class Todolist {
   id: number;
 
   @Column()
-  listName: string;
+  name: string;
 
   @OneToMany(() => Task, (task) => task.todolistId)
   tasks: Task[];
@@ -27,11 +29,17 @@ export class Todolist {
   @Column({default:true})
   isActive: boolean
 
+  @Column()
+  userId: string;
+
   @CreateDateColumn()
   createdDate: Date;
 
   @UpdateDateColumn()
   updatedDate: Date;
+
+  @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
+  user: User;
 
   @AfterInsert()
   logInsert() {

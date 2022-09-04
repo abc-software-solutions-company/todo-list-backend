@@ -2,6 +2,8 @@ import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { AllExceptionsFilter } from './interceptors/all-exception.filter';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -30,6 +32,8 @@ async function bootstrap() {
       whitelist: true,
     })
   );
+  app.useGlobalFilters(new AllExceptionsFilter());
+
 
   await app.listen(3100);
 }

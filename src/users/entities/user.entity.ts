@@ -11,6 +11,7 @@ import {
 
 import { Task } from "src/task/entities/task.entity";
 import { IsUUID } from 'class-validator';
+import { Todolist } from 'src/todolist/entities/todolist.entity';
 
 @Entity()
 export class User {
@@ -21,8 +22,8 @@ export class User {
   @Column()
   userName: string;
 
-  @OneToMany(() => Task, (task) => task.userId)
-  tasks: Task[];
+  @OneToMany(() => Todolist, (list) => list.userId)
+  lists: Todolist[];
 
   @CreateDateColumn()
   createdDate: Date;
