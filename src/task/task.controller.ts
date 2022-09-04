@@ -34,6 +34,11 @@ export class TasksController {
     private userService: UsersService
   ) {}
 
+  @Get("/single/:id")
+  getTaskById(@Param("id") id: string) {
+    return this.taskService.findTaskById(id);
+  }
+
   @Get("/:listID")
   readTodoListByID(@Param("listID") listID: number) {
     return this.taskService.findTaskFromListByID(listID);
