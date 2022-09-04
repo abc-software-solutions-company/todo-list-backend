@@ -8,7 +8,7 @@ export class TodoListDto {
 
   @Expose()
   @ApiProperty()
-  listName: string;
+  name: string;
 
   @Expose()
   @ApiProperty()
@@ -21,4 +21,8 @@ export class TodoListDto {
   @Expose()
   @ApiProperty()
   isActive: boolean;
+
+  @Expose()
+  @ApiProperty()
+  userId: string;
 }

@@ -54,43 +54,33 @@ export class TasksController {
       throw new BadRequestException("Error your list id is not available 😢");
     }
 
-    const existUser = await this.userService
-      .findUserById(body.userId)
-      .then((result) => {
-        return result;
-      });
-    if (existUser === undefined) {
-      throw new BadRequestException("Error you user id is not available 😢");
-    }
-
-
-    return this.taskService.create(body, todoList, user);
+    return this.taskService.create(body, todoList);
   }
 
-  @Delete("/:taskID")
-  async removeUser(@Param("taskID") taskID: string) {
-    const taskExisting = await this.taskService.findTaskById(taskID);
+  @Delete("/:id")
+  async removeUser(@Param("id") id: string) {
+    const taskExisting = await this.taskService.findTaskById(id);
     if (!taskExisting) {
       throw new NotFoundException("Cannot remove task because task not found 😢");
     }
     return this.taskService.remove(taskExisting);
   }
 
-  @Put("/:taskID")
-  async markTaskDone(@Param("taskID") taskID: string) {
-    const taskExisting = await this.taskService.findTaskById(taskID);
+  @Put("/:id")
+  async markTaskDone(@Param("id") id: string) {
+    const taskExisting = await this.taskService.findTaskById(id);
     if (!taskExisting) {
       throw new NotFoundException("Cannot mark done this task because task not found 😢😭😭😭😭😭");
     }
     return this.taskService.markTaskDone(taskExisting);
   }
 
-  @Patch("/:taskID")
-  async updateTask(@Param("taskID") taskID: string,@Body() updateTaskDto: UpdateTaskDto) {
-    const taskExisting = await this.taskService.findTaskById(taskID);
+  @Patch("/:id")
+  async updateTask(@Param("id") id: string,@Body() updateTaskDto: UpdateTaskDto) {
+    const taskExisting = await this.taskService.findTaskById(id);
     if (!taskExisting) {
       throw new NotFoundException("Cannot update task because task not found 😢");
     }
-    return this.taskService.updateTask(taskExisting, updateTaskDto.taskName);
+    return this.taskService.updateTask(taskExisting, updateTaskDto.name);
   }
 }

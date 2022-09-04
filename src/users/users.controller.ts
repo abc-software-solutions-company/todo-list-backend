@@ -22,9 +22,9 @@ import {User} from './entities/user.entity';
 @Serialize(UserDto)
 export class UsersController {
   constructor(private usersService: UsersService) {}
-  @Get('/:userID')
-  async checkUserLogin(@Param('userID') userID: string) {
-    const userExisting = await this.usersService.findUserById(userID);
+  @Get('/:id')
+  async checkUserLogin(@Param('id') id: string) {
+    const userExisting = await this.usersService.findUserById(id);
     console.log(userExisting);
     if (userExisting.length == 0) {
       throw new BadRequestException('You must registered a name before enter this page 😵');
