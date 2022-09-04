@@ -15,7 +15,7 @@ export class Task {
   id: string;
 
   @Column()
-  taskName: string;
+  name: string;
 
   @CreateDateColumn()
   createdDate: Date;
@@ -27,13 +27,7 @@ export class Task {
   isDone: boolean;
 
   @Column()
-  userId: string;
-
-  @Column()
   todolistId: number;
-
-  @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
-  user: User;
 
   @ManyToOne(() => Todolist, (todolist) => todolist.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
   todolist: Todolist;

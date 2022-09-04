@@ -10,5 +10,5 @@ export class UpdateTodolistDto {
     message: 'List Name must not be exceed 100 character'
   })
   @IsString()
-  listName: string;
+  name: string;
 }

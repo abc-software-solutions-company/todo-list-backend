@@ -19,17 +19,16 @@ export class TaskService {
     return task;
   }
 
-  async findTaskByName(taskName: string) {
+  async findTaskByName(name: string) {
     const firstTask = await this.repo
       .createQueryBuilder('task')
-      .where('task.taskName = :taskName', {taskName: taskName})
+      .where('task.name = :name', {name: name})
       .getOne();
     return firstTask;
   }
 
-  async create(taskDto: CreateTaskDto, todolist: Todolist, user: User) {
+  async create(taskDto: CreateTaskDto, todolist: Todolist) {
     const task = this.repo.create(taskDto);
-    task.user = user;
     task.todolist = todolist;
     return this.repo.save(task);
   }
@@ -47,8 +46,8 @@ export class TaskService {
     return this.repo.remove(task);
   }
 
-  async updateTask(task: Task, taskName: string) {
-    task.taskName = taskName;
+  async updateTask(task: Task, name: string) {
+    task.name = name;
     return this.repo.save(task);
   }
 

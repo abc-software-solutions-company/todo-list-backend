@@ -2,6 +2,7 @@ import {NotAcceptableException, Injectable, NotFoundException, HttpCode} from '@
 import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Todolist} from './entities/todolist.entity';
+import { CreateTodolistDto } from './dto/create-todolist.dto';
 @Injectable()
 export class TodolistService {
   constructor(@InjectRepository(Todolist) private repo: Repository<Todolist>) {}
@@ -15,8 +16,8 @@ export class TodolistService {
     return TodoList;
   }
 
-  async create(listName: string): Promise<Todolist> {
-    const todoList = this.repo.create({listName});
+  async create(todoListDto: CreateTodolistDto) {
+    const todoList = await this.repo.create(todoListDto);
     return this.repo.save(todoList);
   }
 
@@ -26,7 +27,7 @@ export class TodolistService {
   }
 
   async updateList(todoList: Todolist, listName: string) {
-    todoList.listName = listName;
+    todoList.name = listName;
     return this.repo.save(todoList);
   }
 
