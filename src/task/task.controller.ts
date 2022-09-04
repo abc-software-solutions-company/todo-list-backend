@@ -34,7 +34,7 @@ export class TasksController {
     private userService: UsersService
   ) {}
 
-  @Get("/:id")
+  @Get("/single/:id")
   getTaskById(@Param("id") id: string) {
     return this.taskService.findTaskById(id);
   }
