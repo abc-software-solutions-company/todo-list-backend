@@ -39,6 +39,11 @@ export class UsersController {
 
   @Post()
   async createUser(@Body() body: CreateUserDto) {
+    console.log(body.userName.length);
+    
+    if (body.userName.trim().length == 0) {
+      throw new BadRequestException('Name not empty')
+    }
     return this.usersService.create(body.userName);
   }
 }
