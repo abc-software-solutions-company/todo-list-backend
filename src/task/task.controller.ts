@@ -58,6 +58,9 @@ export class TasksController {
     if (existTodoList.length == 0) {
       throw new BadRequestException("Error your list id is not available 😢");
     }
+    if (body.name.trim().length == 0) {
+      throw new BadRequestException('Name not empty')
+    }
 
     return this.taskService.create(body, todoList);
   }
@@ -85,6 +88,9 @@ export class TasksController {
     const taskExisting = await this.taskService.findTaskById(id);
     if (!taskExisting) {
       throw new NotFoundException("Cannot update task because task not found 😢");
+    }
+    if (updateTaskDto.name.trim().length) {
+      throw new BadRequestException("Name not empty")
     }
     return this.taskService.updateTask(taskExisting, updateTaskDto.name);
   }

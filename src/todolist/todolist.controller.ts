@@ -48,7 +48,10 @@ export class TodolistController {
   }
 
   @Post()
-  async createUser(@Body() body: CreateTodolistDto) {
+  async createTodoList(@Body() body: CreateTodolistDto) {
+    if (body.name.trim().length === 0) {
+      throw new BadRequestException('Name not empty')
+    }
     return this.todoListService.create(body);
   }
 
@@ -68,6 +71,9 @@ export class TodolistController {
     const listExisting = await this.todoListService.findTodoListByID(id);
     if (!listExisting) {
       throw new NotFoundException('Cannot update list because list not found 😢');
+    }
+    if (updateTodoListDto.name.trim().length == 0 ) {
+      throw new BadRequestException('Name not empty')
     }
     return this.todoListService.updateList(listExisting[0], updateTodoListDto.name);
   }
