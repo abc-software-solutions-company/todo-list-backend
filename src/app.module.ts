@@ -9,6 +9,7 @@ import { Task } from "./task/entities/task.entity";
 import { Todolist } from "./todolist/entities/todolist.entity";
 import { TodolistModule } from "./todolist/todolist.module";
 import 'dotenv/config'
+import { AppGateway } from './websocket/app.gateway';
 
 @Module({
   imports: [
@@ -21,13 +22,13 @@ import 'dotenv/config'
       port: process.env.POSTGRES_PORT,
       entities: [User, Task, Todolist],
       synchronize: true,
-      dropSchema: false
+      dropSchema: false,
     }),
     UsersModule,
     TasksModule,
     TodolistModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {}
