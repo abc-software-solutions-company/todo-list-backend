@@ -25,6 +25,10 @@ export class User {
   @OneToMany(() => Todolist, (list) => list.userId)
   lists: Todolist[];
 
+  @OneToMany(() => Task, (task) => task.userId)
+  tasks: Task[];
+
+
   @CreateDateColumn()
   createdDate: Date;
 

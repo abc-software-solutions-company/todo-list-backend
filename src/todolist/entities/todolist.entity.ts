@@ -23,9 +23,6 @@ export class Todolist {
   @Column()
   name: string;
 
-  @OneToMany(() => Task, (task) => task.todolistId)
-  tasks: Task[];
-
   @Column({default:true})
   isActive: boolean
 
@@ -40,6 +37,9 @@ export class Todolist {
 
   @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
   user: User;
+
+  @OneToMany(() => Task, (task) => task.todoListId)
+  tasks: Task[];
 
   @AfterInsert()
   logInsert() {

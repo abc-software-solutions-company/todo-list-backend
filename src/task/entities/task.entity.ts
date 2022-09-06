@@ -26,9 +26,17 @@ export class Task {
   @Column({default: false})
   isDone: boolean;
 
-  @Column()
-  todolistId: number;
+  @Column({type:"bigint"})
+  todoListId: number;
 
-  @ManyToOne(() => Todolist, (todolist) => todolist.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
-  todolist: Todolist;
+  @Column()
+  userId: string;
+
+  // @ManyToOne(() => Todolist, (todolist) => todolist.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
+  // todolist: Todolist;
+
+  @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
+  user: User;
+  @ManyToOne(() => Todolist, (todoList) => todoList.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
+  todoList: Todolist;
 }

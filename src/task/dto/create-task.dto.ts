@@ -18,5 +18,5 @@ export class CreateTaskDto {
 
   @ApiProperty()
   @IsNumber()
-  todolistId: number;
+  todoListId: number;
 }
