@@ -89,7 +89,7 @@ export class TasksController {
     if (!taskExisting) {
       throw new NotFoundException("Cannot update task because task not found 😢");
     }
-    if (updateTaskDto.name.trim().length) {
+    if (updateTaskDto.name.trim().length == 0) {
       throw new BadRequestException("Name not empty")
     }
     return this.taskService.updateTask(taskExisting, updateTaskDto.name);
