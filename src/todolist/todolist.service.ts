@@ -3,9 +3,10 @@ import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Todolist} from './entities/todolist.entity';
 import { CreateTodolistDto } from './dto/create-todolist.dto';
+import { TaskService } from 'src/task/task.service';
 @Injectable()
 export class TodolistService {
-  constructor(@InjectRepository(Todolist) private repo: Repository<Todolist>) {}
+  constructor(@InjectRepository(Todolist) private repo: Repository<Todolist>, private taskService: TaskService) {}
 
   async findAll() {
     const TodoList = await this.repo

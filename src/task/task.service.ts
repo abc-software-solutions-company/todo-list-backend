@@ -29,14 +29,14 @@ export class TaskService {
 
   async create(taskDto: CreateTaskDto, todolist: Todolist) {
     const task = this.repo.create(taskDto);
-    task.todolist = todolist;
+    // task.todolist = todolist;
     return this.repo.save(task);
   }
 
-  async findTaskFromListByID(listId: number) {
+  async findTaskFromListByID(todoListId: number) {
     const TaskList = await this.repo
       .createQueryBuilder('task')
-      .where('task.todolistId = :listId', {listId: listId})
+      .where('task.todoListId = :todoListId', {todoListId: todoListId})
       .orderBy('task.createdDate','DESC')
       .getMany();
     return TaskList;

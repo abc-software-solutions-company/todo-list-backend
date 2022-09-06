@@ -15,7 +15,6 @@ import { ApiTags } from "@nestjs/swagger";
 import { TaskService } from "./task.service";
 import { TodolistService } from "src/todolist/todolist.service";
 import { UsersService } from "src/users/users.service";
-import { Serialize } from "src/interceptors/serialize.interceptor";
 import { TaskDto } from "./dto/task.dto";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { CurrentUser } from "src/users/decorators/current-user-decorator";
@@ -26,7 +25,6 @@ import { UpdateTaskDto } from "./dto/update-task-dto";
 
 @ApiTags("Tasks")
 @Controller("tasks")
-@Serialize(TaskDto)
 export class TasksController {
   constructor(
     private taskService: TaskService,
@@ -51,7 +49,7 @@ export class TasksController {
     @CurrentTodoList() todoList: Todolist
   ) {
     const existTodoList = await this.todoListService
-      .findTodoListByID(body.todolistId)
+      .findTodoListByID(body.todoListId)
       .then((result) => {
         return result;
       });
@@ -94,4 +92,5 @@ export class TasksController {
     }
     return this.taskService.updateTask(taskExisting, updateTaskDto.name);
   }
+
 }

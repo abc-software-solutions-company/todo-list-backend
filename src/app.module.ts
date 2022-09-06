@@ -22,7 +22,7 @@ import { AppGateway } from './websocket/app.gateway';
       port: process.env.POSTGRES_PORT,
       entities: [User, Task, Todolist],
       synchronize: true,
-      dropSchema: false,
+      // dropSchema: true,
     }),
     UsersModule,
     TasksModule,

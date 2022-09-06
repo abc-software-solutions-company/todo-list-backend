@@ -11,7 +11,7 @@ import {
   BadRequestException
 } from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
-import {Serialize} from 'src/interceptors/serialize.interceptor';
+import { TaskService } from 'src/task/task.service';
 import {CurrentUser} from 'src/users/decorators/current-user-decorator';
 import {User} from 'src/users/entities/user.entity';
 import {CreateTodolistDto} from './dto/create-todolist.dto';
@@ -20,11 +20,10 @@ import {UpdateTodolistDto} from './dto/update-todolist.dto';
 import {Todolist} from './entities/todolist.entity';
 import {TodolistService} from './todolist.service';
 
-@Controller('todos')
+@Controller('lists')
 @ApiTags('TodoLists')
-@Serialize(TodoListDto)
 export class TodolistController {
-  constructor(private todoListService: TodolistService) {}
+  constructor(private todoListService: TodolistService, private taskService: TaskService) {}
   @Get()
   getAllUser() {
     return this.todoListService.findAll();
@@ -44,7 +43,16 @@ export class TodolistController {
     if (listName.length === 0) {
       throw new BadRequestException('Cannot find this list 😢');
     }
-    return listName[0];
+    const listTask = await this.taskService.findTaskFromListByID(parseInt(id));
+    console.log(listTask);
+    return {
+      "name":listName[0].name,
+      "userId" : listName[0].userId,
+      "id" : listName[0].id,
+      "createdAt" : listName[0].createdDate,
+      "updatedAt" : listName[0].updatedDate,
+      "tasks": listTask
+    }
   }
 
   @Post()
@@ -77,4 +85,14 @@ export class TodolistController {
     }
     return this.todoListService.updateList(listExisting[0], updateTodoListDto.name);
   }
+
+  // @Get('/test/')
+  // async test() {
+  //   const a = {
+  //     name: "Thien",
+  //     task: ["task 1", "task 2", "task 3"]
+  //   }
+    
+  //   return a;
+  // }
 }
