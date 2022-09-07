@@ -19,14 +19,19 @@ import {TodoListDto} from './dto/todolist.dto';
 import {UpdateTodolistDto} from './dto/update-todolist.dto';
 import {Todolist} from './entities/todolist.entity';
 import {TodolistService} from './todolist.service';
+ 
+interface IQueryParam {
+  userId : string;
+}
 
 @Controller('lists')
 @ApiTags('TodoLists')
 export class TodolistController {
   constructor(private todoListService: TodolistService, private taskService: TaskService) {}
   @Get()
-  getAllUser() {
-    return this.todoListService.findAll();
+  getListForThisUser(@Query() queryParam : IQueryParam) {
+    console.log(queryParam);
+    return this.todoListService.findListByUserId(queryParam.userId);
   }
 
   @Get('/:id')
