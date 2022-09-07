@@ -17,6 +17,16 @@ export class TodolistService {
     return TodoList;
   }
 
+  async findListByUserId(userId: String) {
+    const TodoList = await this.repo
+    .createQueryBuilder('todolist')
+    .where('todolist.isActive = :isActive', {isActive: true})
+    .andWhere('todolist.userId = :userId', {userId: userId})
+    .orderBy('todolist.createdDate','DESC')
+    .getMany();
+    return TodoList;
+  }
+
   async create(todoListDto: CreateTodolistDto) {
     const todoList = await this.repo.create(todoListDto);
     return this.repo.save(todoList);
