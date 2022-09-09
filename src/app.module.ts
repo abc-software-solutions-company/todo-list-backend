@@ -10,6 +10,8 @@ import { Todolist } from "./todolist/entities/todolist.entity";
 import { TodolistModule } from "./todolist/todolist.module";
 import 'dotenv/config'
 import { AppGateway } from './websocket/app.gateway';
+import { UuidstorageModule } from './uuidstorage/uuidstorage.module';
+import { Uuidstorage } from './uuidstorage/entities/uuidstorage.entity';
 
 @Module({
   imports: [
@@ -20,13 +22,14 @@ import { AppGateway } from './websocket/app.gateway';
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       port: process.env.POSTGRES_PORT,
-      entities: [User, Task, Todolist],
+      entities: [User, Task, Todolist,Uuidstorage],
       synchronize: true,
-      // dropSchema: true,
+      dropSchema: true,
     }),
     UsersModule,
     TasksModule,
     TodolistModule,
+    UuidstorageModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],
