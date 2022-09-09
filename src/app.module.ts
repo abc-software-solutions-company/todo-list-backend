@@ -24,7 +24,7 @@ import { Uuidstorage } from './uuidstorage/entities/uuidstorage.entity';
       port: process.env.POSTGRES_PORT,
       entities: [User, Task, Todolist,Uuidstorage],
       synchronize: true,
-      dropSchema: true,
+      // dropSchema: true
     }),
     UsersModule,
     TasksModule,

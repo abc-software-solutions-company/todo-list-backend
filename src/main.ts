@@ -36,5 +36,8 @@ async function bootstrap() {
 
 
   await app.listen(3100);
+  // Genearted 
+  console.log("Hello I'm running first");
+  
 }
 bootstrap();
