@@ -3,7 +3,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AllExceptionsFilter } from './interceptors/all-exception.filter';
-
+import { UuidstorageController } from './uuidstorage/uuidstorage.controller';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -36,8 +36,5 @@ async function bootstrap() {
 
 
   await app.listen(3100);
-  // Genearted 
-  console.log("Hello I'm running first");
-  
 }
 bootstrap();

@@ -7,14 +7,15 @@ export class UuidstorageController {
 
   @Post()
   generated1000Record() {
-    return this.uuidstorageService.generated1000Record();
+    return "get is busy"
   }
 
   @Get()
   async isEmptyRecord() {
-    const data = await this.uuidstorageService.isEmptyRecord();
-    console.log("I'm a controller running when start server");
+    // const data = await this.uuidstorageService.isEmptyRecord();
+    // console.log("I'm a controller running when start server");
     
-    return data[1];
+    // return data[1];
+    return 'dump'
   }
 }

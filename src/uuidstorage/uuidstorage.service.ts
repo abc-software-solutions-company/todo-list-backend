@@ -1,20 +1,34 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, OnModuleInit} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {Uuidstorage} from './entities/uuidstorage.entity';
 import ShortUniqueId from 'short-unique-id';
 
 @Injectable()
-export class UuidstorageService {
+export class UuidstorageService implements OnModuleInit{
   constructor(@InjectRepository(Uuidstorage) private repo: Repository<Uuidstorage>) {}
+  async onModuleInit() {
+    console.log('This is uuidstorage service module init');
+    console.log(await this.isEmptyRecord());
+    const uuidCount = await this.isEmptyRecord();
+    const maxUUID = 10000;
+    if (uuidCount === 0) {
+      for (let i =0; i <= maxUUID; i++) {
+        this.generatedRecord()
+      }
+    }
+    
 
-  generated1000Record() {
+  }
+
+  generatedRecord() {
     const uidShort = new ShortUniqueId({length: 5});
     return this.repo.save({id: uidShort()});
   }
 
   async isEmptyRecord() {
-    return this.repo.findAndCount();
+    const data = await this.repo.findAndCount();
+    return data[1]
   }
 
   findAll() {
