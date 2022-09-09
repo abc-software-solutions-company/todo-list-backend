@@ -6,7 +6,7 @@ export class Uuidstorage {
   @PrimaryColumn()
   id: string
 
-  @Column()
+  @Column({default:false})
   flag: boolean
 
   @OneToOne(() => Todolist, (todolist) => todolist.uuidstorage)
