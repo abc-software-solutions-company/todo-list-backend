@@ -14,11 +14,9 @@ export class UuidstorageService implements OnModuleInit{
     const maxUUID = 10000;
     if (uuidCount === 0) {
       for (let i =0; i <= maxUUID; i++) {
-        this.generatedRecord()
+        await this.generatedRecord()
       }
     }
-    
-
   }
 
   generatedRecord() {
@@ -29,6 +27,11 @@ export class UuidstorageService implements OnModuleInit{
   async isEmptyRecord() {
     const data = await this.repo.findAndCount();
     return data[1]
+  }
+
+  // Find first id don't use
+  async findFirstRecordUnused() {
+    const data = await this.repo.findOne({'flag':false})
   }
 
   findAll() {
