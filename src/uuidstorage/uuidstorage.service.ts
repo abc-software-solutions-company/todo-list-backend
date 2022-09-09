@@ -8,7 +8,6 @@ export class UuidstorageService {
   constructor(@InjectRepository(Uuidstorage) private repo: Repository<Uuidstorage>) {}
 
   generated1000Record() {
-    // return 'This action adds a new uuidstorage';
     return this.repo.save({id:"test"})
   }
 
