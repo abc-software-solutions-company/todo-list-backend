@@ -8,7 +8,4 @@ export class Uuidstorage {
 
   @Column({default:false})
   flag: boolean
-
-  @OneToOne(() => Todolist, (todolist) => todolist.uuidstorage)
-  todoList: Todolist
 }

@@ -26,8 +26,8 @@ export class Task {
   @Column({default: false})
   isDone: boolean;
 
-  @Column({type:"bigint"})
-  todoListId: number;
+  @Column()
+  todoListId: string;
 
   @Column()
   userId: string;
