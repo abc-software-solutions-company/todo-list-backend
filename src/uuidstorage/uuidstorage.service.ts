@@ -21,7 +21,7 @@ export class UuidstorageService implements OnModuleInit{
   }
 
   async findUnuse() {
-    return (await this.repo.findOne({flag:false}))
+    return (await this.repo.findOneOrFail({flag:false}))
   }
 
   async setFlag(id: string) {

@@ -34,6 +34,8 @@ export class TodolistService {
     const uuid = await this.uuidStorageService.findUnuse();
     // Set new uuID for this list
     todoList.uuidstorage = uuid;
+    // Mark this uuid is used
+    await this.uuidStorageService.setFlag(uuid.id);
     return this.repo.save(todoList);
   }
 
