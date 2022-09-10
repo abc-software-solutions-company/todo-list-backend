@@ -49,12 +49,8 @@ export class TodolistService {
     return this.repo.save(todoList);
   }
 
-  async findTodoListByID(listId: number) {
-    const TodoList = await this.repo
-      .createQueryBuilder('todolist')
-      .where('todolist.id = :listId', {listId: listId})
-      .andWhere('todolist.isActive = :isActive', {isActive: true})
-      .getMany();
+  async findTodoListByID(id: string) {
+    const TodoList = await this.repo.find({id:id, isActive:true})
     return TodoList;
   }
 

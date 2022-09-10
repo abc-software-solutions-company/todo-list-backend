@@ -38,7 +38,7 @@ export class TasksController {
   }
 
   @Get("/:listID")
-  readTodoListByID(@Param("listID") listID: number) {
+  readTodoListByID(@Param("listID") listID: string) {
     return this.taskService.findTaskFromListByID(listID);
   }
 
@@ -48,11 +48,18 @@ export class TasksController {
     @CurrentUser() user: User,
     @CurrentTodoList() todoList: Todolist
   ) {
+    console.log('todolist id');
+    
+    console.log(body);
+    
     const existTodoList = await this.todoListService
       .findTodoListByID(body.todoListId)
       .then((result) => {
         return result;
       });
+    
+      console.log(existTodoList);
+      
     if (existTodoList.length == 0) {
       throw new BadRequestException("Error your list id is not available 😢");
     }
