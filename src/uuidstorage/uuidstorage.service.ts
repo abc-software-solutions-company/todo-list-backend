@@ -12,16 +12,12 @@ export class UuidstorageService implements OnModuleInit{
     console.log(await this.isEmptyRecord());
     const uuidCount = await this.isEmptyRecord();
     const maxUUID = 10000;
+    const uidShort = new ShortUniqueId({length: 5});
     if (uuidCount === 0) {
       for (let i =0; i <= maxUUID; i++) {
-        await this.generatedRecord()
+        await this.repo.save({id: uidShort()});
       }
     }
-  }
-
-  generatedRecord() {
-    const uidShort = new ShortUniqueId({length: 5});
-    return this.repo.save({id: uidShort()});
   }
 
   async isEmptyRecord() {
