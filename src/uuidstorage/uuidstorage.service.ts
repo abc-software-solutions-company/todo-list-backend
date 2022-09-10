@@ -20,6 +20,17 @@ export class UuidstorageService implements OnModuleInit{
     }
   }
 
+  async findUnuse() {
+    return (await this.repo.findOne({flag:false}))
+  }
+
+  async setFlag(id: string) {
+    const uuidRecord = await this.repo.findOne({id:id})
+    uuidRecord.flag = true
+    return await this.repo.save(uuidRecord);
+  }
+
+
   async isEmptyRecord() {
     const data = await this.repo.findAndCount();
     return data[1]
