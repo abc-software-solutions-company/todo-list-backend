@@ -17,6 +17,6 @@ export class CreateTaskDto {
   userId: string;
 
   @ApiProperty()
-  @IsNumber()
-  todoListId: number;
+  @IsString()
+  todoListId: string;
 }

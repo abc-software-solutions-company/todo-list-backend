@@ -4,9 +4,10 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Todolist} from './entities/todolist.entity';
 import { CreateTodolistDto } from './dto/create-todolist.dto';
 import { TaskService } from 'src/task/task.service';
+import { UuidstorageService } from 'src/uuidstorage/uuidstorage.service';
 @Injectable()
 export class TodolistService {
-  constructor(@InjectRepository(Todolist) private repo: Repository<Todolist>, private taskService: TaskService) {}
+  constructor(@InjectRepository(Todolist) private repo: Repository<Todolist>, private taskService: TaskService, private uuidStorageService: UuidstorageService) {}
 
   async findAll() {
     const TodoList = await this.repo
@@ -29,6 +30,12 @@ export class TodolistService {
 
   async create(todoListDto: CreateTodolistDto) {
     const todoList = await this.repo.create(todoListDto);
+    //find UUID unused
+    const uuid = await this.uuidStorageService.findUnuse();
+    // Set new uuID for this list
+    todoList.id = uuid.id;
+    // Mark this uuid is used
+    await this.uuidStorageService.setFlag(uuid.id);
     return this.repo.save(todoList);
   }
 
@@ -42,12 +49,8 @@ export class TodolistService {
     return this.repo.save(todoList);
   }
 
-  async findTodoListByID(listId: number) {
-    const TodoList = await this.repo
-      .createQueryBuilder('todolist')
-      .where('todolist.id = :listId', {listId: listId})
-      .andWhere('todolist.isActive = :isActive', {isActive: true})
-      .getMany();
+  async findTodoListByID(id: string) {
+    const TodoList = await this.repo.find({id:id, isActive:true})
     return TodoList;
   }
 

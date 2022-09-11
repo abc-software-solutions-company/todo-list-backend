@@ -36,19 +36,14 @@ export class TodolistController {
 
   @Get('/:id')
   async getListName(@Param('id') id: string) {
-    var numberRegex = /^\s*[+-]?(\d+|\d*\.\d+|\d+\.\d*)([Ee][+-]?\d+)?\s*$/;
-
-    if (!numberRegex.test(id)) {
-      throw new BadRequestException('Cannot find this list 😢');
-    }
-    const listName = await this.todoListService.findTodoListByID(parseInt(id)).then(result => {
+    const listName = await this.todoListService.findTodoListByID(id).then(result => {
       console.log(result);
       return result;
     });
     if (listName.length === 0) {
       throw new BadRequestException('Cannot find this list 😢');
     }
-    const listTask = await this.taskService.findTaskFromListByID(parseInt(id));
+    const listTask = await this.taskService.findTaskFromListByID(id);
     console.log(listTask);
     return {
       "name":listName[0].name,
@@ -69,7 +64,7 @@ export class TodolistController {
   }
 
   @Delete('/:id')
-  async removeUser(@Param('id') id: number) {
+  async removeUser(@Param('id') id: string) {
     const todoListExisting = await this.todoListService.findTodoListByID(id);
     if (!todoListExisting || todoListExisting[0] === undefined) {
       throw new NotFoundException('Cannot remove list because this list not found 😢');
@@ -80,7 +75,7 @@ export class TodolistController {
   }
 
   @Patch('/:id')
-  async updateList(@Param('id') id: number, @Body() updateTodoListDto: UpdateTodolistDto) {
+  async updateList(@Param('id') id: string, @Body() updateTodoListDto: UpdateTodolistDto) {
     const listExisting = await this.todoListService.findTodoListByID(id);
     if (!listExisting) {
       throw new NotFoundException('Cannot update list because list not found 😢');

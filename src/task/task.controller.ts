@@ -38,7 +38,7 @@ export class TasksController {
   }
 
   @Get("/:listID")
-  readTodoListByID(@Param("listID") listID: number) {
+  readTodoListByID(@Param("listID") listID: string) {
     return this.taskService.findTaskFromListByID(listID);
   }
 

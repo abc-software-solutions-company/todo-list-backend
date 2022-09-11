@@ -7,10 +7,12 @@ import { UsersService } from "src/users/users.service";
 import { Task } from "./entities/task.entity";
 import { Todolist } from "src/todolist/entities/todolist.entity";
 import { User } from "src/users/entities/user.entity";
+import { UuidstorageService } from 'src/uuidstorage/uuidstorage.service';
+import { Uuidstorage } from 'src/uuidstorage/entities/uuidstorage.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task, Todolist, User])],
+  imports: [TypeOrmModule.forFeature([Task, Todolist, User, Uuidstorage])],
   controllers: [TasksController],
-  providers: [TaskService, TodolistService, UsersService],
+  providers: [TaskService, TodolistService, UsersService, UuidstorageService],
 })
 export class TasksModule {}

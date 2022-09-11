@@ -1,6 +1,7 @@
 import { type } from "os";
 import { Task } from "src/task/entities/task.entity";
 import { User } from 'src/users/entities/user.entity';
+import { Uuidstorage } from 'src/uuidstorage/entities/uuidstorage.entity';
 import {
   AfterInsert,
   AfterRemove,
@@ -13,12 +14,14 @@ import {
   UpdateDateColumn,
   PrimaryColumn,
   ManyToOne,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
 
 @Entity()
 export class Todolist {
-  @PrimaryGeneratedColumn({ type: "bigint" })
-  id: number;
+  @PrimaryColumn()
+  id: string;
 
   @Column()
   name: string;
@@ -34,6 +37,10 @@ export class Todolist {
 
   @UpdateDateColumn()
   updatedDate: Date;
+
+  // @OneToOne(() =>Uuidstorage ,(uuidstorage) => uuidstorage.todoList )
+  // @JoinColumn()
+  // uuidstorage: Uuidstorage;
 
   @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
   user: User;
