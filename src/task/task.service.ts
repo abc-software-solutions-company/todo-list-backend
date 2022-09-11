@@ -29,9 +29,7 @@ export class TaskService {
 
   async create(taskDto: CreateTaskDto, todolist: Todolist) {
     const task = this.repo.create(taskDto);
-    // task.todolist = todolist;
     return this.repo.save(task);
-    // return 'dump'
   }
 
   async findTaskFromListByID(todoListId: string) {
