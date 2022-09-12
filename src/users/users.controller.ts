@@ -27,7 +27,7 @@ export class UsersController {
     if (userExisting.length == 0) {
       throw new BadRequestException('You must registered a name before enter this page 😵');
     }
-    return 'loggin ok 😺';
+    return userExisting[0];
   }
 
   @Get()

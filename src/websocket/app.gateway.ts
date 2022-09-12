@@ -13,6 +13,12 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.logger.log(`Client frontend send message and broadcast to all other user`);
   }
 
+  @SubscribeMessage('msgDeleteListToServer')
+  handleMessageDeleteList() {
+    this.server.emit('msgDeleteListToClient');
+    this.logger.log(`Delete list send to ws server`);
+  }
+
   afterInit() {
     this.logger.log('Websokcet handle when first time');
   }
