@@ -26,6 +26,9 @@ export class Task {
   @Column({default: false})
   isDone: boolean;
 
+  @Column({default:true})
+  isActive: boolean
+
   @Column()
   todoListId: string;
 

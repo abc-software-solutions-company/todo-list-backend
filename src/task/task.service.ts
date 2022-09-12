@@ -36,13 +36,15 @@ export class TaskService {
     const TaskList = await this.repo
       .createQueryBuilder('task')
       .where('task.todoListId = :todoListId', {todoListId: todoListId})
+      .andWhere('task.isActive = true')
       .orderBy('task.createdDate','DESC')
       .getMany();
     return TaskList;
   }
 
   async remove(task: Task) {
-    return this.repo.remove(task);
+    task.isActive = false;
+    return this.repo.save(task);
   }
 
   async updateTask(task: Task, name: string) {

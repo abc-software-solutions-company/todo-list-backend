@@ -1,5 +1,5 @@
 import { Todolist } from 'src/todolist/entities/todolist.entity';
-import { Column, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Uuidstorage {
@@ -8,4 +8,7 @@ export class Uuidstorage {
 
   @Column({default:false})
   flag: boolean
+
+  @CreateDateColumn()
+  createdDate: Date;
 }
