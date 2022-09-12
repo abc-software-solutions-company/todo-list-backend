@@ -11,7 +11,7 @@ export class UuidstorageService implements OnModuleInit{
     console.log('This is uuidstorage service module init');
     console.log(await this.isEmptyRecord());
     const uuidCount = await this.isEmptyRecord();
-    const maxUUID = 10000;
+    const maxUUID = 1000;
     const uidShort = new ShortUniqueId({length: 5, dictionary:'alphanum_lower'});
     if (uuidCount === 0) {
       for (let i =0; i <= maxUUID; i++) {
