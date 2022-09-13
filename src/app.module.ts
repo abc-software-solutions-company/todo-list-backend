@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -12,6 +12,7 @@ import 'dotenv/config'
 import { AppGateway } from './websocket/app.gateway';
 import { UuidstorageModule } from './uuidstorage/uuidstorage.module';
 import { Uuidstorage } from './uuidstorage/entities/uuidstorage.entity';
+import { LoggerMiddleware } from './utils/logger.middleware';
 
 @Module({
   imports: [
@@ -34,4 +35,8 @@ import { Uuidstorage } from './uuidstorage/entities/uuidstorage.entity';
   controllers: [AppController],
   providers: [AppService, AppGateway],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+      consumer.apply(LoggerMiddleware).forRoutes('*')
+  }
+}
