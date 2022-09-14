@@ -8,9 +8,10 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   private logger: Logger = new Logger('AppGateway');
 
   @SubscribeMessage('msgToServer')
-  handleMessage() {
-    this.server.emit('msgToClient');
-    this.logger.log(`Client frontend send message and broadcast to all other user`);
+  handleMessage(client: Socket, payload : any) {
+    this.server.emit(`msgToClient_${payload.roomId}`);
+    this.logger.log(`Client frontend send message to room ${payload.roomId} `);
+    this.logger.log(payload.roomId)
   }
 
   @SubscribeMessage('msgDeleteListToServer')
