@@ -12,8 +12,6 @@ export class CreateTaskDto {
   @IsString()
   name: string;
 
-  @ApiProperty()
-  @IsUUID()
   userId: string;
 
   @ApiProperty()
