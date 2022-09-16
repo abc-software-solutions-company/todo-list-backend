@@ -10,8 +10,10 @@ import {
   NotFoundException,
   BadRequestException,
   Put,
+  UseGuards,
+  Req,
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { TaskService } from "./task.service";
 import { TodolistService } from "src/todolist/todolist.service";
 import { UsersService } from "src/users/users.service";
@@ -22,31 +24,41 @@ import { User } from "src/users/entities/user.entity";
 import { CurrentTodoList } from "src/todolist/decorators/current-todolist-decorator";
 import { Todolist } from "src/todolist/entities/todolist.entity";
 import { UpdateTaskDto } from "./dto/update-task-dto";
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AuthService } from 'src/auth/auth.service';
+import { AuthDto } from 'src/auth/dto/auth.dto';
+import extractHeader from 'src/utils/extract-header';
 
 @ApiTags("Tasks")
+@ApiBearerAuth()
 @Controller("tasks")
 export class TasksController {
   constructor(
     private taskService: TaskService,
     private todoListService: TodolistService,
-    private userService: UsersService
+    private userService: UsersService,
+    private authService: AuthService
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get("/single/:id")
   getTaskById(@Param("id") id: string) {
     return this.taskService.findTaskById(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get("/:listID")
   readTodoListByID(@Param("listID") listID: string) {
     return this.taskService.findTaskFromListByID(listID);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createTask(
     @Body() body: CreateTaskDto,
     @CurrentUser() user: User,
-    @CurrentTodoList() todoList: Todolist
+    @CurrentTodoList() todoList: Todolist,
+    @Req() request:any
   ) {
     const existTodoList = await this.todoListService
       .findTodoListByID(body.todoListId)
@@ -60,9 +72,12 @@ export class TasksController {
       throw new BadRequestException('Name not empty')
     }
 
+    const {userId} = extractHeader(request)
+    body.userId = userId
     return this.taskService.create(body, todoList);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete("/:id")
   async removeUser(@Param("id") id: string) {
     const taskExisting = await this.taskService.findTaskById(id);
@@ -72,6 +87,7 @@ export class TasksController {
     return this.taskService.remove(taskExisting);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put("/:id")
   async markTaskDone(@Param("id") id: string) {
     const taskExisting = await this.taskService.findTaskById(id);
@@ -81,6 +97,7 @@ export class TasksController {
     return this.taskService.markTaskDone(taskExisting);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch("/:id")
   async updateTask(@Param("id") id: string,@Body() updateTaskDto: UpdateTaskDto) {
     const taskExisting = await this.taskService.findTaskById(id);

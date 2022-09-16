@@ -13,6 +13,9 @@ import { AppGateway } from './websocket/app.gateway';
 import { UuidstorageModule } from './uuidstorage/uuidstorage.module';
 import { Uuidstorage } from './uuidstorage/entities/uuidstorage.entity';
 import { LoggerMiddleware } from './utils/logger.middleware';
+import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controler';
 
 @Module({
   imports: [
@@ -29,14 +32,15 @@ import { LoggerMiddleware } from './utils/logger.middleware';
     }),
     UsersModule,
     TasksModule,
+    AuthModule,
     TodolistModule,
     UuidstorageModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AuthController],
   providers: [AppService, AppGateway],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-      consumer.apply(LoggerMiddleware).forRoutes('*')
-  }
+export class AppModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //     consumer.apply(LoggerMiddleware).forRoutes('*')
+  // }
 }

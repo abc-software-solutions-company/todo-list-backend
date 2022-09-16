@@ -12,8 +12,6 @@ export class CreateTodolistDto {
   @IsString()
   name: string;
 
-  @ApiProperty()
-  @IsUUID()
   userId: string
 
 }

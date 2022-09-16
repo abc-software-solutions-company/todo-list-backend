@@ -3,13 +3,15 @@ import { Request, Response } from 'express';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     console.log(exception);
-    response.status(400).json({
-      statusCode: 400,
+    
+    console.log(JSON.stringify(exception.status));
+    response.status(exception.status).json({
+      statusCode: exception.status,
       message: 'Bad Request',
       timestamp: new Date().toISOString(),
       path: request.url,
