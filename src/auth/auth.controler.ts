@@ -18,7 +18,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getUserProfile(@Req() request: any) {
-    const {userName} = extractHeader(request);
-    return userName
+    const {userName,userId} = extractHeader(request);
+    return {userName,userId}
   }
 }

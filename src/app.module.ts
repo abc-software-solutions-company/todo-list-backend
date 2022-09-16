@@ -1,7 +1,5 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
 import { UsersModule } from "./users/users.module";
 import { TasksModule } from "./task/task.module";
 import { User } from "./users/entities/user.entity";
@@ -12,7 +10,6 @@ import 'dotenv/config'
 import { AppGateway } from './websocket/app.gateway';
 import { UuidstorageModule } from './uuidstorage/uuidstorage.module';
 import { Uuidstorage } from './uuidstorage/entities/uuidstorage.entity';
-import { LoggerMiddleware } from './utils/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controler';
@@ -36,8 +33,8 @@ import { AuthController } from './auth/auth.controler';
     TodolistModule,
     UuidstorageModule,
   ],
-  controllers: [AppController, AuthController],
-  providers: [AppService, AppGateway],
+  controllers: [ AuthController],
+  providers: [AppGateway],
 })
 export class AppModule {
   // configure(consumer: MiddlewareConsumer) {
