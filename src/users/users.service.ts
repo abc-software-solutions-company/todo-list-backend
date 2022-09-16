@@ -1,12 +1,7 @@
-import {
-  NotAcceptableException,
-  Injectable,
-  NotFoundException,
-  HttpCode,
-} from "@nestjs/common";
-import { Repository } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./entities/user.entity";
+import {Injectable} from '@nestjs/common';
+import {Repository} from 'typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
+import {User} from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -17,20 +12,20 @@ export class UsersService {
   }
 
   async create(userName: string): Promise<User> {
-    const user = this.repo.create({ userName });
+    const user = this.repo.create({userName});
 
     return this.repo.save(user);
   }
 
   async findUserById(id: string) {
-    const firstUser = await this.repo.find({id:id});
+    const firstUser = await this.repo.find({id: id});
     return firstUser;
   }
 
   async findUserByName(userName: string) {
     const firstUser = await this.repo
-      .createQueryBuilder("user")
-      .where("user.userName = :userName", { userName: userName })
+      .createQueryBuilder('user')
+      .where('user.userName = :userName', {userName: userName})
       .getOne();
     return firstUser;
   }

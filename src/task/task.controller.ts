@@ -32,12 +32,6 @@ export class TasksController {
   constructor(private taskService: TaskService, private todoListService: TodolistService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('/single/:id')
-  getTaskById(@Param('id') id: string) {
-    return this.taskService.findTaskById(id);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('/:listID')
   readTodoListByID(@Param('listID') listID: string) {
     return this.taskService.findTaskFromListByID(listID);
@@ -64,11 +58,12 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   async removeUser(@Param('id') id: string) {
-    const taskExisting = await this.taskService.findTaskById(id);
-    if (!taskExisting) {
+    try {
+      const taskExisting = await this.taskService.findTaskById(id);
+      return this.taskService.remove(taskExisting);
+    } catch {
       throw new NotFoundException('Cannot remove task because task not found 😢');
     }
-    return this.taskService.remove(taskExisting);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -88,13 +83,14 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    const taskExisting = await this.taskService.findTaskById(id);
-    if (!taskExisting) {
+    try {
+      const taskExisting = await this.taskService.findTaskById(id);
+      if (updateTaskDto.name.trim().length == 0) {
+        throw new BadRequestException('Name not empty');
+      }
+      return this.taskService.updateTask(taskExisting, updateTaskDto.name);
+    } catch {
       throw new NotFoundException('Cannot update task because task not found 😢');
     }
-    if (updateTaskDto.name.trim().length == 0) {
-      throw new BadRequestException('Name not empty');
-    }
-    return this.taskService.updateTask(taskExisting, updateTaskDto.name);
   }
 }
