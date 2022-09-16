@@ -14,7 +14,7 @@
     "check-format": "prettier --check .",
     "check-all": ".husky/pre-commit",
     "clean": "rimraf \"{.next,dist,build,out,node_modules,coverage,*.tsbuildinfo}\"",
-    "start:dev": "rimraf dist && nest start --watch",
+    "dev": "rimraf dist && nest start --watch",
     "start:debug": "rimraf dist && nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

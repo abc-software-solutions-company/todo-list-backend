@@ -1,4 +1,4 @@
-import { IsString, MaxLength, } from "class-validator";
+import { IsString, MaxLength, MinLength, } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateUserDto {
@@ -6,9 +6,9 @@ export class CreateUserDto {
     description: "Username can not be exceed 35 character",
     maxLength: 35,
   })
-  @MaxLength(35, {
-    message: "Username can not be exceed 35 character"
-  })
+  @MinLength(1)
+  @MaxLength(35)
   @IsString()
+  @MinLength(1)
   userName: string;
 }

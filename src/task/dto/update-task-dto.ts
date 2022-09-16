@@ -1,4 +1,4 @@
-import {IsString, MaxLength} from 'class-validator';
+import {IsString, MaxLength, MinLength} from 'class-validator';
 import {ApiProperty} from '@nestjs/swagger';
 
 export class UpdateTaskDto {
@@ -9,6 +9,7 @@ export class UpdateTaskDto {
   @MaxLength(100, {
     message: 'Task name must not be exceed 100 character'
   })
+  @MinLength(1)
   @IsString()
   name: string;
 }
