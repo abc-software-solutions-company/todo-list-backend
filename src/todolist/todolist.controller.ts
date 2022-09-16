@@ -5,37 +5,27 @@ import {
   Get,
   Patch,
   Param,
-  Query,
   Delete,
   NotFoundException,
   BadRequestException,
   UseGuards,
-  Headers,
-  Req
+  Req,
+  Catch
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
-import { AnyARecord } from 'dns';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TaskService } from 'src/task/task.service';
-import {CurrentUser} from 'src/users/decorators/current-user-decorator';
-import {User} from 'src/users/entities/user.entity';
 import extractHeader from 'src/utils/extract-header';
-import { IUser } from 'src/utils/type';
+import { EntityNotFoundError, QueryFailedError } from 'typeorm';
 import {CreateTodolistDto} from './dto/create-todolist.dto';
-import {TodoListDto} from './dto/todolist.dto';
 import {UpdateTodolistDto} from './dto/update-todolist.dto';
-import {Todolist} from './entities/todolist.entity';
 import {TodolistService} from './todolist.service';
- 
-interface IQueryParam {
-  userId : string;
-}
 
 @Controller('lists')
 @ApiBearerAuth()
 @ApiTags('TodoLists')
+@Catch(QueryFailedError, EntityNotFoundError)
 export class TodolistController {
     constructor(private todoListService: TodolistService, private taskService: TaskService, private authService: AuthService) {}
 

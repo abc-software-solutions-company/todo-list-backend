@@ -10,7 +10,8 @@ import {
   BadRequestException,
   Put,
   UseGuards,
-  Req
+  Req,
+  Catch
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {TaskService} from './task.service';
@@ -21,10 +22,12 @@ import {Todolist} from 'src/todolist/entities/todolist.entity';
 import {UpdateTaskDto} from './dto/update-task-dto';
 import {JwtAuthGuard} from 'src/auth/guards/jwt-auth.guard';
 import extractHeader from 'src/utils/extract-header';
+import { EntityNotFoundError, QueryFailedError, TypeORMError } from 'typeorm';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
 @Controller('tasks')
+@Catch(QueryFailedError, EntityNotFoundError)
 export class TasksController {
   constructor(private taskService: TaskService, private todoListService: TodolistService) {}
 
