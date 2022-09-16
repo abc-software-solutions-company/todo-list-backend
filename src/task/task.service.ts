@@ -13,7 +13,7 @@ export class TaskService {
   }
 
   async findTaskById(id: string) {
-    const task = await this.repo.findOne(id);
+    const task =  await this.repo.findOne(id);
     return task;
   }
 

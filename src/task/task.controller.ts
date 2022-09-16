@@ -22,12 +22,12 @@ import {Todolist} from 'src/todolist/entities/todolist.entity';
 import {UpdateTaskDto} from './dto/update-task-dto';
 import {JwtAuthGuard} from 'src/auth/guards/jwt-auth.guard';
 import extractHeader from 'src/utils/extract-header';
-import { EntityNotFoundError, QueryFailedError, TypeORMError } from 'typeorm';
+import {EntityNotFoundError, QueryFailedError, TypeORMError} from 'typeorm';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
 @Controller('tasks')
-@Catch(QueryFailedError, EntityNotFoundError)
+@Catch(QueryFailedError, EntityNotFoundError, TypeORMError)
 export class TasksController {
   constructor(private taskService: TaskService, private todoListService: TodolistService) {}
 
@@ -74,11 +74,15 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @Put('/:id')
   async markTaskDone(@Param('id') id: string) {
-    const taskExisting = await this.taskService.findTaskById(id);
-    if (!taskExisting) {
-      throw new NotFoundException('Cannot mark done this task because task not found 😢😭😭😭😭😭');
+    try {
+      const taskExisting = await this.taskService.findTaskById(id);
+      if (!taskExisting) {
+        throw new NotFoundException('Cannot mark done this task because task not found 😢😭😭😭😭😭');
+      }
+      return this.taskService.markTaskDone(taskExisting);
+    } catch {
+      throw new NotFoundException('Cannot mark done this task because task not found ');
     }
-    return this.taskService.markTaskDone(taskExisting);
   }
 
   @UseGuards(JwtAuthGuard)

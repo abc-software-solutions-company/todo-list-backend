@@ -8,10 +8,10 @@ import ShortUniqueId from 'short-unique-id';
 export class UuidstorageService implements OnModuleInit{
   constructor(@InjectRepository(Uuidstorage) private repo: Repository<Uuidstorage>) {}
   async onModuleInit() {
-    console.log('This is uuidstorage service module init');
+    console.log('This is number of short uuid generated for list id');
     console.log(await this.isEmptyRecord());
     const uuidCount = await this.isEmptyRecord();
-    const maxUUID = 1000;
+    const maxUUID = 10000;
     const uidShort = new ShortUniqueId({length: 5, dictionary:'alphanum_lower'});
     if (uuidCount === 0) {
       for (let i =0; i <= maxUUID; i++) {
@@ -41,15 +41,4 @@ export class UuidstorageService implements OnModuleInit{
     const data = await this.repo.findOne({'flag':false})
   }
 
-  findAll() {
-    return `This action returns all uuidstorage`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} uuidstorage`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} uuidstorage`;
-  }
 }

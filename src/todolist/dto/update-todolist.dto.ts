@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsString, MaxLength } from 'class-validator';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateTodolistDto {
   @ApiProperty({
@@ -9,5 +9,6 @@ export class UpdateTodolistDto {
   @MaxLength(100, {
     message: 'List Name must not be exceed 100 character'
   })
+  @MinLength(1)
   name: string;
 }

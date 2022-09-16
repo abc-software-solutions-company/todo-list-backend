@@ -13,6 +13,8 @@ import { Uuidstorage } from './uuidstorage/entities/uuidstorage.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controler';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './utils/all-exception.filter';
 
 @Module({
   imports: [
@@ -34,10 +36,9 @@ import { AuthController } from './auth/auth.controler';
     UuidstorageModule,
   ],
   controllers: [ AuthController],
-  providers: [AppGateway],
+  providers: [AppGateway, {
+    provide: APP_FILTER,
+    useClass: AllExceptionsFilter
+  }],
 })
-export class AppModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //     consumer.apply(LoggerMiddleware).forRoutes('*')
-  // }
-}
+export class AppModule {}
