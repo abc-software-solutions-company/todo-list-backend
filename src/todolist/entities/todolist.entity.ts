@@ -50,16 +50,16 @@ export class Todolist {
 
   @AfterInsert()
   logInsert() {
-    console.log("Inserted TodoListwith id", this.id);
+    console.log("😀Inserted TodoListwith id", this.id);
   }
 
   @AfterUpdate()
   logUpdate() {
-    console.log("Updated TodoListwith id", this.id);
+    console.log("😀Updated TodoListwith id", this.id);
   }
 
   @AfterRemove()
   logRemove() {
-    console.log("Removed TodoListwith id", this.id);
+    console.log("😀Removed TodoListwith id", this.id);
   }
 }

@@ -34,7 +34,14 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @Get('/:listID')
   readTodoListByID(@Param('listID') listID: string) {
+    console.log(`😀😀😀Get Many Task for List Id ${listID}`);
     return this.taskService.findTaskFromListByID(listID);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/single/:id')
+  getTaskById(@Param('id') id: string) {
+    return this.taskService.findTaskById(id);
   }
 
   @UseGuards(JwtAuthGuard)
