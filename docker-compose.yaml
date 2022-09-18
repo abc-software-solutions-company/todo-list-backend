@@ -8,4 +8,4 @@ services:
       TZ: 'Asia/Bangkok'
       PGTZ: 'Asia/Bangkok'
     ports:
-      - ${DB_PORT:-5435}:5435
+      - ${DB_PORT:-5432}:5432

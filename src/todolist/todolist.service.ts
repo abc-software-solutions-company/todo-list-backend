@@ -28,7 +28,7 @@ export class TodolistService {
   }
 
   async create(todoListDto: CreateTodolistDto) {
-    console.log(todoListDto.userId);
+    // console.log(todoListDto.userId);
     
     const todoList = await this.repo.create(todoListDto);
     //find UUID unused

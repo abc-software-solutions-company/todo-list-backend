@@ -14,12 +14,14 @@ export class AuthController {
   constructor(private authService: AuthService) {}
   @Post()
   async checkUserLogin(@Body() userDto: CreateUserDto) {
+    console.log(`😀Created Access Token for userName: ${userDto.userName} `);
     return this.authService.login(userDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
   async getUserProfile(@Req() request: any) {
+    console.log('😀Decode User Info from Access Token');
     const {userName,userId} = extractHeader(request);
     return {userName,userId}
   }

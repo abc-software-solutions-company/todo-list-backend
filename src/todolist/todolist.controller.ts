@@ -40,14 +40,14 @@ export class TodolistController {
   @Get('/:id')
   async getListName(@Param('id') id: string) {
     const listName = await this.todoListService.findTodoListByID(id).then(result => {
-      console.log(result);
+      // console.log(result);
       return result;
     });
     if (listName.length === 0) {
       throw new BadRequestException('Cannot find this list 😢');
     }
     const listTask = await this.taskService.findTaskFromListByID(id);
-    console.log(listTask);
+    // console.log(listTask);
     return {
       "name":listName[0].name,
       "userId" : listName[0].userId,
@@ -66,7 +66,7 @@ export class TodolistController {
     }
     const {userId} = extractHeader(request)
     body.userId = userId;
-    console.log(body);
+    // console.log(body);
     return this.todoListService.create(body);
   }
 
@@ -77,7 +77,7 @@ export class TodolistController {
     if (!todoListExisting || todoListExisting[0] === undefined) {
       throw new NotFoundException('Cannot remove list because this list not found 😢');
     }
-    console.log(todoListExisting[0]);
+    // console.log(todoListExisting[0]);
     return this.todoListService.remove(todoListExisting[0]);
   }
 

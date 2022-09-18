@@ -16,15 +16,17 @@ export class AuthService {
     return null;
   }
 
-  async login(user: CreateUserDto) {
-    const newUser = await this.usersService.create(user.userName);
-    const payload = {username: newUser.userName, id: newUser.id};
-    return this.jwtService.sign(payload);
+  async login(createUserDto: CreateUserDto) {
+    const {id, userName} = await this.usersService.create(createUserDto.userName);
+    const user = {id, userName};
+    return {
+      accessToken: this.jwtService.sign(user),
+      user
+    };
   }
-  
+
   async authen(token) {
     console.log('🚀 ~ file: auth.service.ts ~ line 33 ~ AuthService ~ authen ~ token', token);
     return this.jwtService.decode(token);
   }
-
 }
