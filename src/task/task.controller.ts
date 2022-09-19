@@ -34,8 +34,11 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @Get('/:listID')
   readTodoListByID(@Param('listID') listID: string) {
-    console.log(`😀😀😀Get Many Task for List Id ${listID}`);
-    return this.taskService.findTaskFromListByID(listID);
+    try {
+      return this.taskService.findTaskFromListByID(listID);
+    } catch {
+      throw new NotFoundException('😓😓Cannot find task from this list');
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -51,7 +54,7 @@ export class TasksController {
       return result;
     });
     if (existTodoList.length == 0) {
-      throw new BadRequestException('Error your list id is not available 😢');
+      throw new NotFoundException('Error your list id is not available 😢');
     }
     if (body.name.trim().length == 0) {
       throw new BadRequestException('Name not empty');
