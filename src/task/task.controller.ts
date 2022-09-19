@@ -11,7 +11,9 @@ import {
   Put,
   UseGuards,
   Req,
-  Catch
+  Catch,
+  ForbiddenException,
+  NotAcceptableException
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {TaskService} from './task.service';
@@ -57,7 +59,7 @@ export class TasksController {
       throw new NotFoundException('Error your list id is not available 😢');
     }
     if (body.name.trim().length == 0) {
-      throw new BadRequestException('Name not empty');
+      throw new NotAcceptableException('Name not empty');
     }
 
     const {userId} = extractHeader(request);

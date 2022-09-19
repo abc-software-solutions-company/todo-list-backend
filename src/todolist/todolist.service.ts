@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, NotAcceptableException} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Todolist} from './entities/todolist.entity';
@@ -41,7 +41,7 @@ export class TodolistService {
       // Mark this uuid is used
       await this.uuidStorageService.setFlag(uuid.id);
       return this.repo.save(todoList);
-    } else throw new BadRequestException('TodoList Name must have at least 1 character');
+    } else throw new NotAcceptableException('TodoList Name must have at least 1 character');
   }
 
   async remove(todoList: Todolist) {
@@ -53,7 +53,7 @@ export class TodolistService {
     if (todoList.name.trim().length !== 0) {
       todoList.name = listName;
       return this.repo.save(todoList);
-    } else throw new BadRequestException('TodoList Name must have at least 1 character');
+    } else throw new NotAcceptableException('TodoList Name must have at least 1 character');
   }
 
   async findTodoListByID(id: string) {

@@ -10,7 +10,8 @@ import {
   BadRequestException,
   UseGuards,
   Req,
-  Catch
+  Catch,
+  NotAcceptableException
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
@@ -62,7 +63,7 @@ export class TodolistController {
   @Post()
   async createTodoList(@Body() body: CreateTodolistDto, @Req() request:any) {
     if (body.name.trim().length === 0) {
-      throw new BadRequestException('Name not empty')
+      throw new NotAcceptableException('Name not empty')
     }
     const {userId} = extractHeader(request)
     body.userId = userId;
@@ -89,7 +90,7 @@ export class TodolistController {
       throw new NotFoundException('Cannot update list because list not found 😢');
     }
     if (updateTodoListDto.name.trim().length == 0 ) {
-      throw new BadRequestException('Name not empty')
+      throw new NotAcceptableException('Name not empty')
     }
     return this.todoListService.updateList(listExisting[0], updateTodoListDto.name);
   }

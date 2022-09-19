@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
+import {BadRequestException, Injectable, NotAcceptableException, NotFoundException} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Task} from './entities/task.entity';
@@ -31,7 +31,7 @@ export class TaskService {
       const task = this.repo.create(taskDto);
       return this.repo.save(task);
     } else {
-      throw new BadRequestException('Task name must at least 1 character');
+      throw new NotAcceptableException('Task name must at least 1 character');
     }
   }
 
