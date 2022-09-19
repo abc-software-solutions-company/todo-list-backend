@@ -45,7 +45,7 @@ export class TodolistController {
       return result;
     });
     if (listName.length === 0) {
-      throw new BadRequestException('Cannot find this list 😢');
+      throw new NotFoundException('Cannot find this list 😢');
     }
     const listTask = await this.taskService.findTaskFromListByID(id);
     // console.log(listTask);

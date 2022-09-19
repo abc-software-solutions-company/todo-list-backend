@@ -55,7 +55,7 @@ export class TaskService {
       task.name = name;
       return this.repo.save(task);
     } else {
-      throw new BadRequestException('Task name must at least 1 character');
+      throw new NotAcceptableException('Task name must at least 1 character');
     }
   }
 

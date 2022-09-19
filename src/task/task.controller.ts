@@ -98,7 +98,7 @@ export class TasksController {
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       if (updateTaskDto.name.trim().length == 0) {
-        throw new BadRequestException('Name not empty');
+        throw new NotAcceptableException('Name not empty');
       }
       return this.taskService.updateTask(taskExisting, updateTaskDto.name);
     } catch {

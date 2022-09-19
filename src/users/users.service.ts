@@ -14,7 +14,6 @@ export class UsersService {
   async create(userName: string): Promise<User> {
     if (userName.trim().length !== 0) {
       const user = this.repo.create({userName});
-
       return this.repo.save(user);
     } else throw new NotAcceptableException('Username must have 1 character');
   }
