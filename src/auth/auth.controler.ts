@@ -6,20 +6,20 @@ import { EntityNotFoundError, QueryFailedError } from 'typeorm';
 import {AuthService} from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-@ApiTags('User (Created Token)')
+@ApiTags('Auth User (Created Token)')
 @ApiBearerAuth()
-@Controller('users')
+@Controller('auth')
 @Catch(QueryFailedError, EntityNotFoundError)
 export class AuthController {
   constructor(private authService: AuthService) {}
-  @Post()
+  @Post('/login')
   async checkUserLogin(@Body() userDto: CreateUserDto) {
     console.log(`😀Created Access Token for userName: ${userDto.userName} `);
     return this.authService.login(userDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
+  @Get('/verify')
   async getUserProfile(@Req() request: any) {
     console.log('😀Decode User Info from Access Token');
     const {userName,userId} = extractHeader(request);
