@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, NotAcceptableException, NotFoundException} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Task} from './entities/task.entity';
@@ -13,21 +13,26 @@ export class TaskService {
   }
 
   async findTaskById(id: string) {
-    const task =  await this.repo.findOne(id);
-    return task;
+    try {
+      const task = await this.repo.findOne(id);
+      return task;
+    } catch {
+      throw new NotFoundException('😓 Cannot find this task ');
+    }
   }
 
   async findTaskByName(name: string) {
-    const firstTask = await this.repo
-      .createQueryBuilder('task')
-      .where('task.name = :name', {name: name})
-      .getOne();
+    const firstTask = await this.repo.createQueryBuilder('task').where('task.name = :name', {name: name}).getOne();
     return firstTask;
   }
 
   async create(taskDto: CreateTaskDto, todolist: Todolist) {
-    const task = this.repo.create(taskDto);
-    return this.repo.save(task);
+    if (taskDto.name.trim().length !== 0) {
+      const task = this.repo.create(taskDto);
+      return this.repo.save(task);
+    } else {
+      throw new NotAcceptableException('Task name must at least 1 character');
+    }
   }
 
   async findTaskFromListByID(todoListId: string) {
@@ -35,7 +40,7 @@ export class TaskService {
       .createQueryBuilder('task')
       .where('task.todoListId = :todoListId', {todoListId: todoListId})
       .andWhere('task.isActive = true')
-      .orderBy('task.createdDate','DESC')
+      .orderBy('task.createdDate', 'DESC')
       .getMany();
     return TaskList;
   }
@@ -46,12 +51,16 @@ export class TaskService {
   }
 
   async updateTask(task: Task, name: string) {
-    task.name = name;
-    return this.repo.save(task);
+    if (task.name.trim().length !== 0) {
+      task.name = name;
+      return this.repo.save(task);
+    } else {
+      throw new NotAcceptableException('Task name must at least 1 character');
+    }
   }
 
   async markTaskDone(task: Task) {
-    task.isDone = !(task.isDone);
+    task.isDone = !task.isDone;
     return this.repo.save(task);
   }
 }

@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, NotAcceptableException} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {User} from './entities/user.entity';
@@ -12,9 +12,10 @@ export class UsersService {
   }
 
   async create(userName: string): Promise<User> {
-    const user = this.repo.create({userName});
-
-    return this.repo.save(user);
+    if (userName.trim().length !== 0) {
+      const user = this.repo.create({userName});
+      return this.repo.save(user);
+    } else throw new NotAcceptableException('Username must have 1 character');
   }
 
   async findUserById(id: string) {

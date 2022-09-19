@@ -11,7 +11,9 @@ import {
   Put,
   UseGuards,
   Req,
-  Catch
+  Catch,
+  ForbiddenException,
+  NotAcceptableException
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {TaskService} from './task.service';
@@ -34,8 +36,11 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @Get('/:listID')
   readTodoListByID(@Param('listID') listID: string) {
-    console.log(`😀😀😀Get Many Task for List Id ${listID}`);
-    return this.taskService.findTaskFromListByID(listID);
+    try {
+      return this.taskService.findTaskFromListByID(listID);
+    } catch {
+      throw new NotFoundException('😓😓Cannot find task from this list');
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -51,10 +56,10 @@ export class TasksController {
       return result;
     });
     if (existTodoList.length == 0) {
-      throw new BadRequestException('Error your list id is not available 😢');
+      throw new NotFoundException('Error your list id is not available 😢');
     }
     if (body.name.trim().length == 0) {
-      throw new BadRequestException('Name not empty');
+      throw new NotAcceptableException('Name not empty');
     }
 
     const {userId} = extractHeader(request);
@@ -90,11 +95,11 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
+    if (updateTaskDto.name.trim().length == 0) {
+      throw new NotAcceptableException('Name not empty');
+    } else
     try {
       const taskExisting = await this.taskService.findTaskById(id);
-      if (updateTaskDto.name.trim().length == 0) {
-        throw new BadRequestException('Name not empty');
-      }
       return this.taskService.updateTask(taskExisting, updateTaskDto.name);
     } catch {
       throw new NotFoundException('Cannot update task because task not found 😢');
