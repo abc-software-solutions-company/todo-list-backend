@@ -38,6 +38,15 @@ export class TodolistController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('/query/last')
+  async getLastListForThisUser(@Req() request: any) {
+    const {userId} = extractHeader(request)
+    const lastList = await this.todoListService.findLastListByUserId(userId)
+    if (lastList) return lastList
+    else throw new NotFoundException('Not found list');
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('/:id')
   async getListName(@Param('id') id: string) {
     const listName = await this.todoListService.findTodoListByID(id).then(result => {
