@@ -30,6 +30,16 @@ export class TodolistService {
     return TodoList;
   }
 
+  async findLastListByUserId(userId: String) {
+    const TodoList = await this.repo
+      .createQueryBuilder('todolist')
+      .where('todolist.isActive = :isActive', {isActive: true})
+      .andWhere('todolist.userId = :userId', {userId: userId})
+      .orderBy('todolist.createdDate', 'DESC')
+      .getOne();
+    return TodoList;
+  }
+
   async create(todoListDto: CreateTodolistDto) {
     // console.log(todoListDto.userId);
     if (todoListDto.name.trim().length !== 0) {
