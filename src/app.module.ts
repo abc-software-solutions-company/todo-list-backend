@@ -22,6 +22,7 @@ import { AllExceptionsFilter } from './utils/all-exception.filter';
       type: "postgres",
       host: process.env.POSTGRES_HOST,
       database: process.env.POSTGRES_DATABASE,
+      schema: process.env.POSTGRES_SCHEMA,
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       port: process.env.POSTGRES_PORT,
