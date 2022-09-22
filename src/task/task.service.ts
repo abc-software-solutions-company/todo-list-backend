@@ -4,9 +4,17 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Task} from './entities/task.entity';
 import {CreateTaskDto} from './dto/create-task.dto';
 import {Todolist} from 'src/todolist/entities/todolist.entity';
+import { uuid } from 'uuidv4';
 @Injectable()
 export class TaskService {
   constructor(@InjectRepository(Task) private repo: Repository<Task>) {}
+
+  async validTaskId(id: string) {
+    // Check if userId existed
+    const taskIdExisted = await this.repo.count({id:id});
+    if (taskIdExisted >= 1) return false
+    return true
+  }
 
   async findAll(): Promise<Task[]> {
     return this.repo.find();
@@ -27,8 +35,15 @@ export class TaskService {
   }
 
   async create(taskDto: CreateTaskDto, todolist: Todolist) {
+    let taskId = uuid();
+
+    while (await this.validTaskId(taskId)==false) {
+      taskId = uuid();
+    }
+
     if (taskDto.name.trim().length !== 0) {
       const task = this.repo.create(taskDto);
+      task.id = taskId
       return this.repo.save(task);
     } else {
       throw new NotAcceptableException('Task name must at least 1 character');

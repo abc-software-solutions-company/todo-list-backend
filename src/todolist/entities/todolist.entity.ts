@@ -8,14 +8,11 @@ import {
   AfterUpdate,
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryColumn,
   ManyToOne,
-  OneToOne,
-  JoinColumn,
 } from "typeorm";
 
 @Entity()
@@ -37,10 +34,6 @@ export class Todolist {
 
   @UpdateDateColumn()
   updatedDate: Date;
-
-  // @OneToOne(() =>Uuidstorage ,(uuidstorage) => uuidstorage.todoList )
-  // @JoinColumn()
-  // uuidstorage: Uuidstorage;
 
   @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
   user: User;

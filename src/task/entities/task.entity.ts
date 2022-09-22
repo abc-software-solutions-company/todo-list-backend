@@ -1,20 +1,20 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
   AfterInsert,
   AfterUpdate,
   AfterRemove,
+  PrimaryColumn,
 } from "typeorm";
 import { User } from "src/users/entities/user.entity";
 import { Todolist } from "src/todolist/entities/todolist.entity";
 
 @Entity()
 export class Task {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn()
   id: string;
 
   @Column()

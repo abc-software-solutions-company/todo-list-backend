@@ -26,7 +26,6 @@ export class AuthService {
   }
 
   async authen(token) {
-    console.log('🚀 ~ file: auth.service.ts ~ line 33 ~ AuthService ~ authen ~ token', token);
     return this.jwtService.decode(token);
   }
 }
