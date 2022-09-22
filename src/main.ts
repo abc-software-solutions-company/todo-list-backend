@@ -10,7 +10,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle("Todo List")
-    .setDescription("ABC Todo List Simple Application")
+    .setDescription("ABC Todo List Simple Application 1")
     .setVersion("1.0")
     .addBearerAuth()
     .build();
