@@ -20,8 +20,10 @@ export class AuthController {
     return this.authService.login(userDto);
   }
 
-  @Post('/gmail-login')
-  async checkUserGmailLogin(@Body() emailDto: EmailDto) {
+  @Post('/gmail-login',)
+  async checkUserGmailLogin(@Body() emailDto: EmailDto,@Req() request: any) {
+    const {userName,userId} = extractHeader(request);
+    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     return this.authService.loginWithGmail(emailDto);
   }
 
@@ -32,15 +34,14 @@ export class AuthController {
     const {userName,userId} = extractHeader(request);
     if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     return {userName,userId}
-    
-    return this.authService.validateUser(userName,userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/attach_email')
   async abc(@Req() request: any, @Body() emailDto: EmailDto) {
     console.log('😀Decode User Info from Access Token');
-    const {userId} = extractHeader(request);
+    const {userName,userId} = extractHeader(request);
+    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     return this.userService.attachEmail(emailDto.email,userId);
   }
 }

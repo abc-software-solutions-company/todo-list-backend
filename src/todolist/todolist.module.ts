@@ -8,6 +8,8 @@ import { Task } from 'src/task/entities/task.entity';
 import { UuidstorageService } from "src/uuidstorage/uuidstorage.service";
 import { Uuidstorage } from 'src/uuidstorage/entities/uuidstorage.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Todolist, Task, Uuidstorage]),AuthModule],
