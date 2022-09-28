@@ -1,4 +1,4 @@
-import {Body, Catch, Controller, Get, Post, Req, UnauthorizedException, UseGuards} from '@nestjs/common';
+import {Body, Catch, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {CreateUserDto} from 'src/users/dtos/create-user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -30,11 +30,6 @@ export class AuthController {
   async getUserProfile(@Req() request: any) {
     console.log('😀Decode User Info from Access Token');
     const {userName,userId} = extractHeader(request);
-    // Check if this userId available in DB
-    const userExisting = await this.userService.findUserById(userId);
-    if (userExisting.length === 0){
-      throw new UnauthorizedException("🥲🥲 Error This UserId not available")
-    } else
     return {userName,userId}
   }
 
