@@ -46,4 +46,5 @@ export class AuthService {
   async authen(token) {
     return this.jwtService.decode(token);
   }
+
 }

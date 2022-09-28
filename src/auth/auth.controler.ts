@@ -1,4 +1,4 @@
-import {Body, Catch, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Catch, Controller, Get, Post, Req, UnauthorizedException, UseGuards} from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {CreateUserDto} from 'src/users/dtos/create-user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -30,14 +30,15 @@ export class AuthController {
   async getUserProfile(@Req() request: any) {
     console.log('😀Decode User Info from Access Token');
     const {userName,userId} = extractHeader(request);
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     return {userName,userId}
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/attach_email')
   async abc(@Req() request: any, @Body() emailDto: EmailDto) {
-    console.log('😀Decode User Info from Access Token');
     const {userId} = extractHeader(request);
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     return this.userService.attachEmail(emailDto.email,userId);
   }
 }

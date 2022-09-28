@@ -13,7 +13,8 @@ import {
   Req,
   Catch,
   ForbiddenException,
-  NotAcceptableException
+  NotAcceptableException,
+  UnauthorizedException
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {TaskService} from './task.service';
@@ -25,13 +26,14 @@ import {UpdateTaskDto} from './dto/update-task-dto';
 import {JwtAuthGuard} from 'src/auth/guards/jwt-auth.guard';
 import extractHeader from 'src/utils/extract-header';
 import {EntityNotFoundError, QueryFailedError, TypeORMError} from 'typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
 @Controller('tasks')
 @Catch(QueryFailedError, EntityNotFoundError, TypeORMError)
 export class TasksController {
-  constructor(private taskService: TaskService, private todoListService: TodolistService) {}
+  constructor(private taskService: TaskService, private todoListService: TodolistService, private userService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('/:listID')
@@ -63,13 +65,16 @@ export class TasksController {
     }
 
     const {userId} = extractHeader(request);
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     body.userId = userId;
     return this.taskService.create(body, todoList);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async removeUser(@Param('id') id: string) {
+  async removeUser(@Param('id') id: string,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       return this.taskService.remove(taskExisting);
@@ -80,7 +85,9 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Put('/:id')
-  async markTaskDone(@Param('id') id: string) {
+  async markTaskDone(@Param('id') id: string,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       if (!taskExisting) {
@@ -94,7 +101,9 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
-  async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
+  async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     if (updateTaskDto.name.trim().length == 0) {
       throw new NotAcceptableException('Name not empty');
     } else
