@@ -52,7 +52,9 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  async getListName(@Param('id') id: string) {
+  async getListName(@Param('id') id: string,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     const listName = await this.todoListService.findTodoListByID(id).then(result => {
       // console.log(result);
       return result;
@@ -87,7 +89,9 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async removeList(@Param('id') id: string) {
+  async removeList(@Param('id') id: string,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     const todoListExisting = await this.todoListService.findTodoListByID(id);
     if (!todoListExisting || todoListExisting[0] === undefined) {
       throw new NotFoundException('Cannot remove list because this list not found 😢');
@@ -98,7 +102,9 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
-  async updateList(@Param('id') id: string, @Body() updateTodoListDto: UpdateTodolistDto) {
+  async updateList(@Param('id') id: string, @Body() updateTodoListDto: UpdateTodolistDto,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     const listExisting = await this.todoListService.findTodoListByID(id);
     if (!listExisting[0]) {
       throw new NotFoundException('Cannot update list because list not found 😢');

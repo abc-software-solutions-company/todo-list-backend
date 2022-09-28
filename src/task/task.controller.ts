@@ -72,7 +72,9 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async removeUser(@Param('id') id: string) {
+  async removeUser(@Param('id') id: string,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       return this.taskService.remove(taskExisting);
@@ -83,7 +85,9 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Put('/:id')
-  async markTaskDone(@Param('id') id: string) {
+  async markTaskDone(@Param('id') id: string,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       if (!taskExisting) {
@@ -97,7 +101,9 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
-  async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
+  async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto,@Req() request: any) {
+    const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     if (updateTaskDto.name.trim().length == 0) {
       throw new NotAcceptableException('Name not empty');
     } else

@@ -3,7 +3,6 @@ import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {User} from './entities/user.entity';
 import { uuid } from 'uuidv4';
-import { response } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -18,7 +17,7 @@ export class UsersService {
 
   async checkUnAuthorized(userId: string) {
     console.log('✅ ok I"m here');
-    if (this.validUserId(userId)) return false
+    if (this.validUserId(userId)) return true
   }
 
   async findAll(): Promise<User[]> {
