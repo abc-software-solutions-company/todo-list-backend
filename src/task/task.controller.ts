@@ -13,7 +13,8 @@ import {
   Req,
   Catch,
   ForbiddenException,
-  NotAcceptableException
+  NotAcceptableException,
+  UnauthorizedException
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {TaskService} from './task.service';
@@ -25,17 +26,20 @@ import {UpdateTaskDto} from './dto/update-task-dto';
 import {JwtAuthGuard} from 'src/auth/guards/jwt-auth.guard';
 import extractHeader from 'src/utils/extract-header';
 import {EntityNotFoundError, QueryFailedError, TypeORMError} from 'typeorm';
+import { AuthService } from 'src/auth/auth.service';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
 @Controller('tasks')
 @Catch(QueryFailedError, EntityNotFoundError, TypeORMError)
 export class TasksController {
-  constructor(private taskService: TaskService, private todoListService: TodolistService) {}
+  constructor(private taskService: TaskService, private todoListService: TodolistService, private authService: AuthService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('/:listID')
-  readTodoListByID(@Param('listID') listID: string) {
+  async readTodoListByID(@Param('listID') listID: string,@Req() request: any) {
+    const {userName,userId} = extractHeader(request);
+    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     try {
       return this.taskService.findTaskFromListByID(listID);
     } catch {
@@ -45,13 +49,17 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/single/:id')
-  getTaskById(@Param('id') id: string) {
+  async getTaskById(@Param('id') id: string,@Req() request: any) {
+    const {userName,userId} = extractHeader(request);
+    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     return this.taskService.findTaskById(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
   async createTask(@Body() body: CreateTaskDto, @CurrentTodoList() todoList: Todolist, @Req() request: any) {
+    const {userName,userId} = extractHeader(request);
+    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     const existTodoList = await this.todoListService.findTodoListByID(body.todoListId).then(result => {
       return result;
     });
@@ -61,15 +69,15 @@ export class TasksController {
     if (body.name.trim().length == 0) {
       throw new NotAcceptableException('Name not empty');
     }
-
-    const {userId} = extractHeader(request);
     body.userId = userId;
     return this.taskService.create(body, todoList);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async removeUser(@Param('id') id: string) {
+  async removeUser(@Param('id') id: string,@Req() request: any) {
+    const {userName,userId} = extractHeader(request);
+    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       return this.taskService.remove(taskExisting);
@@ -80,7 +88,9 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Put('/:id')
-  async markTaskDone(@Param('id') id: string) {
+  async markTaskDone(@Param('id') id: string,@Req() request: any) {
+    const {userName,userId} = extractHeader(request);
+    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       if (!taskExisting) {
@@ -94,7 +104,9 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
-  async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
+  async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto,@Req() request:any) {
+    const {userName,userId} = extractHeader(request);
+    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     if (updateTaskDto.name.trim().length == 0) {
       throw new NotAcceptableException('Name not empty');
     } else
