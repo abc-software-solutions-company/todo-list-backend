@@ -11,12 +11,14 @@ import {
   UseGuards,
   Req,
   Catch,
-  NotAcceptableException
+  NotAcceptableException,
+  UnauthorizedException
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TaskService } from 'src/task/task.service';
+import { UsersService } from 'src/users/users.service';
 import extractHeader from 'src/utils/extract-header';
 import { EntityNotFoundError, QueryFailedError } from 'typeorm';
 import {CreateTodolistDto} from './dto/create-todolist.dto';
@@ -28,12 +30,13 @@ import {TodolistService} from './todolist.service';
 @ApiTags('TodoLists')
 @Catch(QueryFailedError, EntityNotFoundError)
 export class TodolistController {
-    constructor(private todoListService: TodolistService, private taskService: TaskService, private authService: AuthService) {}
+    constructor(private todoListService: TodolistService, private taskService: TaskService, private userService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()
   async getListForThisUser(@Req() request: any) {
     const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     return this.todoListService.findListByUserId(userId);
   }
 
@@ -41,6 +44,7 @@ export class TodolistController {
   @Get('/query/last')
   async getLastListForThisUser(@Req() request: any) {
     const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     const lastList = await this.todoListService.findLastListByUserId(userId)
     if (lastList) return lastList
     else throw new NotFoundException('Not found list');
@@ -75,6 +79,7 @@ export class TodolistController {
       throw new NotAcceptableException('Name not empty')
     }
     const {userId} = extractHeader(request)
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     body.userId = userId;
     // console.log(body);
     return this.todoListService.create(body);
@@ -82,7 +87,7 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async removeUser(@Param('id') id: string) {
+  async removeList(@Param('id') id: string) {
     const todoListExisting = await this.todoListService.findTodoListByID(id);
     if (!todoListExisting || todoListExisting[0] === undefined) {
       throw new NotFoundException('Cannot remove list because this list not found 😢');

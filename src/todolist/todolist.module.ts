@@ -8,10 +8,12 @@ import { Task } from 'src/task/entities/task.entity';
 import { UuidstorageService } from "src/uuidstorage/uuidstorage.service";
 import { Uuidstorage } from 'src/uuidstorage/entities/uuidstorage.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Todolist, Task, Uuidstorage]),AuthModule],
+  imports: [TypeOrmModule.forFeature([Todolist, Task, Uuidstorage,User]),AuthModule],
   controllers: [TodolistController],
-  providers: [TodolistService, TaskService, UuidstorageService],
+  providers: [TodolistService, TaskService, UuidstorageService, UsersService],
 })
 export class TodolistModule {}

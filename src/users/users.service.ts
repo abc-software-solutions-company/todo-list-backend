@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotAcceptableException} from '@nestjs/common';
+import { BadRequestException, HttpCode, Injectable, NotAcceptableException, UnauthorizedException} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {User} from './entities/user.entity';
 import { uuid } from 'uuidv4';
+import { response } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -13,6 +14,11 @@ export class UsersService {
     const userIdExisted = await this.repo.count({id:id});
     if (userIdExisted >= 1) return false
     return true
+  }
+
+  async checkUnAuthorized(userId: string) {
+    console.log('✅ ok I"m here');
+    if (this.validUserId(userId)) return false
   }
 
   async findAll(): Promise<User[]> {

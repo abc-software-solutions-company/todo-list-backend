@@ -13,7 +13,8 @@ import {
   Req,
   Catch,
   ForbiddenException,
-  NotAcceptableException
+  NotAcceptableException,
+  UnauthorizedException
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {TaskService} from './task.service';
@@ -25,13 +26,14 @@ import {UpdateTaskDto} from './dto/update-task-dto';
 import {JwtAuthGuard} from 'src/auth/guards/jwt-auth.guard';
 import extractHeader from 'src/utils/extract-header';
 import {EntityNotFoundError, QueryFailedError, TypeORMError} from 'typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
 @Controller('tasks')
 @Catch(QueryFailedError, EntityNotFoundError, TypeORMError)
 export class TasksController {
-  constructor(private taskService: TaskService, private todoListService: TodolistService) {}
+  constructor(private taskService: TaskService, private todoListService: TodolistService, private userService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('/:listID')
@@ -63,6 +65,7 @@ export class TasksController {
     }
 
     const {userId} = extractHeader(request);
+    if (this.userService.checkUnAuthorized(userId)) throw new UnauthorizedException('😓 This account doesn"t exist ');
     body.userId = userId;
     return this.taskService.create(body, todoList);
   }
