@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException} from '@nestjs/common';
+import { BadRequestException, Injectable, NotAcceptableException} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {User} from './entities/user.entity';
@@ -47,6 +47,11 @@ export class UsersService {
 
   async attachEmail(email: string, id: string) {
     const user = await this.repo.findOne({id:id})
+    // If user already have email block this function
+    if (user.email) {
+      throw new BadRequestException('🥵 This user already have email linked')
+    } else
+    // If user doesn't have email
     user.email = email;
     return await this.repo.save(user);
   }
