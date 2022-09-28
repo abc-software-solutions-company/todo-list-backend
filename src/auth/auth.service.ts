@@ -1,7 +1,8 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {CreateUserDto} from 'src/users/dtos/create-user.dto';
 import {UsersService} from 'src/users/users.service';
+import { EmailDto } from './dto/email.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +24,23 @@ export class AuthService {
       accessToken: this.jwtService.sign(user),
       user
     };
+  }
+
+  async loginWithGmail(emailDto: EmailDto) {
+    try {
+      const {id,userName} = await this.usersService.findUserByEmail(emailDto.email)
+      const user = {id,userName}
+      if (user){
+        return {
+          accessToken: this.jwtService.sign(user),
+          user
+        };
+      }
+    }
+    catch {
+      throw new BadRequestException("🥲🥲🥲 This Gmail or Email is not registered");
+    }
+
   }
 
   async authen(token) {

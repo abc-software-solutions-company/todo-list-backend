@@ -37,6 +37,11 @@ export class UsersService {
     return firstUser;
   }
 
+  async findUserByEmail(email: string) {
+      const firstUser = await this.repo.findOne({email:email});
+      return firstUser;
+  }
+
   async findUserByName(userName: string) {
     const firstUser = await this.repo
       .createQueryBuilder('user')
