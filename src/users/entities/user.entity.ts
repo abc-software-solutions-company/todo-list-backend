@@ -18,6 +18,9 @@ export class User {
   @PrimaryColumn()
   id: string;
 
+  @Column({nullable:true})
+  email: string;
+
   @Column()
   userName: string;
 

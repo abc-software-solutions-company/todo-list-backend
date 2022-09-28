@@ -25,4 +25,12 @@ export class AuthController {
     const {userName,userId} = extractHeader(request);
     return {userName,userId}
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/attach_email;')
+  async abc(@Req() request: any) {
+    console.log('😀Decode User Info from Access Token');
+    const {userName,userId} = extractHeader(request);
+    return {userName,userId}
+  }
 }

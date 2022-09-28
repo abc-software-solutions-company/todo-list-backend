@@ -44,4 +44,10 @@ export class UsersService {
       .getOne();
     return firstUser;
   }
+
+  async attachEmail(email: string, id: string) {
+    const user = await this.repo.findOne({id:id})
+    user.email = email;
+    return await this.repo.save(user);
+  }
 }
