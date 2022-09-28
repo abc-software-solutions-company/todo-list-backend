@@ -40,7 +40,12 @@ export class AuthService {
     catch {
       throw new BadRequestException("🥲🥲🥲 This Gmail or Email is not registered");
     }
+  }
 
+  async readEmail(userId: string) {
+    const email = await this.usersService.findUserById(userId);
+    return email[0].email
+    
   }
 
   async authen(token) {

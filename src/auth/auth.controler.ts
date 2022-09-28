@@ -33,7 +33,9 @@ export class AuthController {
     // console.log('😀Decode User Info from Access Token');
     const {userName,userId} = extractHeader(request);
     if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
-    return {userName,userId}
+    // Read Email
+    const email = await this.authService.readEmail(userId);
+    return {userName,userId,email}
   }
 
   @UseGuards(JwtAuthGuard)
