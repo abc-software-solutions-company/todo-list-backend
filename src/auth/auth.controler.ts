@@ -20,6 +20,11 @@ export class AuthController {
     return this.authService.login(userDto);
   }
 
+  @Post('/gmail-login')
+  async checkUserGmailLogin(@Body() emailDto: EmailDto) {
+    return this.authService.loginWithGmail(emailDto);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/verify')
   async getUserProfile(@Req() request: any) {
@@ -32,12 +37,7 @@ export class AuthController {
   @Post('/attach_email')
   async abc(@Req() request: any, @Body() emailDto: EmailDto) {
     console.log('😀Decode User Info from Access Token');
-    const {userName,userId} = extractHeader(request);
-    // return {
-    //   "userName" : userName,
-    //   "userId" : userId,
-    //   "emailDto" : emailDto.email
-    // }
+    const {userId} = extractHeader(request);
     return this.userService.attachEmail(emailDto.email,userId);
   }
 }
