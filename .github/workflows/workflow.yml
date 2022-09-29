@@ -22,6 +22,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Test Echo Secret Key (Test purpose only)
+        run: echo ${{ secrets.ENV_SECRET }}
+
       - run: npm install -g yarn
       - run: cp .env.stage.example .env
       - run: yarn
