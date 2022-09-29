@@ -23,11 +23,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Test Echo Secret Key (Test purpose only)
-        run: echo ${{ secrets.ENV_SECRET }}
+      - run: cp .env.stage.example .env
 
       - run: npm install -g yarn
-      - run: cp .env.stage.example .env
       - run: yarn
         # This is nest start command, don't misread about development mode. It's ready at production mode1
       - run: yarn build
