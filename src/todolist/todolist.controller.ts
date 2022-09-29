@@ -50,11 +50,8 @@ export class TodolistController {
     else throw new NotFoundException('Not found list');
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  async getListName(@Param('id') id: string,@Req() request: any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌'); else {
+  async getListDetail(@Param('id') id: string,@Req() request: any) {
       const listName = await this.todoListService.findTodoListByID(id).then(result => {
         // console.log(result);
         return result;
@@ -72,8 +69,6 @@ export class TodolistController {
         "updatedAt" : listName[0].updatedDate,
         "tasks": listTask
       }
-    }
-
   }
 
   @UseGuards(JwtAuthGuard)
