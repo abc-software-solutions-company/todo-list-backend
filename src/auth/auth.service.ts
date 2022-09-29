@@ -18,8 +18,8 @@ export class AuthService {
   }
 
   async login(createUserDto: CreateUserDto) {
-    const {id, userName} = await this.usersService.create(createUserDto.userName);
-    const user = {id, userName};
+    const {id, userName, email} = await this.usersService.create(createUserDto.userName);
+    const user = {id, userName,email};
     return {
       accessToken: this.jwtService.sign(user),
       user
@@ -28,8 +28,8 @@ export class AuthService {
 
   async loginWithGmail(emailDto: EmailDto) {
     try {
-      const {id,userName} = await this.usersService.findUserByEmail(emailDto.email)
-      const user = {id,userName}
+      const {id,userName, email} = await this.usersService.findUserByEmail(emailDto.email)
+      const user = {id,userName, email}
       if (user){
         return {
           accessToken: this.jwtService.sign(user),

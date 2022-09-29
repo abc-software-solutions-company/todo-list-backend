@@ -21,9 +21,7 @@ export class AuthController {
   }
 
   @Post('/gmail-login',)
-  async checkUserGmailLogin(@Body() emailDto: EmailDto,@Req() request: any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
+  async checkUserGmailLogin(@Body() emailDto: EmailDto) {
     return this.authService.loginWithGmail(emailDto);
   }
 
