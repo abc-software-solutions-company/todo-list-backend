@@ -36,7 +36,6 @@ export class TodolistController {
   @Get()
   async getListForThisUser(@Req() request: any) {
     const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     return this.todoListService.findListByUserId(userId);
   }
 
@@ -44,7 +43,6 @@ export class TodolistController {
   @Get('/query/last')
   async getLastListForThisUser(@Req() request: any) {
     const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     const lastList = await this.todoListService.findLastListByUserId(userId)
     if (lastList) return lastList
     else throw new NotFoundException('Not found list');
@@ -78,7 +76,6 @@ export class TodolistController {
       throw new NotAcceptableException('Name not empty')
     }
     const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     body.userId = userId;
     // console.log(body);
     return this.todoListService.create(body);
@@ -86,9 +83,7 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async removeUser(@Param('id') id: string,@Req() request:any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
+  async removeUser(@Param('id') id: string) {
     const todoListExisting = await this.todoListService.findTodoListByID(id);
     if (!todoListExisting || todoListExisting[0] === undefined) {
       throw new NotFoundException('Cannot remove list because this list not found 😢');
@@ -99,9 +94,7 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
-  async updateList(@Param('id') id: string, @Body() updateTodoListDto: UpdateTodolistDto,@Req() request:any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
+  async updateList(@Param('id') id: string, @Body() updateTodoListDto: UpdateTodolistDto) {
     const listExisting = await this.todoListService.findTodoListByID(id);
     if (!listExisting[0]) {
       throw new NotFoundException('Cannot update list because list not found 😢');

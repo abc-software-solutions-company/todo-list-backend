@@ -37,9 +37,7 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/:listID')
-  async readTodoListByID(@Param('listID') listID: string,@Req() request: any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
+  async readTodoListByID(@Param('listID') listID: string) {
     try {
       return this.taskService.findTaskFromListByID(listID);
     } catch {
@@ -49,17 +47,14 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/single/:id')
-  async getTaskById(@Param('id') id: string,@Req() request: any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
+  async getTaskById(@Param('id') id: string) {
     return this.taskService.findTaskById(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
   async createTask(@Body() body: CreateTaskDto, @CurrentTodoList() todoList: Todolist, @Req() request: any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
+    const {userId} = extractHeader(request);
     const existTodoList = await this.todoListService.findTodoListByID(body.todoListId).then(result => {
       return result;
     });
@@ -75,9 +70,7 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async removeUser(@Param('id') id: string,@Req() request: any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
+  async removeUser(@Param('id') id: string) {
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       return this.taskService.remove(taskExisting);
@@ -90,7 +83,6 @@ export class TasksController {
   @Put('/:id')
   async markTaskDone(@Param('id') id: string,@Req() request: any) {
     const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       if (!taskExisting) {
@@ -104,9 +96,7 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
-  async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto,@Req() request:any) {
-    const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
+  async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
     if (updateTaskDto.name.trim().length == 0) {
       throw new NotAcceptableException('Name not empty');
     } else

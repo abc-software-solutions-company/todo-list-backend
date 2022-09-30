@@ -30,7 +30,6 @@ export class AuthController {
   async getUserProfile(@Req() request: any) {
     console.log('😀Decode User Info from Access Token');
     const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     // Read Email
     const email = await this.authService.readEmail(userId);
     return {userName,userId,email}
@@ -41,7 +40,6 @@ export class AuthController {
   async abc(@Req() request: any, @Body() emailDto: EmailDto) {
     console.log('😀Decode User Info from Access Token');
     const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     return this.userService.attachEmail(emailDto.email,userId);
   }
 }
