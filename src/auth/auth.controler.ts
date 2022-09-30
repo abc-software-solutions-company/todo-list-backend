@@ -28,9 +28,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/verify')
   async getUserProfile(@Req() request: any) {
-    // console.log('😀Decode User Info from Access Token');
+    console.log('😀Decode User Info from Access Token');
     const {userName,userId} = extractHeader(request);
-    if (await this.authService.validateUser(userName,userId)===null) throw new UnauthorizedException('❌❌❌❌❌')
     // Read Email
     const email = await this.authService.readEmail(userId);
     return {userName,userId,email}
