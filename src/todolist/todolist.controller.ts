@@ -83,12 +83,16 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async removeUser(@Param('id') id: string) {
+  async removeUser(@Param('id') id: string, @Req() request: any) {
+    const {userId,userName} = extractHeader(request);
     const todoListExisting = await this.todoListService.findTodoListByID(id);
     if (!todoListExisting || todoListExisting[0] === undefined) {
       throw new NotFoundException('Cannot remove list because this list not found 😢');
     }
-    // console.log(todoListExisting[0]);
+    const checkListOwner = await this.todoListService.findListByUserId(userId)
+    if (checkListOwner.length == 0) {
+      throw new NotFoundException('Cannot remove list you are not owner 😢');
+    }
     return this.todoListService.remove(todoListExisting[0]);
   }
 
