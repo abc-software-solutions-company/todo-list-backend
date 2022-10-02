@@ -49,7 +49,7 @@ export class TodolistController {
   }
 
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('/query/all')
   async getAllList() {
     return this.todoListService.findAll();
