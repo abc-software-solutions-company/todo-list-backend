@@ -48,6 +48,13 @@ export class TodolistController {
     else throw new NotFoundException('Not found list');
   }
 
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/query/all')
+  async getAllList() {
+    return this.todoListService.findAll();
+  }
+  
   @Get('/:id')
   async getListDetail(@Param('id') id: string,@Req() request: any) {
       const listName = await this.todoListService.findTodoListByID(id).then(result => {
