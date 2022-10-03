@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {UsersModule} from './users/users.module';
 import {TasksModule} from './task/task.module';
@@ -16,6 +16,7 @@ import {AuthController} from './auth/auth.controler';
 import {APP_FILTER, APP_GUARD} from '@nestjs/core';
 import {AllExceptionsFilter} from './utils/all-exception.filter';
 import {ThrottlerGuard, ThrottlerModule} from '@nestjs/throttler';
+import { ApiKeyMiddleware } from './utils/api-key.middleware';
 
 @Module({
   imports: [
@@ -32,8 +33,8 @@ import {ThrottlerGuard, ThrottlerModule} from '@nestjs/throttler';
       // dropSchema: true
     }),
     ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 60
+      ttl: 30,
+      limit: 100
     }),
     UsersModule,
     TasksModule,
@@ -54,4 +55,8 @@ import {ThrottlerGuard, ThrottlerModule} from '@nestjs/throttler';
     }
   ]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ApiKeyMiddleware).forRoutes('*');
+  }
+}

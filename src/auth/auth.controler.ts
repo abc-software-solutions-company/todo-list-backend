@@ -1,5 +1,5 @@
 import {Body, Catch, Controller, Get, Post, Req, UnauthorizedException, UseGuards} from '@nestjs/common';
-import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags,ApiHeader} from '@nestjs/swagger';
 import {CreateUserDto} from 'src/users/dtos/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import extractHeader from 'src/utils/extract-header';
@@ -10,6 +10,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Auth User (Created Token)')
 @ApiBearerAuth()
+@ApiHeader({name:"api_key"})
 @Controller('auth')
 @Catch(QueryFailedError, EntityNotFoundError)
 export class AuthController {
