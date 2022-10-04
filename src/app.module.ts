@@ -27,7 +27,7 @@ import { ApiKeyMiddleware } from './utils/api-key.middleware';
       schema: process.env.POSTGRES_SCHEMA,
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
-      port: process.env.POSTGRES_PORT,
+      port: parseInt(process.env.POSTGRES_PORT),
       entities: [User, Task, Todolist, Uuidstorage],
       synchronize: true
       // dropSchema: true
