@@ -38,6 +38,9 @@ export class Task {
   @Column()
   userId: string;
 
+  @Column({default:0})
+  index: number;
+
   @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
   user: User;
   @ManyToOne(() => Todolist, (todoList) => todoList.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })

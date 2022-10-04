@@ -24,9 +24,7 @@ export class TaskService {
     try {
       const task = await this.repo.findOne(id);
       return task;
-    } catch {
-      throw new NotFoundException('😓 Cannot find this task ');
-    }
+    } catch {throw new NotFoundException('😓 Cannot find this task ');}
   }
 
   async findTaskByName(name: string) {
@@ -37,17 +35,14 @@ export class TaskService {
   async create(taskDto: CreateTaskDto, todolist: Todolist) {
     let taskId = uuid();
 
-    while (await this.validTaskId(taskId)==false) {
-      taskId = uuid();
-    }
+    while (await this.validTaskId(taskId)==false) taskId = uuid();
 
     if (taskDto.name.trim().length !== 0) {
       const task = this.repo.create(taskDto);
       task.id = taskId
+      task.index = await this.setIndexForNewTask();
       return this.repo.save(task);
-    } else {
-      throw new NotAcceptableException('Task name must at least 1 character');
-    }
+    } else throw new NotAcceptableException('Task name must at least 1 character');
   }
 
   async findTaskFromListByID(todoListId: string) {
@@ -69,13 +64,34 @@ export class TaskService {
     if (task.name.trim().length !== 0) {
       task.name = name;
       return this.repo.save(task);
-    } else {
-      throw new NotAcceptableException('Task name must at least 1 character');
-    }
+    } else throw new NotAcceptableException('Task name must at least 1 character');
   }
 
   async markTaskDone(task: Task) {
     task.isDone = !task.isDone;
     return this.repo.save(task);
+  }
+
+  async setIndexForAllTask() {
+    // if any task have default index = 1, assign it to number + 100
+    const taskHaveZeroIndex = await this.repo.find({index:0})
+    // now use a loop to assign index increment
+    for (let index = 0; index < taskHaveZeroIndex.length - 1; index++) {
+      // Change index for each task
+      taskHaveZeroIndex[index].index = taskHaveZeroIndex[index].index + 1000*index;
+      await this.repo.save(taskHaveZeroIndex[index])
+    }
+    // return taskHaveZeroIndex;
+    return "😍😍😍😍😍"
+  }
+
+  async countAllTask() {
+    const countAllTask = await this.repo.count();
+    return countAllTask;
+  }
+
+  async setIndexForNewTask() {
+    const newIndex = await this.countAllTask()
+    return newIndex*1000;
   }
 }
