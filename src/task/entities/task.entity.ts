@@ -4,9 +4,6 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  AfterInsert,
-  AfterUpdate,
-  AfterRemove,
   PrimaryColumn,
 } from "typeorm";
 import { User } from "src/users/entities/user.entity";
@@ -48,19 +45,4 @@ export class Task {
   user: User;
   @ManyToOne(() => Todolist, (todoList) => todoList.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
   todoList: Todolist;
-
-  @AfterInsert()
-  logInsert() {
-    console.log("😀Inserted Task with id", this.id);
-  }
-
-  @AfterUpdate()
-  logUpdate() {
-    console.log("😀Updated Task with id", this.id);
-  }
-
-  @AfterRemove()
-  logRemove() {
-    console.log("😀Removed Task with id", this.id);
-  }
 }

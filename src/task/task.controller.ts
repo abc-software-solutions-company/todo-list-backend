@@ -7,14 +7,11 @@ import {
   Param,
   Delete,
   NotFoundException,
-  BadRequestException,
   Put,
   UseGuards,
   Req,
   Catch,
-  ForbiddenException,
   NotAcceptableException,
-  UnauthorizedException
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import {TaskService} from './task.service';
@@ -38,37 +35,25 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @Get('/:listID')
   async readTodoListByID(@Param('listID') listID: string) {
-    try {
-      return this.taskService.findTaskFromListByID(listID);
-    } catch {
+    try { return this.taskService.findTaskFromListByID(listID);} catch {
       throw new NotFoundException('😓😓Cannot find task from this list');
     }
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/single/:id')
-  async getTaskById(@Param('id') id: string) {
-    return this.taskService.findTaskById(id);
-  }
+  async getTaskById(@Param('id') id: string) { return this.taskService.findTaskById(id); }
 
   @Get('/index/assign')
-  async assignIndexForAllTask(){
-    return this.taskService.setIndexForAllTask();
-  }
+  async assignIndexForAllTask() { return this.taskService.setIndexForAllTask(); }
 
   @UseGuards(JwtAuthGuard)
   @Post()
   async createTask(@Body() body: CreateTaskDto, @CurrentTodoList() todoList: Todolist, @Req() request: any) {
     const {userId} = extractHeader(request);
-    const existTodoList = await this.todoListService.findTodoListByID(body.todoListId).then(result => {
-      return result;
-    });
-    if (existTodoList.length == 0) {
-      throw new NotFoundException('Error your list id is not available 😢');
-    }
-    if (body.name.trim().length == 0) {
-      throw new NotAcceptableException('Name not empty');
-    }
+    const existTodoList = await this.todoListService.findTodoListByID(body.todoListId).then((result) => { return result;  });
+    if (existTodoList.length == 0) {  throw new NotFoundException('Not found list id 😢');  }
+    if (body.name.trim().length == 0) {   throw new NotAcceptableException('Name not empty');  }
     body.userId = userId;
     return this.taskService.create(body, todoList);
   }
@@ -79,37 +64,26 @@ export class TasksController {
     try {
       const taskExisting = await this.taskService.findTaskById(id);
       return this.taskService.remove(taskExisting);
-    } catch {
-      throw new NotFoundException('Cannot remove task because task not found 😢');
-    }
+    } catch {   throw new NotFoundException('Cannot remove task because task not found 😢');   }
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('/:id')
-  async markTaskDone(@Param('id') id: string,@Req() request: any) {
-    const {userName,userId} = extractHeader(request);
+  async markTaskDone(@Param('id') id: string) {
     try {
       const taskExisting = await this.taskService.findTaskById(id);
-      if (!taskExisting) {
-        throw new NotFoundException('Cannot mark done this task because task not found 😢😭😭😭😭😭');
-      }
+      if (!taskExisting) throw new NotFoundException('Cannot mark done this task because task not found 😢😭😭😭😭😭');
       return this.taskService.markTaskDone(taskExisting);
-    } catch {
-      throw new NotFoundException('Cannot mark done this task because task not found ');
-    }
+    } catch {   throw new NotFoundException('Cannot mark done this task because task not found ');  }
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    if (updateTaskDto.name.trim().length == 0) {
-      throw new NotAcceptableException('Name not empty');
-    } else
-    try {
+    if (updateTaskDto.name.trim().length == 0) throw new NotAcceptableException('Name not empty');
+    else try {
       const taskExisting = await this.taskService.findTaskById(id);
       return this.taskService.updateTask(taskExisting, updateTaskDto.name);
-    } catch {
-      throw new NotFoundException('Cannot update task because task not found 😢');
-    }
+    } catch {   throw new NotFoundException('Cannot update task because task not found 😢');    }
   }
 }

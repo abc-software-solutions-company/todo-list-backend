@@ -81,7 +81,6 @@ export class TaskService {
       taskHaveZeroIndex[index].index = taskHaveZeroIndex[index].index + 1000*index;
       await this.repo.save(taskHaveZeroIndex[index])
     }
-    // return taskHaveZeroIndex;
     return "😍😍😍😍😍"
   }
 

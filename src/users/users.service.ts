@@ -22,9 +22,7 @@ export class UsersService {
   async create(userName: string): Promise<User> {
     // create userId
     let userId = uuid();
-    while ((await this.validUserId(userId)) == false) {
-      userId = uuid();
-    }
+    while ((await this.validUserId(userId)) == false) userId = uuid();
 
     if (userName.trim().length !== 0) {
       const user = this.repo.create({userName: userName, id: userId});
@@ -54,12 +52,10 @@ export class UsersService {
     const emailExisted = await this.repo.find({email: email});
     const currentUser = await this.repo.findOne({id:id});
     // If user already have email block this function
-    if (emailExisted.length > 0) {
-      throw new BadRequestException('🥵 This user already have email linked');
-    } else {
+    if (emailExisted.length > 0)  throw new BadRequestException('🥵 This user already have email linked');
+    else {
       currentUser.email = email;
       return await this.repo.save(currentUser);
     }
-    // If user doesn't have email
   }
 }
