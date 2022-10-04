@@ -10,8 +10,11 @@ import { UsersModule } from 'src/users/users.module';
 import { Uuidstorage } from 'src/uuidstorage/entities/uuidstorage.entity';
 import { UuidstorageModule } from 'src/uuidstorage/uuidstorage.module';
 
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+
 
 export function testHelper() {
+  dotenv.config()
   const testingModuleBuilder = Test.createTestingModule({
     imports:[
       TypeOrmModule.forRoot({
