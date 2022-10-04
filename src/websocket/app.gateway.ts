@@ -1,34 +1,17 @@
-import { Logger } from '@nestjs/common';
-import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway()
-export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class AppGateway {
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('AppGateway');
 
   @SubscribeMessage('msgToServer')
   handleMessage(client: Socket, payload : any) {
     this.server.emit(`msgToClient_${payload.roomId}`);
-    this.logger.log(`Client frontend send message to room ${payload.roomId} `);
-    this.logger.log(payload.roomId)
   }
 
   @SubscribeMessage('msgDeleteListToServer')
   handleMessageDeleteList() {
     this.server.emit('msgDeleteListToClient');
-    this.logger.log(`Delete list send to ws server`);
-  }
-
-  afterInit() {
-    this.logger.log('Websokcet handle when first time');
-  }
-
-  handleConnection(client: Socket) {
-    this.logger.log( `Client joined to todolist app`);
-  }
-
-  handleDisconnect(client: Socket) {
-    this.logger.log( `Client get out todolist app`);
   }
 }
