@@ -51,7 +51,7 @@ export class TaskService {
       .createQueryBuilder('task')
       .where('task.todoListId = :todoListId', {todoListId: todoListId})
       .andWhere('task.isActive = true')
-      .orderBy('task.createdDate', 'DESC')
+      .orderBy('task.index', 'ASC')
       .getMany();
     return TaskList;
   }

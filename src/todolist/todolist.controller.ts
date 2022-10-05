@@ -13,7 +13,6 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
-import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TaskService } from 'src/task/task.service';
 import extractHeader from 'src/utils/extract-header';
@@ -49,12 +48,11 @@ export class TodolistController {
   // @UseGuards(JwtAuthGuard)
   @Get('/query/all')
   async getAllList() {    return this.todoListService.findAll();    }
-  
+
   @Get('/:id')
   async getListDetail(@Param('id') id: string) {
       const listName = await this.todoListService.findTodoListByID(id).then(result => { return result; });
       if (listName.length === 0) throw new NotFoundException('Cannot find this list 😢');
-      
       const listTask = await this.taskService.findTaskFromListByID(id);
       return {
         "name":listName[0].name,
