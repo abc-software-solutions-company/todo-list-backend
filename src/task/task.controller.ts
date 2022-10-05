@@ -93,8 +93,9 @@ export class TasksController {
   async reorderTask(@Body() body: ReorderTaskDTO) {
     const firstTask = await this.taskService.findTaskById(body.taskFirstID);
     const secondTask = await this.taskService.findTaskById(body.taskSecondID);
-    // return [firstTask, secondTask]
-    return await this.taskService.reorderTask(firstTask,secondTask)
+    const needReorderTask = await this.taskService.findTaskById(body.taskReorderID);
+    if (!firstTask || !secondTask || !needReorderTask) throw new NotFoundException('Not found task');
+    return await this.taskService.reorderTask(firstTask,secondTask,needReorderTask)
     // return [body.taskFirstID, body.taskSecondID]
   }
 }

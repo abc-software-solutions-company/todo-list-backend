@@ -2,11 +2,15 @@ import {IsString} from 'class-validator';
 import {ApiProperty} from '@nestjs/swagger';
 
 export class ReorderTaskDTO {
-  @ApiProperty({example:"e88a4c01-7762-47cf-a913-0dc9754f7538"})
+  @ApiProperty({example:"b0e035db-1532-4f73-90c1-ce5d0f8d03a8"})
   @IsString()
   taskFirstID: string;
 
-  @ApiProperty({example:"c952c9bc-3f33-46b8-a877-7f39f0690948"})
+  @ApiProperty({example:"622f034a-6533-4d4e-8153-488e919b77b8"})
   @IsString()
   taskSecondID: string;
+
+  @ApiProperty({example:"f8998fd2-e24b-4b77-9e8f-6320e0f30bf6"})
+  @IsString()
+  taskReorderID: string;
 }

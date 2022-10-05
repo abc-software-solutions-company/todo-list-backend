@@ -5,6 +5,7 @@ import {Task} from './entities/task.entity';
 import {CreateTaskDto} from './dto/create-task.dto';
 import {Todolist} from 'src/todolist/entities/todolist.entity';
 import { uuid } from 'uuidv4';
+import { findDuplicates } from 'src/utils/find-duplicate';
 @Injectable()
 export class TaskService {
   constructor(@InjectRepository(Task) private repo: Repository<Task>) {}
@@ -99,9 +100,20 @@ export class TaskService {
     return this.repo.save(task);
   }
 
-  async reorderTask(taskFirst: Task, taskSecond: Task) {
-    const taskFirstIndex = taskFirst.index;
-    const taskSecondIndex = taskSecond.index;
-    return [taskFirstIndex, taskSecondIndex]
+  async reorderTask(taskFirst: Task, taskSecond: Task, taskNeedReorder: Task) {
+    const firstIndex = taskFirst.index;
+    const secondIndex = taskSecond.index;
+    let reorderIndex = taskNeedReorder.index;
+
+    // Check if taskIndex duplicate
+    const duplicateArr = findDuplicates([firstIndex,secondIndex,reorderIndex])
+    console.log('😎😎😎😎😎😎😎');
+
+    if (duplicateArr >=0 ) throw new BadRequestException('Duplicate task, stop')
+    
+    // Reorder Task, Change index for taskNeed
+    if (firstIndex > secondIndex) reorderIndex = secondIndex + 1;
+    else reorderIndex = firstIndex + 1;
+    // return [taskFirstIndex, taskSecondIndex, taskNeedReorderIndex]
   }
 }
