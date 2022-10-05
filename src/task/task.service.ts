@@ -109,11 +109,13 @@ export class TaskService {
     const duplicateArr = findDuplicates([firstIndex,secondIndex,reorderIndex])
     console.log('😎😎😎😎😎😎😎');
 
-    if (duplicateArr >=0 ) throw new BadRequestException('Duplicate task, stop')
-    
+    if (duplicateArr > 0 ) throw new BadRequestException('Duplicate task, stop')
     // Reorder Task, Change index for taskNeed
     if (firstIndex > secondIndex) reorderIndex = secondIndex + 1;
     else reorderIndex = firstIndex + 1;
-    // return [taskFirstIndex, taskSecondIndex, taskNeedReorderIndex]
+
+    // Update new index for taskNeedReorder to database;
+    taskNeedReorder.index = reorderIndex;
+    return this.repo.save(taskNeedReorder);
   }
 }
