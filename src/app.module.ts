@@ -34,7 +34,7 @@ import { ApiKeyMiddleware } from './utils/api-key.middleware';
     }),
     ThrottlerModule.forRoot({
       ttl: 30,
-      limit: 200
+      limit: 100
     }),
     UsersModule,
     TasksModule,
