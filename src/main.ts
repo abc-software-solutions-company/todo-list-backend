@@ -26,7 +26,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: process.env.ORIGIN || '*',
+    origin: [process.env.ORIGIN,process.env.WEBSOCKET_ORIGIN] || '*',
     credentials: (process.env.CREDENTIALS? true : false)
   });
 
