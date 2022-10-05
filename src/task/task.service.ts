@@ -93,4 +93,15 @@ export class TaskService {
     const newIndex = await this.countAllTask()
     return newIndex*1000;
   }
+
+  async setTaskStatus(task: Task, status: number) {
+    task.status = status;
+    return this.repo.save(task);
+  }
+
+  async reorderTask(taskFirst: Task, taskSecond: Task) {
+    const taskFirstIndex = taskFirst.index;
+    const taskSecondIndex = taskSecond.index;
+    return [taskFirstIndex, taskSecondIndex]
+  }
 }

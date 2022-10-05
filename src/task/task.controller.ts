@@ -24,6 +24,7 @@ import {JwtAuthGuard} from 'src/auth/guards/jwt-auth.guard';
 import extractHeader from 'src/utils/extract-header';
 import {EntityNotFoundError, QueryFailedError, TypeORMError} from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
+import { ReorderTaskDTO } from './dto/reorder-task.dto';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
@@ -85,5 +86,15 @@ export class TasksController {
       const taskExisting = await this.taskService.findTaskById(id);
       return this.taskService.updateTask(taskExisting, updateTaskDto.name);
     } catch {   throw new NotFoundException('Cannot update task because task not found 😢');    }
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Patch('/query/reorders')
+  async reorderTask(@Body() body: ReorderTaskDTO) {
+    const firstTask = await this.taskService.findTaskById(body.taskFirstID);
+    const secondTask = await this.taskService.findTaskById(body.taskSecondID);
+    // return [firstTask, secondTask]
+    return await this.taskService.reorderTask(firstTask,secondTask)
+    // return [body.taskFirstID, body.taskSecondID]
   }
 }
