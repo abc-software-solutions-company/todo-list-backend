@@ -25,10 +25,7 @@ async function bootstrap() {
     next();
   });
 
-  app.enableCors({
-    origin: [process.env.ORIGIN,process.env.WEBSOCKET_ORIGIN] || '*',
-    credentials: (process.env.CREDENTIALS? true : false)
-  });
+  app.enableCors();
 
   app.useGlobalPipes(
     new ValidationPipe({
