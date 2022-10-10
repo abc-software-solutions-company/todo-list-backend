@@ -38,7 +38,7 @@ export class Task {
   @Column()
   userId: string;
 
-  @Column({default:0})
+  @Column({ default:0, type:'float8' })
   index: number;
 
   @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE' })
