@@ -91,16 +91,21 @@ export class TasksController {
   // @UseGuards(JwtAuthGuard)
   @Patch('/query/reorders')
   async reorderTask(@Body() body: ReorderTaskDTO) {
+    const needReorderTask = await this.taskService.findTaskById(body.taskReorderID);
+    // Swap task to top
     if (body.taskFirstID === 'swap-top-list') {
-      const needReorderTask = await this.taskService.findTaskById(body.taskReorderID);
       const secondTask = await this.taskService.findTaskById(body.taskSecondID);
       return this.taskService.reorderTaskToTop(needReorderTask,secondTask);
     }
+    // Swap task to bottom
+    if (body.taskSecondID === 'swap-bottom-list') {
+      const firstTask = await this.taskService.findTaskById(body.taskFirstID);
+      return this.taskService.reorderTaskToBottom(needReorderTask,firstTask);
+    }
+    // Swap task in between
     const firstTask = await this.taskService.findTaskById(body.taskFirstID);
     const secondTask = await this.taskService.findTaskById(body.taskSecondID);
-    const needReorderTask = await this.taskService.findTaskById(body.taskReorderID);
     if (!firstTask || !secondTask || !needReorderTask) throw new NotFoundException('Not found task');
     return await this.taskService.reorderTask(firstTask,secondTask,needReorderTask)
-    // return [body.taskFirstID, body.taskSecondID]
   }
 }

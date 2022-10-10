@@ -111,17 +111,23 @@ export class TaskService {
   }
 
   async reorderTaskToTop(taskNeedReorder: Task, taskSecond: Task) {
-    console.log(`Task Need Reorder is ${taskNeedReorder.name}`);
-    console.log(`Task Second to decrease one index is ${taskSecond.name}`);
-
     let reorderIndex = taskNeedReorder.index;
     let secondIndex = taskSecond.index;
 
     reorderIndex = secondIndex - 1;
+
+    taskNeedReorder.index = reorderIndex;
+    return this.repo.save(taskNeedReorder);
+  }
+
+  async reorderTaskToBottom(taskNeedReorder: Task, taskFirst: Task) {
+    let reorderIndex = taskNeedReorder.index;
+    let fistIndex = taskFirst.index;
+
+    reorderIndex = fistIndex + 1;
     
     taskNeedReorder.index = reorderIndex;
     return this.repo.save(taskNeedReorder);
-
   }
 }
 
