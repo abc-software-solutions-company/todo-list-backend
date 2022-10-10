@@ -91,6 +91,11 @@ export class TasksController {
   // @UseGuards(JwtAuthGuard)
   @Patch('/query/reorders')
   async reorderTask(@Body() body: ReorderTaskDTO) {
+    if (body.taskFirstID === 'swap-top-list') {
+      const needReorderTask = await this.taskService.findTaskById(body.taskReorderID);
+      const secondTask = await this.taskService.findTaskById(body.taskSecondID);
+      return this.taskService.reorderTaskToTop(needReorderTask,secondTask);
+    }
     const firstTask = await this.taskService.findTaskById(body.taskFirstID);
     const secondTask = await this.taskService.findTaskById(body.taskSecondID);
     const needReorderTask = await this.taskService.findTaskById(body.taskReorderID);

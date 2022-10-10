@@ -104,14 +104,24 @@ export class TaskService {
     const secondIndex = taskSecond.index;
     let reorderIndex = taskNeedReorder.index;
 
-
-    // Reorder Task, Change index for taskNeed
-    // if (firstIndex > secondIndex) reorderIndex = secondIndex + 1;
-    // else reorderIndex = firstIndex + 1;
     reorderIndex = (firstIndex + secondIndex)/2;
 
-    // Update new index for taskNeedReorder to database;
     taskNeedReorder.index = reorderIndex;
     return this.repo.save(taskNeedReorder);
   }
+
+  async reorderTaskToTop(taskNeedReorder: Task, taskSecond: Task) {
+    console.log(`Task Need Reorder is ${taskNeedReorder.name}`);
+    console.log(`Task Second to decrease one index is ${taskSecond.name}`);
+
+    let reorderIndex = taskNeedReorder.index;
+    let secondIndex = taskSecond.index;
+
+    reorderIndex = secondIndex - 1;
+    
+    taskNeedReorder.index = reorderIndex;
+    return this.repo.save(taskNeedReorder);
+
+  }
 }
+
