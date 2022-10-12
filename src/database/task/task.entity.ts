@@ -19,7 +19,7 @@ export class Task {
   @Column()
   userId: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 0 , type: 'bigint'})
   index: number;
 
   @Column({ default: true })

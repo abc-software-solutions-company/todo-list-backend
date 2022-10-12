@@ -2,11 +2,12 @@ import { Injectable, NotFoundException, NotAcceptableException } from '@nestjs/c
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { uuid } from 'uuidv4';
-import { CreateTaskDto } from './task.dto';
+import { CreateTaskDto, ReorderTaskDto } from './task.dto';
 import { Task } from './task.entity';
 
 @Injectable()
 export class TaskService {
+  indexStep :number = Math.pow(2, 30);
   constructor(@InjectRepository(Task) private readonly repo: Repository<Task>) {}
 
   async validTaskId(id: string) {
@@ -37,13 +38,9 @@ export class TaskService {
     let taskId = uuid();
 
     while ((await this.validTaskId(taskId)) == false) taskId = uuid();
-
-    if (taskDto.name.trim().length !== 0) {
-      const task = this.repo.create(taskDto);
-      task.id = taskId;
-      task.index = await this.setIndexForNewTask();
-      return this.repo.save(task);
-    } else throw new NotAcceptableException('Task name must at least 1 character');
+    const index = ((await this.repo.countBy({ todoListId: taskDto.todoListId })) + 1) * this.indexStep;
+    const task = this.repo.create({ ...taskDto, id: taskId, index });
+    return this.repo.save(task);
   }
 
   async findTaskFromListByID(todoListId: string) {
@@ -85,44 +82,29 @@ export class TaskService {
     return '😍😍😍😍😍';
   }
 
-  async countAllTask() {
-    const countAllTask = await this.repo.count();
-    return countAllTask;
+  async resetOrder(todoListId: string) {
+    const tasks = await this.repo.find({where:{todoListId: todoListId},order:{index:'ASC'}});
+    tasks.forEach(async (task,index) => {
+      task.index=(index+1)*this.indexStep;
+      console.log(task)
+      await this.repo.save(task)
+    });
+    
   }
 
-  async setIndexForNewTask() {
-    const newIndex = await this.countAllTask();
-    return newIndex * 1000;
-  }
+  async reorderTask({taskFirstID,taskReorderID,taskSecondID}: ReorderTaskDto) {
+    const task = await this.repo.findOneBy({id:taskReorderID}) 
+    const index1 = taskFirstID ? (await this.repo.findOneBy({id:taskFirstID})).index: 0;
+    const index2 = taskSecondID ? (await this.repo.findOneBy({id:taskSecondID})).index : index1+this.indexStep;
 
-  async reorderTask(taskFirst: Task, taskSecond: Task, taskNeedReorder: Task) {
-    const firstIndex = taskFirst.index;
-    const secondIndex = taskSecond.index;
-    let reorderIndex = taskNeedReorder.index;
+    const index = Math.round((Number(index1) + Number(index2)) / 2);
+    task.index = index;
+    await this.repo.save(task)
 
-    reorderIndex = (firstIndex + secondIndex) / 2;
-
-    taskNeedReorder.index = reorderIndex;
-    return this.repo.save(taskNeedReorder);
-  }
-
-  async reorderTaskToTop(taskNeedReorder: Task, taskSecond: Task) {
-    let reorderIndex = taskNeedReorder.index;
-    const secondIndex = taskSecond.index;
-
-    reorderIndex = secondIndex - 1;
-
-    taskNeedReorder.index = reorderIndex;
-    return this.repo.save(taskNeedReorder);
-  }
-
-  async reorderTaskToBottom(taskNeedReorder: Task, taskFirst: Task) {
-    let reorderIndex = taskNeedReorder.index;
-    const fistIndex = taskFirst.index;
-
-    reorderIndex = fistIndex + 1;
-
-    taskNeedReorder.index = reorderIndex;
-    return this.repo.save(taskNeedReorder);
+    if (index-index1<32 || index2-index<32) {
+      this.resetOrder(task.todoListId)
+    }
+    console.log(index1,index,index2)
+    return task;
   }
 }

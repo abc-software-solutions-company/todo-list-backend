@@ -31,7 +31,7 @@ export class UsersService {
   }
 
   async findUserById(id: string) {
-    const firstUser = await this.repo.findBy({ id: id });
+    const firstUser = await this.repo.findOneBy({ id: id });
     return firstUser;
   }
 

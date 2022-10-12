@@ -15,6 +15,7 @@ import {
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import extractHeader from 'src/utils/extract-header';
+import { IRequest } from 'src/utils/type';
 import { CreateTaskDto, ReorderTaskDto, UpdateTaskDto } from './task.dto';
 import { TaskService } from './task.service';
 
@@ -47,8 +48,8 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createTask(@Body() body: CreateTaskDto, @Req() request: any) {
-    const { userId } = extractHeader(request);
+  async createTask(@Body() body: CreateTaskDto, @Req() request: IRequest) {
+    const { userId } = request.user;
     if (body.name.trim().length == 0) {
       throw new NotAcceptableException('Name not empty');
     }
@@ -95,11 +96,8 @@ export class TaskController {
   // @UseGuards(JwtAuthGuard)
   @Patch('/query/reorders')
   async reorderTask(@Body() body: ReorderTaskDto) {
-    const firstTask = await this.taskService.findTaskById(body.taskFirstID);
-    const secondTask = await this.taskService.findTaskById(body.taskSecondID);
-    const needReorderTask = await this.taskService.findTaskById(body.taskReorderID);
-    if (!firstTask || !secondTask || !needReorderTask) throw new NotFoundException('Not found task');
-    return await this.taskService.reorderTask(firstTask, secondTask, needReorderTask);
+
+    return await this.taskService.reorderTask(body);
     // return [body.taskFirstID, body.taskSecondID]
   }
 }

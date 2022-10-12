@@ -10,7 +10,7 @@ export default registerAs('database', () => {
     name: process.env.DATABASE_NAME || 'postgres',
     schema: process.env.DATABASE_SCHEMA,
     synchronize: process.env.DATABASE_SYNCHRONIZE === 'true',
-    dropSchema: true,
+    dropSchema: false,
     autoLoadEntities: true,
   };
   if (process.env.NODE_ENV === 'dev') {
