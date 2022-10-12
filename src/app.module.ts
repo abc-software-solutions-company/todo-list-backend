@@ -1,59 +1,54 @@
-import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
-import {TypeOrmModule} from '@nestjs/typeorm';
-import {UsersModule} from './users/users.module';
-import {TasksModule} from './task/task.module';
-import {User} from './users/entities/user.entity';
-import {Task} from './task/entities/task.entity';
-import {Todolist} from './todolist/entities/todolist.entity';
-import {TodolistModule} from './todolist/todolist.module';
-import 'dotenv/config';
-import {AppGateway} from './websocket/app.gateway';
-import {UuidstorageModule} from './uuidstorage/uuidstorage.module';
-import {Uuidstorage} from './uuidstorage/entities/uuidstorage.entity';
-import {AuthModule} from './auth/auth.module';
-import {AuthService} from './auth/auth.service';
-import {AuthController} from './auth/auth.controler';
-import {APP_FILTER, APP_GUARD} from '@nestjs/core';
-import {AllExceptionsFilter} from './utils/all-exception.filter';
-import {ThrottlerGuard, ThrottlerModule} from '@nestjs/throttler';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { AuthModule } from './auth/auth.module';
+import appConfig from './configs/app.config';
+import databaseConfig from './configs/database.config';
+import { TasksModule } from './database/task/task.module';
+import { TodolistModule } from './database/todolist/todolist.module';
+import { TypeOrmConfigService } from './database/typeorm-config.service';
+import { UsersModule } from './database/user/users.module';
+import { PoolModule } from './database/pool/pool.module';
+import { AllExceptionsFilter } from './utils/all-exception.filter';
 import { ApiKeyMiddleware } from './utils/api-key.middleware';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      database: process.env.POSTGRES_DATABASE,
-      schema: process.env.POSTGRES_SCHEMA,
-      username: process.env.POSTGRES_USERNAME,
-      password: process.env.POSTGRES_PASSWORD,
-      port: parseInt(process.env.POSTGRES_PORT),
-      entities: [User, Task, Todolist, Uuidstorage],
-      synchronize: true
-      // dropSchema: true
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [databaseConfig, appConfig],
+      envFilePath: ['.env'],
+    }),
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
+      dataSourceFactory: async (options) => {
+        const dataSource = await new DataSource(options).initialize();
+        return dataSource;
+      },
     }),
     ThrottlerModule.forRoot({
       ttl: 30,
-      limit: 100
+      limit: 100,
     }),
+    PoolModule,
+    AuthModule,
     UsersModule,
     TasksModule,
-    AuthModule,
     TodolistModule,
-    UuidstorageModule
   ],
-  controllers: [AuthController],
   providers: [
-    AppGateway,
     {
       provide: APP_FILTER,
-      useClass: AllExceptionsFilter
+      useClass: AllExceptionsFilter,
     },
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }
-  ]
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

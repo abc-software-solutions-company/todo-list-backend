@@ -1,11 +1,13 @@
 version: '3'
 services:
   postgres:
-    image: postgres:13
-    container_name: todolist-db
+    image: postgres
+    container_name: todolist-dev-db
     environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      TZ: 'Asia/Bangkok'
-      PGTZ: 'Asia/Bangkok'
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      POSTGRES_DB: ${DATABASE_NAME:-postgres}
+      TZ: 'Asia/Saigon'
+      PGTZ: 'Asia/Saigon'
     ports:
-      - ${DB_PORT:-5432}:5432
+      - ${DATABASE_PORT:-5436}:5432
