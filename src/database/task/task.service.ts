@@ -76,7 +76,9 @@ export class TaskService {
     // now use a loop to assign index increment
     for (let index = 0; index < taskHaveZeroIndex.length - 1; index++) {
       // Change index for each task
-      taskHaveZeroIndex[index].index = taskHaveZeroIndex[index].index + 1000 * index;
+      // taskHaveZeroIndex[index].index = taskHaveZeroIndex[index].index + 1000 * index;
+      taskHaveZeroIndex[index].index = index*this.indexStep;
+
       await this.repo.save(taskHaveZeroIndex[index]);
     }
     return '😍😍😍😍😍';
