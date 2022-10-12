@@ -1,0 +1,18 @@
+{
+  "files.exclude": {
+    // "node_modules/": true,
+    "dist/": true
+    // "src/*/*.spec.ts": true
+    // "nginx/": true,
+    // ".swc/": true,
+    // "tsconfig.tsbuildinfo": true,
+    // ".yarnrc": true,
+    // ".editorconfig": true,
+    // ".node-version": true,
+    // ".nvmrc": true,
+    // ".releaserc": true,
+    // "LICENSE": true,
+    // "Makefile": true,
+    // "CHANGELOG.md": true
+  }
+}

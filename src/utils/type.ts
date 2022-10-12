@@ -1,4 +1,10 @@
+import { Request } from 'express';
+
 export interface IUser {
-  userId: string
-  userName: string
+  userId: string;
+  name: string;
+}
+
+export interface IRequest extends Request {
+ user: IUser
 }
