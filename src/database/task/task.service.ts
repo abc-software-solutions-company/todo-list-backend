@@ -61,15 +61,13 @@ export class TaskService {
       taskSecondID ? (await this.repo.findOneBy({ id: taskSecondID })).index : index1 + this.indexStep,
     );
 
+    if (!task) return BadRequestException;
+
     const index = Math.round((index1 + index2) / 2);
     task.index = index;
-    console.log(index1, index, index2);
     await this.repo.save(task);
 
-    if (index - index1 < 32 || index2 - index < 32) {
-      this.reAllIndex(task.todoListId);
-    }
-    console.log(index1, index, index2);
+    if (index - index1 < 32 || index2 - index < 32) this.reAllIndex(task.todoListId);
     return task;
   }
 }

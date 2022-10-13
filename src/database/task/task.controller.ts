@@ -51,7 +51,8 @@ export class TaskController {
   @UseGuards(JwtAuthGuard)
   @Patch('/reIndex')
   async reIndex(@Body() body: ReIndexDto) {
-    return await this.taskService.reIndex(body);
-    // return [body.taskFirstID, body.taskSecondID]
+    const result = await this.taskService.reIndex(body);
+    if (result === BadRequestException) throw new BadRequestException();
+    return 'OK';
   }
 }
