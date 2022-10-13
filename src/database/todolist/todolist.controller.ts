@@ -36,6 +36,7 @@ export class TodolistController {
     const { id: userId } = request.user;
     const result = await this.todoListService.create({ name, userId });
     if (result === BadRequestException) throw new BadRequestException();
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)

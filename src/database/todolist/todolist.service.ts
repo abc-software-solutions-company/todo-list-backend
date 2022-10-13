@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './todolist.entity';
 import { PoolService } from 'src/database/pool/pool.service';
-import { TaskService } from '../task/task.service';
 import { ICreate, IGetMyList, IUpdate } from './todolist.type';
 @Injectable()
 export class TodolistService {
