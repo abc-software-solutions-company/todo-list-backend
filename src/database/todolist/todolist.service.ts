@@ -10,7 +10,7 @@ export class TodolistService {
   constructor(
     @InjectRepository(Todolist) private readonly repo: Repository<Todolist>,
     private readonly poolService: PoolService,
-    private readonly taskService: TaskService
+    private readonly taskService: TaskService,
   ) {}
 
   findAll() {
@@ -18,7 +18,7 @@ export class TodolistService {
   }
 
   async findListByUserId(userId: string) {
-    const TodoList = await this.repo.findBy({isActive:true,userId})
+    const TodoList = await this.repo.findBy({ isActive: true, userId });
     return TodoList;
   }
 
@@ -32,19 +32,19 @@ export class TodolistService {
     return TodoList;
   }
 
-  async create(todoListDto: CreateTodolistDto) {
-    // console.log(todoListDto.userId);
-    if (todoListDto.name.trim().length !== 0) {
-      const todoList = await this.repo.create(todoListDto);
-      //find UUID unused
-      const uuid = await this.poolService.findUnuse();
-      // Set new uuID for this list
-      todoList.id = uuid.id;
-      // Mark this uuid is used
-      await this.poolService.setFlag(uuid.id);
-      return this.repo.save(todoList);
-    } else throw new NotAcceptableException('TodoList Name must have at least 1 character');
-  }
+  // async create(todoListDto: CreateTodolistDto) {
+  //   // console.log(todoListDto.userId);
+  //   if (todoListDto.name.trim().length !== 0) {
+  //     const todoList = await this.repo.create(todoListDto);
+  //     //find UUID unused
+  //     const uuid = await this.poolService.findUnuse();
+  //     // Set new uuID for this list
+  //     todoList.id = uuid.id;
+  //     // Mark this uuid is used
+  //     await this.poolService.setFlag(uuid.id);
+  //     return this.repo.save(todoList);
+  //   } else throw new NotAcceptableException('TodoList Name must have at least 1 character');
+  // }
 
   async remove(todoList: Todolist) {
     todoList.isActive = false;
@@ -71,12 +71,12 @@ export class TodolistService {
       .getOne();
     return firstTodoList;
   }
-  
-  async resetIndexForAllTask() {
-    const lists = await this.findAll();
-    lists.forEach( list => {
-       this.taskService.resetOrder(list.id);
-    })
-    return 'OK'
-  }
+
+  // async resetIndexForAllTask() {
+  //   const lists = await this.findAll();
+  //   lists.forEach((list) => {
+  //     this.taskService.resetOrder(list.id);
+  //   });
+  //   return 'OK';
+  // }
 }

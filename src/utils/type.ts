@@ -1,10 +1,11 @@
 import { Request } from 'express';
 
 export interface IUser {
-  userId: string;
+  id: string;
   name: string;
+  email: string;
 }
 
 export interface IRequest extends Request {
- user: IUser
+  user: IUser;
 }

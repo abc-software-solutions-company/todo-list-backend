@@ -20,9 +20,9 @@ export class User {
   @OneToMany(() => Task, (task) => task.userId)
   tasks: Task[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   createdDate: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   updatedDate: Date;
 }

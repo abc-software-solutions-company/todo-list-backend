@@ -1,46 +1,43 @@
-import { Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  MethodNotAllowedException,
+  Post,
+  Req,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from 'src/database/user/user.dto';
-import { UsersService } from 'src/database/user/users.service';
-import extractHeader from 'src/utils/extract-header';
 import { IRequest } from 'src/utils/type';
+import { LinkEmailDto, LoginDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { EmailDto } from './dto/email.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Auth User (Created Token)')
 @ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService: UsersService) {}
+  constructor(private readonly authService: AuthService) {}
   @Post('/login')
-  async checkUserLogin(@Body() userDto: CreateUserDto) {
-    return this.authService.login(userDto);
-  }
-
-  @Post('/gmail-login')
-  async checkUserGmailLogin(@Body() emailDto: EmailDto) {
-    return this.authService.loginWithGmail(emailDto);
+  login(@Body() param: LoginDto) {
+    return this.authService.login(param);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/verify')
-  async getUserProfile(@Req() request: IRequest) {
-    const { userId } = request.user;
+  async verify(@Req() { user: { id } }: IRequest) {
+    console.log();
 
-    const user = await this.userService.findUserById(userId);
-    if (user) {
-      const { email, name, id } = user;
-      return { email, name, id };
-    } else {
-      throw new UnauthorizedException();
-    }
+    const result = await this.authService.verify({ id });
+    if (result === UnauthorizedException) throw new UnauthorizedException();
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/attach_email')
-  async abc(@Req() request: any, @Body() emailDto: EmailDto) {
-    const { userId } = extractHeader(request);
-    return this.userService.attachEmail(emailDto.email, userId);
+  @Post('/linkEmail')
+  async linkEmail(@Req() { user: { id } }: IRequest, @Body() { email }: LinkEmailDto) {
+    const result = await this.authService.linkEmail({ id, email });
+    if (result === MethodNotAllowedException) throw new MethodNotAllowedException();
   }
 }
