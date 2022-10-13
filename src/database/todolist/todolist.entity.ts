@@ -1,15 +1,5 @@
 import { Task } from 'src/database/task/task.entity';
-import {
-  Entity,
-  Column,
-  OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryColumn,
-  ManyToOne,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { Pool } from '../pool/pool.entity';
 import { User } from '../user/user.entity';
 

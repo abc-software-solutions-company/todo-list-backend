@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  MethodNotAllowedException,
-  Post,
-  Req,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, MethodNotAllowedException, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IRequest } from 'src/utils/type';
 import { LinkEmailDto, LoginDto } from './auth.dto';

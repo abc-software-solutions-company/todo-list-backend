@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  UseGuards,
-  Req,
-  BadRequestException,
-  Post,
-  Patch,
-  MethodNotAllowedException,
-} from '@nestjs/common';
+import { Body, Controller, Get, UseGuards, Req, BadRequestException, Post, Patch, MethodNotAllowedException } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
