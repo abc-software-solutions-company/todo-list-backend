@@ -84,6 +84,11 @@ export class TodolistController {
     return this.todoListService.remove(todoListExisting[0]);
   }
 
+  @Patch('/resetIndex')
+  resetIndex() {
+   return this.todoListService.resetIndexForAllTask();
+ }
+
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   async updateList(@Param('id') id: string, @Body() updateTodoListDto: UpdateTodolistDto) {
@@ -92,4 +97,6 @@ export class TodolistController {
     if (updateTodoListDto.name.trim().length == 0) throw new NotAcceptableException('Name not empty');
     return this.todoListService.updateList(listExisting[0], updateTodoListDto.name);
   }
+
+
 }

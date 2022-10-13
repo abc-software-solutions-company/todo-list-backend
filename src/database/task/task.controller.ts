@@ -41,11 +41,6 @@ export class TaskController {
     return this.taskService.findTaskById(id);
   }
 
-  @Get('/index/assign')
-  async assignIndexForAllTask() {
-    return this.taskService.setIndexForAllTask();
-  }
-
   @UseGuards(JwtAuthGuard)
   @Post()
   async createTask(@Body() body: CreateTaskDto, @Req() request: IRequest) {

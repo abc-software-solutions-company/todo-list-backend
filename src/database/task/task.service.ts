@@ -70,20 +70,6 @@ export class TaskService {
     return this.repo.save(task);
   }
 
-  async setIndexForAllTask() {
-    // if any task have default index = 1, assign it to number + 100
-    const taskHaveZeroIndex = await this.repo.findBy({ index: 0 });
-    // now use a loop to assign index increment
-    for (let index = 0; index < taskHaveZeroIndex.length - 1; index++) {
-      // Change index for each task
-      // taskHaveZeroIndex[index].index = taskHaveZeroIndex[index].index + 1000 * index;
-      taskHaveZeroIndex[index].index = index*this.indexStep;
-
-      await this.repo.save(taskHaveZeroIndex[index]);
-    }
-    return '😍😍😍😍😍';
-  }
-
   async resetOrder(todoListId: string) {
     const tasks = await this.repo.find({where:{todoListId: todoListId},order:{index:'ASC'}});
     tasks.forEach(async (task,index) => {
@@ -95,12 +81,13 @@ export class TaskService {
   }
 
   async reorderTask({taskFirstID,taskReorderID,taskSecondID}: ReorderTaskDto) {
-    const task = await this.repo.findOneBy({id:taskReorderID}) 
-    const index1 = taskFirstID ? (await this.repo.findOneBy({id:taskFirstID})).index: 0;
-    const index2 = taskSecondID ? (await this.repo.findOneBy({id:taskSecondID})).index : index1+this.indexStep;
+    const task = await this.repo.findOneBy({id:taskReorderID})
+    const index1 = Number(taskFirstID ? (await this.repo.findOneBy({id:taskFirstID})).index: 0);
+    const index2 = Number(taskSecondID ? (await this.repo.findOneBy({id:taskSecondID})).index : index1+this.indexStep);
 
-    const index = Math.round((Number(index1) + Number(index2)) / 2);
+    const index = Math.round((index1 + index2) / 2);
     task.index = index;
+    console.log(index1,index,index2);
     await this.repo.save(task)
 
     if (index-index1<32 || index2-index<32) {
