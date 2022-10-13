@@ -1,10 +1,10 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotAcceptableException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './todolist.entity';
 import { PoolService } from 'src/database/pool/pool.service';
-import { CreateTodolistDto } from './todolist.dto';
 import { TaskService } from '../task/task.service';
+import { ICreate, IGetMyList } from './todolist.type';
 @Injectable()
 export class TodolistService {
   constructor(
@@ -17,25 +17,20 @@ export class TodolistService {
     return this.repo.find();
   }
 
-  async findListByUserId(userId: string) {
-    const TodoList = await this.repo.findBy({ isActive: true, userId });
-    return TodoList;
+  async getUserList({ userId }: IGetMyList) {
+    const result = await this.repo.findBy({ isActive: true, userId });
+    if (!result) return BadRequestException;
+    return result;
   }
 
-  async findLastListByUserId(userId: string) {
-    const TodoList = await this.repo
-      .createQueryBuilder('todolist')
-      .where('todolist.isActive = :isActive', { isActive: true })
-      .andWhere('todolist.userId = :userId', { userId: userId })
-      .orderBy('todolist.createdDate', 'DESC')
-      .getOne();
-    return TodoList;
+  async create({ name, userId }: ICreate) {
+    return console.log('ok');
   }
 
-  // async create(todoListDto: CreateTodolistDto) {
-  //   // console.log(todoListDto.userId);
-  //   if (todoListDto.name.trim().length !== 0) {
-  //     const todoList = await this.repo.create(todoListDto);
+  // async create(ListDto: CreateListDto) {
+  //   // console.log(ListDto.userId);
+  //   if (ListDto.name.trim().length !== 0) {
+  //     const todoList = await this.repo.create(ListDto);
   //     //find UUID unused
   //     const uuid = await this.poolService.findUnuse();
   //     // Set new uuID for this list

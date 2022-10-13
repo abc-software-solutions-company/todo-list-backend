@@ -1,20 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MinLength, IsString } from 'class-validator';
+import { MinLength, IsEmpty } from 'class-validator';
 
-export class CreateTodolistDto {
+export class CreateListDto {
   @ApiProperty()
   @MinLength(1)
-  @IsString()
+  @IsEmpty()
   name: string;
-
-  userId: string;
 }
-export class UpdateTodolistDto {
+export class UpdateListDto {
   @ApiProperty()
   @MinLength(1)
   name: string;
 }
-export class TodoListDto {
+export class ListDto {
   @ApiProperty()
   id: number;
 
