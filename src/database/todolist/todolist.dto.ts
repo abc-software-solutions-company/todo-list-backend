@@ -10,8 +10,19 @@ export class CreateListDto {
 export class UpdateListDto {
   @ApiProperty()
   @MinLength(1)
-  name: string;
+  @IsEmpty()
+  id: string;
+
+  @ApiProperty()
+  name?: string;
+
+  @ApiProperty()
+  isActive?: boolean;
+
+  @ApiProperty()
+  isDone?: boolean;
 }
+
 export class ListDto {
   @ApiProperty()
   id: number;
