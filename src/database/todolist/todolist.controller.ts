@@ -22,7 +22,11 @@ export class TodolistController {
 
   @Get('/:id')
   async getOne(@Param('id') id: string) {
-    return this.todoListService.getOne({ id });
+    const result = await this.todoListService.getOne({ id });
+    console.log(result instanceof HttpException);
+
+    if (result instanceof HttpException) throw result;
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)

@@ -15,7 +15,7 @@ export class TodolistService {
   }
 
   async getOne({ id }: IGetOne) {
-    if (!id) return MethodNotAllowedException;
+    if (!id) return new MethodNotAllowedException();
     const result = await this.repo.findOne({ where: { id }, relations: { tasks: true } });
     if (!result) return new BadRequestException();
     return result;
