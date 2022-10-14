@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Param, Post, Body, Req, Patch, MethodNotAllowedException, BadRequestException } from '@nestjs/common';
+import { Controller, UseGuards, Get, Param, Post, Body, Req, Patch, HttpException } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
@@ -15,7 +15,7 @@ export class TaskController {
   @Get('/:todoListId')
   async getByListId(@Param('todoListId') todoListId: string) {
     const result = await this.taskService.getByListId({ todoListId });
-    if (result === MethodNotAllowedException) throw new MethodNotAllowedException();
+    if (result instanceof HttpException) throw result;
     return result;
   }
 
@@ -24,7 +24,7 @@ export class TaskController {
   async create(@Body() body: CreateTaskDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
     const result = await this.taskService.create({ ...body, userId });
-    if (result === BadRequestException) throw new BadRequestException();
+    if (result instanceof HttpException) throw result;
     return result;
   }
 
@@ -32,8 +32,7 @@ export class TaskController {
   @Patch('/update')
   async update(@Body() body: UpdateTaskDto) {
     const result = await this.taskService.update(body);
-    if (result === BadRequestException) throw new BadRequestException();
-    if (result === MethodNotAllowedException) throw new MethodNotAllowedException();
+    if (result instanceof HttpException) throw result;
     return result;
   }
 
@@ -41,7 +40,6 @@ export class TaskController {
   @Patch('/reIndex')
   async reIndex(@Body() body: ReIndexDto) {
     const result = await this.taskService.reIndex(body);
-    if (result === BadRequestException) throw new BadRequestException();
-    return 'OK';
+    if (result instanceof HttpException) throw result;
   }
 }

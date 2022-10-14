@@ -12,14 +12,15 @@ export class TaskService {
   constructor(@InjectRepository(Task) private readonly repo: Repository<Task>) {}
 
   getByListId({ todoListId }: IGet) {
-    if (!todoListId) return MethodNotAllowedException;
+    if (!todoListId) return new MethodNotAllowedException();
     const TaskList = this.repo.find({ where: { todoListId, isActive: true }, order: { index: 'ASC' } });
-    if (!TaskList) return MethodNotAllowedException;
+    if (!TaskList) return new MethodNotAllowedException();
     return TaskList;
   }
 
   async create({ name, todoListId, userId }: ICreate) {
     let i = 0;
+    if (name.trim().length == 0) return new BadRequestException();
     while (i < 3) {
       const id = uuid();
       try {
@@ -31,14 +32,14 @@ export class TaskService {
       }
     }
 
-    return BadRequestException;
+    return new BadRequestException();
   }
 
   async update(body: IUpdate) {
-    if (!body) return BadRequestException;
+    if (!body) return new BadRequestException();
     const { isActive, isDone, name, id } = body;
     const task = await this.repo.findOneBy({ id });
-    if (!task) return MethodNotAllowedException;
+    if (!task) return new MethodNotAllowedException();
     task.isActive = isActive === undefined ? task.isActive : isActive;
     task.isDone = isDone === undefined ? task.isDone : isDone;
     task.name = name ? task.name : name;
@@ -57,11 +58,9 @@ export class TaskService {
   async reIndex({ taskFirstID, taskReorderID, taskSecondID }: ReIndexDto) {
     const task = await this.repo.findOneBy({ id: taskReorderID });
     const index1 = Number(taskFirstID ? (await this.repo.findOneBy({ id: taskFirstID })).index : 0);
-    const index2 = Number(
-      taskSecondID ? (await this.repo.findOneBy({ id: taskSecondID })).index : index1 + this.indexStep,
-    );
+    const index2 = Number(taskSecondID ? (await this.repo.findOneBy({ id: taskSecondID })).index : index1 + this.indexStep);
 
-    if (!task) return BadRequestException;
+    if (!task) return new BadRequestException();
 
     const index = Math.round((index1 + index2) / 2);
     task.index = index;

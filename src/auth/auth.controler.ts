@@ -1,11 +1,11 @@
-import { Body, Controller, Get, MethodNotAllowedException, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IRequest } from 'src/utils/type';
 import { LinkEmailDto, LoginDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-@ApiTags('Auth User (Created Token)')
+@ApiTags('Auth User')
 @ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
@@ -18,10 +18,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/verify')
   async verify(@Req() { user: { id } }: IRequest) {
-    console.log();
-
     const result = await this.authService.verify({ id });
-    if (result === UnauthorizedException) throw new UnauthorizedException();
+    if (result instanceof HttpException) throw result;
     return result;
   }
 
@@ -29,6 +27,6 @@ export class AuthController {
   @Post('/linkEmail')
   async linkEmail(@Req() { user: { id } }: IRequest, @Body() { email }: LinkEmailDto) {
     const result = await this.authService.linkEmail({ id, email });
-    if (result === MethodNotAllowedException) throw new MethodNotAllowedException();
+    if (result instanceof HttpException) throw result;
   }
 }

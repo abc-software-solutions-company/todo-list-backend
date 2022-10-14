@@ -2,10 +2,9 @@ export interface IGet {
   todoListId: string;
 }
 
-export interface ICreate {
+export interface ICreate extends IGet {
   name: string;
   userId: string;
-  todoListId: string;
 }
 
 export interface IUpdate {

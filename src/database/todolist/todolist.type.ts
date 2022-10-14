@@ -1,9 +1,12 @@
+export interface IGetOne {
+  id: string;
+}
+
 export interface IGetMyList {
   userId: string;
 }
 
-export interface ICreate {
-  userId: string;
+export interface ICreate extends IGetMyList {
   name: string;
 }
 

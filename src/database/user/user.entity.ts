@@ -14,10 +14,10 @@ export class User {
   @Column({ nullable: true })
   email: string;
 
-  @OneToMany(() => Todolist, (list) => list.userId)
+  @OneToMany(() => Todolist, (list) => list.user)
   lists: Todolist[];
 
-  @OneToMany(() => Task, (task) => task.userId)
+  @OneToMany(() => Task, (task) => task.user)
   tasks: Task[];
 
   @CreateDateColumn({ select: false })

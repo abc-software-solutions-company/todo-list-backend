@@ -17,6 +17,7 @@ export class UsersService {
   }
 
   async create({ name, email }: ICreate) {
+    if (name.trim().length === 0) return new BadRequestException();
     let i = 0;
     while (i < 3) {
       const id = uuid();
@@ -27,22 +28,6 @@ export class UsersService {
         i = i + 1;
       }
     }
-    throw new Error();
-  }
-
-  async findUserById(id: string) {
-    const firstUser = await this.repo.findOneBy({ id: id });
-    return firstUser;
-  }
-
-  async attachEmail(email: string, id: string) {
-    const emailExisted = await this.repo.findBy({ email: email });
-    const currentUser = await this.repo.findOneBy({ id: id });
-    // If user already have email block this function
-    if (emailExisted.length > 0) throw new BadRequestException('🥵 This user already have email linked');
-    else {
-      currentUser.email = email;
-      return await this.repo.save(currentUser);
-    }
+    return new BadRequestException();
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, UseGuards, Req, BadRequestException, Post, Patch, MethodNotAllowedException } from '@nestjs/common';
+import { Body, Controller, Get, UseGuards, Req, Post, Patch, Param, HttpException } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
@@ -13,11 +13,16 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getUserList(@Req() request: IRequest) {
+  async getByUserId(@Req() request: IRequest) {
     const { id: userId } = request.user;
-    const result = await this.todoListService.getUserList({ userId });
-    if (!result) throw new BadRequestException();
+    const result = await this.todoListService.getByUserId({ userId });
+    if (result instanceof HttpException) throw result;
     return result;
+  }
+
+  @Get('/:id')
+  async getOne(@Param('id') id: string) {
+    return this.todoListService.getOne({ id });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -25,16 +30,15 @@ export class TodolistController {
   async create(@Body() { name }: CreateListDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
     const result = await this.todoListService.create({ name, userId });
-    if (result === BadRequestException) throw new BadRequestException();
+    if (result instanceof HttpException) throw result;
     return result;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('/update')
+  @Patch()
   async update(@Body() body: UpdateListDto) {
     const result = await this.todoListService.update(body);
-    if (result === BadRequestException) throw new BadRequestException();
-    if (result === MethodNotAllowedException) throw new MethodNotAllowedException();
+    if (result instanceof HttpException) throw result;
     return result;
   }
 }
