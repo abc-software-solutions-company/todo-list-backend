@@ -22,12 +22,12 @@ export class UpdateTaskDto {
   isActive: boolean;
 }
 export class ReIndexDto {
-  @ApiProperty({ example: 'taskFirstID' })
-  taskFirstID: string;
+  @ApiProperty({ example: 'taskFirstId' })
+  taskFirstId: string;
 
   @ApiProperty({ example: 'taskSecondId' })
-  taskSecondID: string;
+  taskSecondId: string;
 
   @ApiProperty({ example: 'taskReorderId' })
-  taskReorderID: string;
+  taskReorderId: string;
 }

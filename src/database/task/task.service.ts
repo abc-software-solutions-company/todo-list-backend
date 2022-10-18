@@ -57,15 +57,16 @@ export class TaskService {
     });
   }
 
-  async reIndex({ taskFirstID, taskReorderID, taskSecondID }: ReIndexDto) {
-    const task = await this.repo.findOneBy({ id: taskReorderID });
-    const index1 = Number(taskFirstID ? (await this.repo.findOneBy({ id: taskFirstID })).index : 0);
-    const index2 = Number(taskSecondID ? (await this.repo.findOneBy({ id: taskSecondID })).index : index1 + this.indexStep);
+  async reIndex({ taskFirstId, taskReorderId, taskSecondId }: ReIndexDto) {
+    const task = await this.repo.findOneBy({ id: taskReorderId });
+    const index1 = Number(taskFirstId ? (await this.repo.findOneBy({ id: taskFirstId })).index : 0);
+    const index2 = Number(taskSecondId ? (await this.repo.findOneBy({ id: taskSecondId })).index : index1 + this.indexStep);
 
     if (!task) return new BadRequestException();
 
     const index = Math.round((index1 + index2) / 2);
     task.index = index;
+
     await this.repo.save(task);
 
     if (index - index1 < 32 || index2 - index < 32) this.reAllIndex(task.todoListId);
