@@ -7,7 +7,7 @@ import { Task } from './task.entity';
 
 @Injectable()
 export class TaskService {
-  indexStep :number = Math.pow(2, 30);
+  indexStep: number = Math.pow(2, 30);
   constructor(@InjectRepository(Task) private readonly repo: Repository<Task>) {}
 
   async validTaskId(id: string) {
@@ -77,7 +77,7 @@ export class TaskService {
     for (let index = 0; index < taskHaveZeroIndex.length - 1; index++) {
       // Change index for each task
       // taskHaveZeroIndex[index].index = taskHaveZeroIndex[index].index + 1000 * index;
-      taskHaveZeroIndex[index].index = index*this.indexStep;
+      taskHaveZeroIndex[index].index = index * this.indexStep;
 
       await this.repo.save(taskHaveZeroIndex[index]);
     }
@@ -85,28 +85,29 @@ export class TaskService {
   }
 
   async resetOrder(todoListId: string) {
-    const tasks = await this.repo.find({where:{todoListId: todoListId},order:{index:'ASC'}});
-    tasks.forEach(async (task,index) => {
-      task.index=(index+1)*this.indexStep;
-      console.log(task)
-      await this.repo.save(task)
+    const tasks = await this.repo.find({ where: { todoListId: todoListId }, order: { index: 'ASC' } });
+    tasks.forEach(async (task, index) => {
+      task.index = (index + 1) * this.indexStep;
+      console.log(task);
+      await this.repo.save(task);
     });
-    
   }
 
-  async reorderTask({taskFirstID,taskReorderID,taskSecondID}: ReorderTaskDto) {
-    const task = await this.repo.findOneBy({id:taskReorderID}) 
-    const index1 = taskFirstID ? (await this.repo.findOneBy({id:taskFirstID})).index: 0;
-    const index2 = taskSecondID ? (await this.repo.findOneBy({id:taskSecondID})).index : index1+this.indexStep;
+  async reorderTask({ taskFirstID, taskReorderID, taskSecondID }: ReorderTaskDto) {
+    const task = await this.repo.findOneBy({ id: taskReorderID });
+    const index1 = Number(taskFirstID ? (await this.repo.findOneBy({ id: taskFirstID })).index : 0);
+    const index2 = Number(
+      taskSecondID ? (await this.repo.findOneBy({ id: taskSecondID })).index : index1 + this.indexStep,
+    );
 
     const index = Math.round((Number(index1) + Number(index2)) / 2);
     task.index = index;
-    await this.repo.save(task)
+    await this.repo.save(task);
 
-    if (index-index1<32 || index2-index<32) {
-      this.resetOrder(task.todoListId)
+    if (index - index1 < 32 || index2 - index < 32) {
+      this.resetOrder(task.todoListId);
     }
-    console.log(index1,index,index2)
+    console.log(index1, index, index2);
     return task;
   }
 }
