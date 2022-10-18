@@ -42,7 +42,9 @@ export class TaskService {
     if (!task) return new MethodNotAllowedException();
     task.isActive = isActive === undefined ? task.isActive : isActive;
     task.isDone = isDone === undefined ? task.isDone : isDone;
-    task.name = name ? task.name : name;
+    task.name = name ? name : task.name;
+    console.log(task.name);
+
     return this.repo.save(task);
   }
 
