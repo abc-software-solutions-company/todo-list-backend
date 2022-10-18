@@ -14,7 +14,7 @@ import { UsersModule } from './database/user/users.module';
 import { PoolModule } from './database/pool/pool.module';
 import { AllExceptionsFilter } from './utils/all-exception.filter';
 import { ApiKeyMiddleware } from './utils/api-key.middleware';
-import { SocketsModule } from './websocket/socket.moudle';
+import { SocketsModule } from './websocket/socket.module';
 
 @Module({
   imports: [
@@ -39,7 +39,7 @@ import { SocketsModule } from './websocket/socket.moudle';
     UsersModule,
     TasksModule,
     TodolistModule,
-    SocketsModule
+    SocketsModule,
   ],
   providers: [
     {
