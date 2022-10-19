@@ -17,7 +17,7 @@ export class AuthService {
   async login(body: LoginDto) {
     const resultEmail = await this.userService.repo.findOneBy({ email: body.email });
     let result: IUser = { email: '', id: '', name: '' };
-    if (resultEmail) result = resultEmail;
+    if (resultEmail && body.email === resultEmail.email) result = resultEmail;
     else {
       const newUser = await this.userService.create(body);
       if (newUser instanceof HttpException) throw result;
