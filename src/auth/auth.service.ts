@@ -1,47 +1,47 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, MethodNotAllowedException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from 'src/database/user/user.dto';
+import { User } from 'src/database/user/user.entity';
 import { UsersService } from 'src/database/user/users.service';
-import { EmailDto } from './dto/email.dto';
+import { IUser } from 'src/utils/type';
+import { LoginDto } from './auth.dto';
 
+interface IVerify {
+  id: string;
+}
+interface ILinkEmail extends IVerify {
+  email: string;
+}
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService) {}
-
-  async validateUser(username: string, id: string) {
-    const user = await this.usersService.findUserByName(username);
-    if (user && user.id === id) {
-      const { ...result } = user;
-      return result;
+  constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService, private readonly userService: UsersService) {}
+  async login(body: LoginDto) {
+    const resultEmail = await this.userService.repo.findOneBy({ email: body.email });
+    let result: IUser = { email: '', id: '', name: '' };
+    if (resultEmail && body.email === resultEmail.email) result = resultEmail;
+    else {
+      const newUser = await this.userService.create(body);
+      if (newUser instanceof HttpException) throw result;
+      result = newUser;
     }
-    return null;
-  }
-
-  async login(createUserDto: CreateUserDto) {
-    const { id, name, email } = await this.usersService.create(createUserDto.name);
-    const user = { id, name, email };
+    const { id, name, email } = result;
+    const payload: IUser = { id, name, email };
     return {
-      accessToken: this.jwtService.sign(user),
-      user,
+      accessToken: this.jwtService.sign(payload),
+      user: payload,
     };
   }
 
-  async loginWithGmail(emailDto: EmailDto) {
-    try {
-      const { id, name, email } = await this.usersService.findUserByEmail(emailDto.email);
-      const user = { id, name, email };
-      if (user) {
-        return {
-          accessToken: this.jwtService.sign(user),
-          user,
-        };
-      }
-    } catch {
-      throw new BadRequestException('🥲🥲🥲 This Gmail or Email is not registered');
-    }
+  async verify({ id }: IVerify) {
+    if (!id) return new UnauthorizedException();
+    const user = await this.usersService.repo.findOneBy({ id });
+    if (!user) return new UnauthorizedException();
+    return { id: user.id, name: user.name, email: user.email };
   }
 
-  async authen(token: string) {
-    return this.jwtService.decode(token);
+  async linkEmail({ email, id }: ILinkEmail) {
+    const user = await this.usersService.repo.findOneBy({ id });
+    if (!user) return new MethodNotAllowedException();
+    user.email = email;
+    return this.userService.repo.save(user);
   }
 }

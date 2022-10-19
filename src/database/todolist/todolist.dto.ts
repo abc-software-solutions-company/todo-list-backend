@@ -1,35 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MinLength, IsString } from 'class-validator';
 
-export class CreateTodolistDto {
+export class CreateListDto {
   @ApiProperty()
-  @MinLength(1)
-  @IsString()
-  name: string;
-
-  userId: string;
-}
-export class UpdateTodolistDto {
-  @ApiProperty()
-  @MinLength(1)
   name: string;
 }
-export class TodoListDto {
+export class UpdateListDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
-  name: string;
+  name?: string;
 
   @ApiProperty()
-  createdDate: Date;
+  isActive?: boolean;
 
   @ApiProperty()
-  updatedDate: Date;
-
-  @ApiProperty()
-  isActive: boolean;
-
-  @ApiProperty()
-  userId: string;
+  isDone?: boolean;
 }

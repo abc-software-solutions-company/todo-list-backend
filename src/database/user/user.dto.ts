@@ -12,6 +12,7 @@ export class CreateUserDto {
   @MinLength(1)
   name: string;
 }
+
 export class UserDto {
   @ApiProperty()
   id: number;
@@ -19,4 +20,8 @@ export class UserDto {
   @ApiProperty()
   @MinLength(1)
   name: string;
+
+  @ApiProperty({example: 'email'})
+  @IsString()
+  email: string;
 }

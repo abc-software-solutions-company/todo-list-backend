@@ -1,17 +1,25 @@
-import {SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({ cors: { origin: '*' } })
-export class SocketGateway {
+export class SocketGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
 
-  @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, payload : any) {
-    this.server.emit(`msgToClient_${payload.roomId}`);
+  handleConnection = async (socket: Socket) => {
+    const { listId } = socket.handshake.auth;
+    socket.join(listId);
+  };
+
+  @SubscribeMessage('updateList')
+  updateList(socket: Socket) {
+    const { listId } = socket.handshake.auth;
+
+    this.server.to(listId).emit('updateList');
   }
 
-  @SubscribeMessage('msgDeleteListToServer')
-  handleMessageDeleteList() {
-    this.server.emit('msgDeleteListToClient');
+  @SubscribeMessage('updateListExceptMe')
+  updateListExceptMe(socket: Socket) {
+    const { listId } = socket.handshake.auth;
+    this.server.to(listId).except(socket.id).emit('updateList');
   }
 }

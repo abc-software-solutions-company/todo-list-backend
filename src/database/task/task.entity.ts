@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Todolist } from '../todolist/todolist.entity';
 import { User } from '../user/user.entity';
 
@@ -19,21 +19,23 @@ export class Task {
   @Column()
   userId: string;
 
-  @Column({ default: 0 , type: 'bigint'})
+  @Column({ type: 'bigint' })
   index: number;
 
   @Column({ default: true })
   isActive: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   createdDate: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   updatedDate: Date;
 
-  @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => Todolist, (todoList) => todoList.id, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => Todolist, (todoList) => todoList.id)
+  @JoinColumn({ name: 'todoListId' })
   todoList: Todolist;
 }

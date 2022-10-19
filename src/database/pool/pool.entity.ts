@@ -8,16 +8,9 @@ export class Pool {
   @Column({ type: 'boolean', default: false })
   isUsed: boolean;
 
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
+  @CreateDateColumn({ select: false })
   createdDate: Date;
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-  })
+  @UpdateDateColumn({ select: false })
   updatedDate: Date;
 }

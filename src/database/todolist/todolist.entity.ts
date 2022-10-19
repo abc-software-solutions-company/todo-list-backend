@@ -1,15 +1,5 @@
 import { Task } from 'src/database/task/task.entity';
-import {
-  Entity,
-  Column,
-  OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryColumn,
-  ManyToOne,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { Pool } from '../pool/pool.entity';
 import { User } from '../user/user.entity';
 
@@ -27,17 +17,17 @@ export class Todolist {
   @Column({ default: true })
   isActive: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   createdDate: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   updatedDate: Date;
 
-  @ManyToOne(() => User, (user) => user.id, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @OneToMany(() => Task, (task) => task.todoListId)
+  @OneToMany(() => Task, (task) => task.todoList)
   tasks: Task[];
 
   @OneToOne(() => Pool, (pool) => pool.id)

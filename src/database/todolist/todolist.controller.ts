@@ -1,95 +1,46 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Get,
-  Patch,
-  Param,
-  Delete,
-  NotFoundException,
-  UseGuards,
-  Req,
-  NotAcceptableException,
-} from '@nestjs/common';
+import { Body, Controller, Get, UseGuards, Req, Post, Patch, Param, HttpException } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import extractHeader from 'src/utils/extract-header';
-import { TaskService } from '../task/task.service';
-import { CreateTodolistDto, UpdateTodolistDto } from './todolist.dto';
+import { IRequest } from 'src/utils/type';
+import { CreateListDto, UpdateListDto } from './todolist.dto';
 import { TodolistService } from './todolist.service';
 
 @Controller('lists')
 @ApiBearerAuth()
 @ApiTags('TodoLists')
 export class TodolistController {
-  constructor(private readonly todoListService: TodolistService, private readonly taskService: TaskService) {}
+  constructor(private readonly todoListService: TodolistService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getListForThisUser(@Req() request: any) {
-    const { userId } = extractHeader(request);
-    return this.todoListService.findListByUserId(userId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/query/last')
-  async getLastListForThisUser(@Req() request: any) {
-    const { userId } = extractHeader(request);
-    const lastList = await this.todoListService.findLastListByUserId(userId);
-    if (lastList) return lastList;
-    else throw new NotFoundException('Not found list');
-  }
-
-  // @UseGuards(JwtAuthGuard)
-  @Get('/query/all')
-  async getAllList() {
-    return this.todoListService.findAll();
+  async getByUserId(@Req() request: IRequest) {
+    const { id: userId } = request.user;
+    const result = await this.todoListService.getByUserId({ userId });
+    if (result instanceof HttpException) throw result;
+    return result;
   }
 
   @Get('/:id')
-  async getListDetail(@Param('id') id: string) {
-    const listName = await this.todoListService.findTodoListByID(id).then((result) => {
-      return result;
-    });
-    if (listName.length === 0) throw new NotFoundException('Cannot find this list 😢');
-    const listTask = await this.taskService.findTaskFromListByID(id);
-    return {
-      name: listName[0].name,
-      userId: listName[0].userId,
-      id: listName[0].id,
-      createdAt: listName[0].createdDate,
-      updatedAt: listName[0].updatedDate,
-      tasks: listTask,
-    };
+  async getOne(@Param('id') id: string) {
+    const result = await this.todoListService.getOne({ id });
+    if (result instanceof HttpException) throw result;
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createTodoList(@Body() body: CreateTodolistDto, @Req() request: any) {
-    if (body.name.trim().length === 0) throw new NotAcceptableException('Name not empty');
-    const { userId } = extractHeader(request);
-    body.userId = userId;
-    return this.todoListService.create(body);
+  async create(@Body() { name }: CreateListDto, @Req() request: IRequest) {
+    const { id: userId } = request.user;
+    const result = await this.todoListService.create({ name, userId });
+    if (result instanceof HttpException) throw result;
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('/:id')
-  async removeUser(@Param('id') id: string, @Req() request: any) {
-    const { userId } = extractHeader(request);
-    const todoListExisting = await this.todoListService.findTodoListByID(id);
-    if (!todoListExisting || todoListExisting[0] === undefined) throw new NotFoundException('Not found list 😢');
-
-    const checkListOwner = await this.todoListService.findListByUserId(userId);
-    if (checkListOwner.length == 0) throw new NotFoundException('Cannot remove list you are not owner 😢');
-    return this.todoListService.remove(todoListExisting[0]);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('/:id')
-  async updateList(@Param('id') id: string, @Body() updateTodoListDto: UpdateTodolistDto) {
-    const listExisting = await this.todoListService.findTodoListByID(id);
-    if (!listExisting[0]) throw new NotFoundException('Not found list 😢');
-    if (updateTodoListDto.name.trim().length == 0) throw new NotAcceptableException('Name not empty');
-    return this.todoListService.updateList(listExisting[0], updateTodoListDto.name);
+  @Patch()
+  async update(@Body() body: UpdateListDto) {
+    const result = await this.todoListService.update(body);
+    if (result instanceof HttpException) throw result;
+    return result;
   }
 }

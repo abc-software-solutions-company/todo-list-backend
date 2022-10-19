@@ -8,30 +8,50 @@ import ShortUniqueId from 'short-unique-id';
 export class PoolService implements OnModuleInit {
   constructor(@InjectRepository(Pool) private readonly repo: Repository<Pool>) {}
 
-  async onModuleInit() {
-    // const uuidCount = await this.isEmptyRecord();
-    // const maxUUID = 1000;
-    // const uidShort = new ShortUniqueId({ length: 5, dictionary: 'alphanum_lower' });
-    // if (uuidCount === 0) {
-    //   for (let i = 0; i <= maxUUID; i++) {
-    //     await this.repo.save({ id: uidShort() });
-    //   }
-    // }
+  onModuleInit() {
+    this.generate(1000);
   }
 
-  async findUnuse() {
-    const data = await this.repo.findOneBy({ isUsed: false });
-    return data;
+  generateOne(length: number) {
+    const shortUniqueId = new ShortUniqueId({ length, dictionary: 'alphanum_lower' });
+    const uuid = shortUniqueId();
+    return uuid;
   }
 
-  async setFlag(id: string) {
-    const uuidRecord = await this.repo.findOneBy({ id: id });
-    uuidRecord.isUsed = true;
-    return await this.repo.save(uuidRecord);
+  async generate(num: number) {
+    let pools = 0;
+    let i = 0;
+    while (i < num) {
+      const pool = new Pool();
+      pool.id = this.generateOne(5);
+      pool.isUsed = false;
+      const save = await this.repo.save(pool);
+      if (save) {
+        i = i + 1;
+        pools = pools + 1;
+      }
+    }
+    return `Generated ${pools} id suceessful`;
   }
 
-  async isEmptyRecord() {
-    const data = await this.repo.findAndCount();
-    return data[1];
+  getOne() {
+    return this.repo.findOneBy({ isUsed: false });
+  }
+
+  async use(id: string) {
+    const pool = await this.repo.findOneBy({ id });
+    pool.isUsed = true;
+    return this.repo.save(pool);
+  }
+
+  async status() {
+    const usage = (await this.repo.findBy({ isUsed: true })).length;
+    const all = (await this.repo.find()).length;
+    const UsageRate = ((usage * 100) / all || 0).toFixed(2);
+    return {
+      all,
+      usage,
+      UsageRate: UsageRate + ' %',
+    };
   }
 }

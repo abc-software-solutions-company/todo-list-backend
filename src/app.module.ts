@@ -14,7 +14,7 @@ import { UsersModule } from './database/user/users.module';
 import { PoolModule } from './database/pool/pool.module';
 import { AllExceptionsFilter } from './utils/all-exception.filter';
 import { ApiKeyMiddleware } from './utils/api-key.middleware';
-import { SocketsModule } from './websocket/socket.moudle';
+import { SocketsModule } from './websocket/socket.module';
 
 @Module({
   imports: [
@@ -30,26 +30,26 @@ import { SocketsModule } from './websocket/socket.moudle';
         return dataSource;
       },
     }),
-    ThrottlerModule.forRoot({
-      ttl: 30,
-      limit: 100,
-    }),
+    // ThrottlerModule.forRoot({
+    //   ttl: 30,
+    //   limit: 100,
+    // }),
     PoolModule,
     AuthModule,
     UsersModule,
     TasksModule,
     TodolistModule,
-    SocketsModule
+    SocketsModule,
   ],
   providers: [
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
 })
 export class AppModule implements NestModule {
