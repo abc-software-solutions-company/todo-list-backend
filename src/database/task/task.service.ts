@@ -2,14 +2,15 @@ import { Injectable, MethodNotAllowedException, BadRequestException } from '@nes
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { uuid } from 'uuidv4';
+import { TodolistService } from '../todolist/todolist.service';
 import { ReIndexDto } from './task.dto';
 import { Task } from './task.entity';
 import { ICreate, IGet, IUpdate } from './task.type';
 
 @Injectable()
 export class TaskService {
-  indexStep: number = Math.pow(2, 30);
-  constructor(@InjectRepository(Task) private readonly repo: Repository<Task>) {}
+  readonly indexStep: number = Math.pow(2, 30);
+  constructor(@InjectRepository(Task) readonly repo: Repository<Task>, readonly todolist: TodolistService) {}
 
   getByListId({ todoListId }: IGet) {
     if (!todoListId) return new MethodNotAllowedException();
@@ -20,29 +21,31 @@ export class TaskService {
 
   async create({ name, todoListId, userId }: ICreate) {
     let i = 0;
-    if (name.trim().length == 0) return new BadRequestException();
+    if (name.trim().length == 0) return new BadRequestException('Emty name');
     while (i < 3) {
       const id = uuid();
       try {
         const index = ((await this.repo.countBy({ todoListId })) + 1) * this.indexStep;
-        const user = this.repo.create({ name, todoListId, userId, id, index });
+        const list = await this.todolist.repo.findOne({ where: { id: todoListId }, relations: { status: true } });
+        const statusId = Number(list.status[0].id);
+        const user = this.repo.create({ name, todoListId, userId, id, index, statusId });
         return this.repo.save(user);
       } catch {
         i = i + 1;
       }
     }
-
-    return new BadRequestException();
+    return new BadRequestException('Server Err');
   }
 
   async update(body: IUpdate) {
     if (!body) return new BadRequestException();
-    const { isActive, isDone, name, id } = body;
+    const { isActive, isDone, name, id, statusId } = body;
     const task = await this.repo.findOneBy({ id });
     if (!task) return new MethodNotAllowedException();
     task.isActive = isActive === undefined ? task.isActive : isActive;
     task.isDone = isDone === undefined ? task.isDone : isDone;
     task.name = name ? name : task.name;
+    task.statusId = statusId ? statusId : task.statusId;
     console.log(task.name);
 
     return this.repo.save(task);
@@ -60,7 +63,9 @@ export class TaskService {
   async reIndex({ taskFirstId, taskReorderId, taskSecondId }: ReIndexDto) {
     const task = await this.repo.findOneBy({ id: taskReorderId });
     const index1 = Number(taskFirstId ? (await this.repo.findOneBy({ id: taskFirstId })).index : 0);
-    const index2 = Number(taskSecondId ? (await this.repo.findOneBy({ id: taskSecondId })).index : index1 + this.indexStep);
+    const index2 = Number(
+      taskSecondId ? (await this.repo.findOneBy({ id: taskSecondId })).index : index1 + this.indexStep,
+    );
 
     if (!task) return new BadRequestException();
 

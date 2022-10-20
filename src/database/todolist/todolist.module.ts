@@ -5,10 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todolist } from './todolist.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { PoolModule } from '../pool/pool.module';
-import { TasksModule } from '../task/task.module';
+import { StatusModule } from '../status/status.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Todolist]), TasksModule, PoolModule, AuthModule],
+  imports: [TypeOrmModule.forFeature([Todolist]), PoolModule, StatusModule, AuthModule],
   controllers: [TodolistController],
   providers: [TodolistService],
   exports: [TodolistService],
