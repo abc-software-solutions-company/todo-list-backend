@@ -1,5 +1,6 @@
 import { Controller, UseGuards, Get, Param, Post, Body, Req, Patch, HttpException } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
 import { CreateTaskDto, ReIndexDto, UpdateTaskDto } from './task.dto';
@@ -7,6 +8,7 @@ import { TaskService } from './task.service';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
+@SkipThrottle()
 @Controller('tasks')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}

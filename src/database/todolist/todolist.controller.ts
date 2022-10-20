@@ -1,5 +1,6 @@
 import { Body, Controller, Get, UseGuards, Req, Post, Patch, Param, HttpException } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
 import { CreateListDto, UpdateListDto } from './todolist.dto';
@@ -7,6 +8,7 @@ import { TodolistService } from './todolist.service';
 
 @Controller('lists')
 @ApiBearerAuth()
+@SkipThrottle()
 @ApiTags('TodoLists')
 export class TodolistController {
   constructor(private readonly todoListService: TodolistService) {}

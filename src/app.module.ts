@@ -30,10 +30,10 @@ import { SocketsModule } from './websocket/socket.module';
         return dataSource;
       },
     }),
-    // ThrottlerModule.forRoot({
-    //   ttl: 30,
-    //   limit: 100,
-    // }),
+    ThrottlerModule.forRoot({
+      ttl: 30,
+      limit: 100,
+    }),
     PoolModule,
     AuthModule,
     UsersModule,
@@ -46,10 +46,10 @@ import { SocketsModule } from './websocket/socket.module';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {
