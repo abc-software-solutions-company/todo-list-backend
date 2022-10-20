@@ -1,5 +1,6 @@
 import { Body, Controller, Get, UseGuards, Req, Post, Patch, Param, HttpException } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
 import { CreateListDto, UpdateListDto } from './todolist.dto';
@@ -13,6 +14,7 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
+  @SkipThrottle()
   async getByUserId(@Req() request: IRequest) {
     const { id: userId } = request.user;
     const result = await this.todoListService.getByUserId({ userId });
@@ -21,6 +23,7 @@ export class TodolistController {
   }
 
   @Get('/:id')
+  @SkipThrottle()
   async getOne(@Param('id') id: string) {
     const result = await this.todoListService.getOne({ id });
     if (result instanceof HttpException) throw result;
