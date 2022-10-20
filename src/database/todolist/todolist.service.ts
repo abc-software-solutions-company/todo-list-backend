@@ -8,6 +8,10 @@ import { ICreate, IGetMyList, IGetOne, IUpdate } from './todolist.type';
 export class TodolistService {
   constructor(@InjectRepository(Todolist) private readonly repo: Repository<Todolist>, private readonly poolService: PoolService) {}
 
+  get() {
+    return this.repo.findBy({ isActive: true });
+  }
+
   async getByUserId({ userId }: IGetMyList) {
     const result = await this.repo.findBy({ isActive: true, userId });
     if (!result) return new BadRequestException();
