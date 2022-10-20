@@ -12,8 +12,14 @@ import { TodolistService } from './todolist.service';
 export class TodolistController {
   constructor(private readonly todoListService: TodolistService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
+  @SkipThrottle()
+  async get() {
+    return this.todoListService.get();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
   @SkipThrottle()
   async getByUserId(@Req() request: IRequest) {
     const { id: userId } = request.user;
