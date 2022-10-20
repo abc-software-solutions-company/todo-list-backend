@@ -8,13 +8,13 @@ import { TaskService } from './task.service';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
-@SkipThrottle()
 @Controller('tasks')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('/:todoListId')
+  @SkipThrottle()
   async getByListId(@Param('todoListId') todoListId: string) {
     const result = await this.taskService.getByListId({ todoListId });
     if (result instanceof HttpException) throw result;

@@ -8,13 +8,13 @@ import { TodolistService } from './todolist.service';
 
 @Controller('lists')
 @ApiBearerAuth()
-@SkipThrottle()
 @ApiTags('TodoLists')
 export class TodolistController {
   constructor(private readonly todoListService: TodolistService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()
+  @SkipThrottle()
   async getByUserId(@Req() request: IRequest) {
     const { id: userId } = request.user;
     const result = await this.todoListService.getByUserId({ userId });
@@ -23,6 +23,7 @@ export class TodolistController {
   }
 
   @Get('/:id')
+  @SkipThrottle()
   async getOne(@Param('id') id: string) {
     const result = await this.todoListService.getOne({ id });
     if (result instanceof HttpException) throw result;
