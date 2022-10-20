@@ -20,7 +20,11 @@ export class UpdateTaskDto {
 
   @ApiProperty()
   isActive: boolean;
+
+  @ApiProperty()
+  statusId: number;
 }
+
 export class ReIndexDto {
   @ApiProperty({ example: 'taskFirstId' })
   taskFirstId: string;
