@@ -10,6 +10,7 @@ export interface ICreate extends IGet {
 export interface IUpdate {
   id: string;
   name?: string;
+  statusId: number;
   isActive?: boolean;
   isDone?: boolean;
 }

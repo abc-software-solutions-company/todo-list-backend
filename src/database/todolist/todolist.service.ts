@@ -4,9 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './todolist.entity';
 import { PoolService } from 'src/database/pool/pool.service';
 import { ICreate, IGetMyList, IGetOne, IUpdate } from './todolist.type';
+import { StatusService } from '../status/status.service';
 @Injectable()
 export class TodolistService {
-  constructor(@InjectRepository(Todolist) private readonly repo: Repository<Todolist>, private readonly poolService: PoolService) {}
+  constructor(
+    @InjectRepository(Todolist) readonly repo: Repository<Todolist>,
+    readonly poolService: PoolService,
+    readonly statusService: StatusService,
+  ) {}
 
   get() {
     return this.repo.findBy({ isActive: true });
@@ -22,7 +27,7 @@ export class TodolistService {
     if (!id) return new MethodNotAllowedException();
     const result = await this.repo.findOne({
       where: { id, isActive: true },
-      relations: { tasks: true },
+      relations: { tasks: true, status: true },
       order: { tasks: { index: 'ASC' } },
     });
     if (!result) return new BadRequestException();
@@ -34,11 +39,12 @@ export class TodolistService {
     const { id } = await this.poolService.getOne();
     const { name, userId } = body;
     if (name.trim().length == 0) return new BadRequestException();
-    const list = await this.repo.create({ name, userId, id });
-    const result = this.repo.save(list);
-    if (!result) return new BadRequestException();
-    this.poolService.use(id);
-    return result;
+    const listEntity = this.repo.create({ name, userId, id });
+    const list = await this.repo.save(listEntity);
+    if (!list) return new BadRequestException();
+    await this.statusService.init({ todoListId: list.id });
+    await this.poolService.use(id);
+    return list;
   }
 
   async update(body: IUpdate) {
