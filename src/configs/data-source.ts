@@ -1,4 +1,5 @@
 import { Pool } from 'src/database/pool/pool.entity';
+import { Status } from 'src/database/status/status.entity';
 import { Task } from 'src/database/task/task.entity';
 import { Todolist } from 'src/database/todolist/todolist.entity';
 import { User } from 'src/database/user/user.entity';
@@ -11,10 +12,10 @@ const config: DataSourceOptions = {
   username: process.env.DATABASE_USERNAME || 'postgres',
   password: process.env.DATABASE_PASSWORD || 'postgres',
   database: process.env.DATABASE_NAME || 'postgres',
-  schema: process.env.DATABASE_SCHEMA,
-  entities: [Task, User, Todolist, Pool],
+  schema: process.env.DATABASE_SCHEMA || 'public',
+  entities: [Task, User, Todolist, Pool, Status],
   migrations: ['src/migrations/*'],
 };
-console.log(config);
+
 const postgresDataSource = new DataSource(config);
 export default postgresDataSource;

@@ -1,6 +1,5 @@
-import { BadRequestException, HttpException, Injectable, MethodNotAllowedException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, Injectable, MethodNotAllowedException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/database/user/user.entity';
 import { UsersService } from 'src/database/user/users.service';
 import { IUser } from 'src/utils/type';
 import { LoginDto } from './auth.dto';
@@ -13,7 +12,11 @@ interface ILinkEmail extends IVerify {
 }
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService, private readonly userService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly userService: UsersService,
+  ) {}
   async login(body: LoginDto) {
     const resultEmail = await this.userService.repo.findOneBy({ email: body.email });
     let result: IUser = { email: '', id: '', name: '' };

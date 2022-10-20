@@ -1,4 +1,5 @@
 import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Status } from '../status/status.entity';
 import { Todolist } from '../todolist/todolist.entity';
 import { User } from '../user/user.entity';
 
@@ -15,6 +16,9 @@ export class Task {
 
   @Column()
   todoListId: string;
+
+  @Column()
+  statusId: number;
 
   @Column()
   userId: string;
@@ -38,4 +42,8 @@ export class Task {
   @ManyToOne(() => Todolist, (todoList) => todoList.id)
   @JoinColumn({ name: 'todoListId' })
   todoList: Todolist;
+
+  @ManyToOne(() => Status, (status) => status.id)
+  @JoinColumn({ name: 'statusId' })
+  status: Status;
 }
