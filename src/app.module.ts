@@ -1,17 +1,18 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import appConfig from './configs/app.config';
 import databaseConfig from './configs/database.config';
+import { PoolModule } from './database/pool/pool.module';
+import { StatusModule } from './database/status/status.module';
 import { TasksModule } from './database/task/task.module';
 import { TodolistModule } from './database/todolist/todolist.module';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { UsersModule } from './database/user/users.module';
-import { PoolModule } from './database/pool/pool.module';
 import { AllExceptionsFilter } from './utils/all-exception.filter';
 import { ApiKeyMiddleware } from './utils/api-key.middleware';
 import { SocketsModule } from './websocket/socket.module';
@@ -36,9 +37,10 @@ import { SocketsModule } from './websocket/socket.module';
     }),
     PoolModule,
     AuthModule,
-    UsersModule,
-    TasksModule,
     TodolistModule,
+    StatusModule,
+    TasksModule,
+    UsersModule,
     SocketsModule,
   ],
   providers: [
