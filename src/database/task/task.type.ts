@@ -13,4 +13,5 @@ export interface IUpdate {
   statusId: number;
   isActive?: boolean;
   isDone?: boolean;
+  userId: string;
 }

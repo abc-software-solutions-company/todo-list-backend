@@ -30,7 +30,7 @@ export class TaskService {
         const statusId = Number(list.status[0].id);
         const user = this.repo.create({ name, todoListId, userId, id, index, statusId });
         // As a readonly list, Only list owner can create task for this list.
-        if (list.visibility === 1 && list.userId === userId)
+        if (list.visibility === 1 && list.userId !== userId)
           return new BadRequestException('As a readonly list, Only list owner can create task for this list');
 
         return this.repo.save(user);
@@ -43,15 +43,17 @@ export class TaskService {
 
   async update(body: IUpdate) {
     if (!body) return new BadRequestException();
-    const { isActive, isDone, name, id, statusId } = body;
-    const task = await this.repo.findOneBy({ id });
+    const { isActive, isDone, name, id, statusId, userId } = body;
+    const task = await this.repo.findOne({ where: { id }, relations: { todoList: true } });
+
     if (!task) return new MethodNotAllowedException();
     task.isActive = isActive === undefined ? task.isActive : isActive;
     task.isDone = isDone === undefined ? task.isDone : isDone;
     task.name = name ? name : task.name;
     task.statusId = statusId ? statusId : task.statusId;
-    console.log(task.name);
-
+    // As a task created frow readonly list. Only list owner can update this task.
+    if (task.todoList.visibility === 1 && task.userId !== userId)
+      return new BadRequestException('As a task created frow readonly list. Only list owner can update this task.');
     return this.repo.save(task);
   }
 

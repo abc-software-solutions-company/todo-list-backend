@@ -32,8 +32,9 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/update')
-  async update(@Body() body: UpdateTaskDto) {
-    const result = await this.taskService.update(body);
+  async update(@Body() body: UpdateTaskDto, @Req() request: IRequest) {
+    const { id: userId } = request.user;
+    const result = await this.taskService.update({ ...body, userId });
     if (result instanceof HttpException) throw result;
     return result;
   }
