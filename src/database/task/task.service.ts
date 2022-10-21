@@ -29,9 +29,11 @@ export class TaskService {
         const list = await this.todolist.repo.findOne({ where: { id: todoListId }, relations: { status: true } });
         const statusId = Number(list.status[0].id);
         const user = this.repo.create({ name, todoListId, userId, id, index, statusId });
-        // As a readonly list, Only list owner can create task for this list.
-        if (list.visibility === 1 && list.userId !== userId)
-          return new BadRequestException('As a readonly list, Only list owner can create task for this list');
+        // As a readonly list or private list, Only list owner can create task for this list.
+        if (list.visibility <= 1 && list.userId !== userId)
+          return new BadRequestException(
+            'As a readonly list or private list, Only list owner can create task for this list.',
+          );
 
         return this.repo.save(user);
       } catch {
@@ -51,9 +53,11 @@ export class TaskService {
     task.isDone = isDone === undefined ? task.isDone : isDone;
     task.name = name ? name : task.name;
     task.statusId = statusId ? statusId : task.statusId;
-    // As a task created frow readonly list. Only list owner can update this task.
-    if (task.todoList.visibility === 1 && task.userId !== userId)
-      return new BadRequestException('As a task created frow readonly list. Only list owner can update this task.');
+    // As a task created from read-only list or private list. Only list owner can update this task.
+    if (task.todoList.visibility <= 1 && task.userId !== userId)
+      return new BadRequestException(
+        'As a task created from read-only list or private list. Only list owner can update this task.',
+      );
     return this.repo.save(task);
   }
 
