@@ -48,12 +48,16 @@ export class TodolistService {
   }
 
   async update(body: IUpdate) {
-    const { isActive, id, name, visibility } = body;
+    const { isActive, id, name, visibility, userId } = body;
     const list = await this.repo.findOneBy({ id });
     if (!list) return new MethodNotAllowedException();
+    // As a readonly list. Only list owner can update.
+    if (list.visibility === 1 && list.userId !== userId)
+      return new BadRequestException('As a readonly list. Only list owner can update.');
     list.isActive = isActive === undefined ? list.isActive : isActive;
     list.name = name === undefined ? list.name : name;
     list.visibility = visibility === undefined ? list.visibility : visibility;
+
     return this.repo.save(list);
   }
 }

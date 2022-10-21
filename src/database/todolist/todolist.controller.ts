@@ -47,8 +47,9 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Patch()
-  async update(@Body() body: UpdateListDto) {
-    const result = await this.todoListService.update(body);
+  async update(@Body() body: UpdateListDto, @Req() request: IRequest) {
+    const { id: userId } = request.user;
+    const result = await this.todoListService.update({ ...body, userId });
     if (result instanceof HttpException) throw result;
     return result;
   }

@@ -15,4 +15,5 @@ export interface IUpdate {
   name?: string;
   isActive?: boolean;
   visibility?: number;
+  userId: string;
 }
