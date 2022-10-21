@@ -29,9 +29,11 @@ export class TodolistController {
   }
 
   @Get('/:id')
+  @UseGuards(JwtAuthGuard)
   @SkipThrottle()
-  async getOne(@Param('id') id: string) {
-    const result = await this.todoListService.getOne({ id });
+  async getOne(@Param('id') id: string, @Req() request: IRequest) {
+    const { id: userId } = request.user;
+    const result = await this.todoListService.getOne({ id, userId });
     if (result instanceof HttpException) throw result;
     return result;
   }

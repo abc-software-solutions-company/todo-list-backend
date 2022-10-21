@@ -23,7 +23,7 @@ export class TodolistService {
     return result;
   }
 
-  async getOne({ id }: IGetOne) {
+  async getOne({ id, userId }: IGetOne) {
     if (!id) return new MethodNotAllowedException();
     const result = await this.repo.findOne({
       where: { id, isActive: true },
@@ -31,6 +31,9 @@ export class TodolistService {
       order: { tasks: { index: 'ASC' } },
     });
     if (!result) return new BadRequestException();
+    // As a Private List. Only List owner can view this list
+    if (result.visibility === 0 && result.userId !== userId)
+      return new BadRequestException('As a Private List. Only List owner can view this list');
     return result;
   }
 
