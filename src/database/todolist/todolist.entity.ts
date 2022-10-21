@@ -28,9 +28,8 @@ export class Todolist {
   @Column({ default: true })
   isActive: boolean;
 
-  // 0: private | 1: public can readonly | 2: public can edit
-  @Column({ default: 1 })
-  visibility: number;
+  @Column()
+  visibility: string;
 
   @CreateDateColumn({ select: false })
   createdDate: Date;

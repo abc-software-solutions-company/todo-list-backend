@@ -18,5 +18,5 @@ export class UpdateListDto {
   isDone?: boolean;
 
   @ApiProperty()
-  visibility?: number;
+  visibility?: string;
 }

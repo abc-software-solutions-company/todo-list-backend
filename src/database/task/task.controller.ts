@@ -41,8 +41,10 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/reIndex')
-  async reIndex(@Body() body: ReIndexDto) {
-    const result = await this.taskService.reIndex(body);
+  async reIndex(@Body() body: ReIndexDto, @Req() request: IRequest) {
+    const { id: userId } = request.user;
+
+    const result = await this.taskService.reIndex({ ...body, userId });
     if (result instanceof HttpException) throw result;
   }
 }

@@ -15,3 +15,10 @@ export interface IUpdate {
   isDone?: boolean;
   userId: string;
 }
+
+export interface IReIndex {
+  taskFirstId: string;
+  taskSecondId: string;
+  taskReorderId: string;
+  userId: string;
+}
