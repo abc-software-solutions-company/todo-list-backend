@@ -1,5 +1,15 @@
 import { Task } from 'src/database/task/task.entity';
-import { Entity, Column, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryColumn,
+  ManyToOne,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Pool } from '../pool/pool.entity';
 import { Status } from '../status/status.entity';
 import { User } from '../user/user.entity';
@@ -17,6 +27,10 @@ export class Todolist {
 
   @Column({ default: true })
   isActive: boolean;
+
+  // 0: private | 1: public can readonly | 2: public can edit
+  @Column({ default: 1 })
+  visibility: number;
 
   @CreateDateColumn({ select: false })
   createdDate: Date;

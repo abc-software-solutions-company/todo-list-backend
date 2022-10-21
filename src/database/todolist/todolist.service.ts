@@ -48,11 +48,12 @@ export class TodolistService {
   }
 
   async update(body: IUpdate) {
-    const { isActive, id, name } = body;
+    const { isActive, id, name, visibility } = body;
     const list = await this.repo.findOneBy({ id });
     if (!list) return new MethodNotAllowedException();
     list.isActive = isActive === undefined ? list.isActive : isActive;
     list.name = name === undefined ? list.name : name;
+    list.visibility = visibility === undefined ? list.visibility : visibility;
     return this.repo.save(list);
   }
 }
