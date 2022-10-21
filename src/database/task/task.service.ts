@@ -29,6 +29,10 @@ export class TaskService {
         const list = await this.todolist.repo.findOne({ where: { id: todoListId }, relations: { status: true } });
         const statusId = Number(list.status[0].id);
         const user = this.repo.create({ name, todoListId, userId, id, index, statusId });
+        // As a readonly list, Only list owner can create task for this list.
+        if (list.visibility === 1 && list.userId === userId)
+          return new BadRequestException('As a readonly list, Only list owner can create task for this list');
+
         return this.repo.save(user);
       } catch {
         i = i + 1;
