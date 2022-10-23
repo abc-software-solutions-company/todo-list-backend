@@ -28,7 +28,7 @@ export class Todolist {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   visibility: string;
 
   @CreateDateColumn({ select: false })
