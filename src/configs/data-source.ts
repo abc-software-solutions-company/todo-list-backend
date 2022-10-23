@@ -14,7 +14,7 @@ const config: DataSourceOptions = {
   database: process.env.DATABASE_NAME || 'postgres',
   schema: process.env.DATABASE_SCHEMA || 'public',
   entities: [Task, User, Todolist, Pool, Status],
-  migrations: ['src/migrations/*'],
+  migrations: ['src/migrations/1666328125440-AddStatus.ts'],
 };
 
 const postgresDataSource = new DataSource(config);

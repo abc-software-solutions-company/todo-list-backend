@@ -20,6 +20,12 @@ export class Status {
   name: string;
 
   @Column()
+  color: string;
+
+  @Column({ type: 'bigint' })
+  index: number;
+
+  @Column()
   todoListId: string;
 
   @CreateDateColumn({ select: false })
