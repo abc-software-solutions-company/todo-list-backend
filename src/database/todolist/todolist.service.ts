@@ -57,7 +57,7 @@ export class TodolistService {
     list.name = name === undefined ? list.name : name;
     list.visibility = visibility === undefined ? list.visibility : visibility;
     // As a read-only list or private list. Only list owner can update this list.
-    if (list.visibility === this.visibilityList.private && list.userId !== userId)
+    if (list.userId !== userId)
       return new BadRequestException('As a read-only list or private list. Only list owner can update this list.');
     if (Object.values(this.visibilityList).includes(visibility)) list.visibility = visibility;
     return this.repo.save(list);
