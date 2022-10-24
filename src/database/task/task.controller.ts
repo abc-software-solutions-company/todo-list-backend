@@ -12,11 +12,11 @@ import { TaskService } from './task.service';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  @Get('/sync')
-  @SkipThrottle()
-  async sync() {
-    return this.taskService.sync();
-  }
+  // @Get('/sync')
+  // @SkipThrottle()
+  // async sync() {
+  //   return this.taskService.sync();
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Get('/:todoListId')

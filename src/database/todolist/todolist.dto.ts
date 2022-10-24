@@ -4,19 +4,20 @@ export class CreateListDto {
   @ApiProperty()
   name: string;
 }
+
 export class UpdateListDto {
   @ApiProperty()
   id: string;
 
   @ApiProperty()
-  name?: string;
+  name: string;
 
   @ApiProperty()
-  isActive?: boolean;
+  isActive: boolean;
 
   @ApiProperty()
-  isDone?: boolean;
+  isDone: boolean;
 
   @ApiProperty()
-  visibility?: string;
+  visibility: string;
 }

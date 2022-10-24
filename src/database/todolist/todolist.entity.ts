@@ -25,7 +25,7 @@ export class Todolist {
   @Column()
   userId: string;
 
-  @Column({ nullable: true })
+  @Column()
   visibility: string;
 
   @Column({ default: true })
