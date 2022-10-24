@@ -11,6 +11,25 @@ export class TaskService {
   readonly indexStep: number = Math.pow(2, 30);
   constructor(@InjectRepository(Task) readonly repo: Repository<Task>, readonly todolist: TodolistService) {}
 
+  async sync() {
+    // const all = await this.repo.find({ relations: { todoList: { status: true } } });
+    // for (let i = 0; i < all.length; i++) {
+    //   console.log('🚀 ~ file: task.service.ts ~ line 18 ~ TaskService ~ sync ~ i', i);
+    //   const task = all[i];
+    //   const ascendingStatus = task.todoList.status.sort((a, b) => a.index - b.index);
+    //   const statStatus = ascendingStatus[0].id;
+    //   const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
+    //   if (task.isDone === true || task.statusId === endStatus) {
+    //     task.isDone = true;
+    //     task.statusId = endStatus;
+    //   } else {
+    //     task.isDone = false;
+    //     if (task.statusId === endStatus) task.statusId = statStatus;
+    //   }
+    //   await this.repo.save(task);
+    // }
+  }
+
   getByListId({ todoListId }: IGet) {
     if (!todoListId) return new MethodNotAllowedException();
     const TaskList = this.repo.find({ where: { todoListId, isActive: true }, order: { index: 'ASC' } });
@@ -45,18 +64,28 @@ export class TaskService {
   async update(body: IUpdate) {
     if (!body) return new BadRequestException();
     const { isActive, isDone, name, id, statusId, userId } = body;
-    const task = await this.repo.findOne({ where: { id }, relations: { todoList: true } });
-
+    const task = await this.repo.findOne({ where: { id }, relations: { todoList: { status: true } } });
     if (!task) return new MethodNotAllowedException();
     task.isActive = isActive === undefined ? task.isActive : isActive;
-    task.isDone = isDone === undefined ? task.isDone : isDone;
     task.name = name ? name : task.name;
-    task.statusId = statusId ? statusId : task.statusId;
     // As a task created from read-only list or private list. Only list owner can update this task.
-    if (task.todoList.visibility !== this.todolist.visibilityList.public && task.userId !== userId)
+    if (task.todoList.visibility !== this.todolist.visibilityList.public && task.todoList.userId !== userId)
       return new MethodNotAllowedException(
         'As a task created from read-only list or private list. Only list owner can update this task.',
       );
+    const ascendingStatus = task.todoList.status.sort((a, b) => a.index - b.index);
+    const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
+    if (isDone === true || statusId == endStatus) {
+      task.isDone = true;
+      task.statusId = endStatus;
+    } else {
+      task.isDone = false;
+      if (task.statusId == endStatus) {
+        const statStatus = ascendingStatus[0].id;
+        task.statusId = statStatus;
+      } else task.statusId = statusId ? statusId : task.statusId;
+    }
+
     return this.repo.save(task);
   }
 
