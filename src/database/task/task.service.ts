@@ -3,9 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { uuid } from 'uuidv4';
 import { TodolistService } from '../todolist/todolist.service';
-import { ReIndexDto } from './task.dto';
 import { Task } from './task.entity';
-import { ICreate, IGet, IUpdate } from './task.type';
+import { ICreate, IGet, IReIndex, IUpdate } from './task.type';
 
 @Injectable()
 export class TaskService {
@@ -29,6 +28,12 @@ export class TaskService {
         const list = await this.todolist.repo.findOne({ where: { id: todoListId }, relations: { status: true } });
         const statusId = Number(list.status[0].id);
         const user = this.repo.create({ name, todoListId, userId, id, index, statusId });
+        // As a readonly list or private list, Only list owner can create task for this list.
+        if (list.visibility !== this.todolist.visibilityList.public && list.userId !== userId)
+          return new MethodNotAllowedException(
+            'As a readonly list or private list, Only list owner can create task for this list.',
+          );
+
         return this.repo.save(user);
       } catch {
         i = i + 1;
@@ -39,29 +44,26 @@ export class TaskService {
 
   async update(body: IUpdate) {
     if (!body) return new BadRequestException();
-    const { isActive, isDone, name, id, statusId } = body;
-    const task = await this.repo.findOneBy({ id });
+    const { isActive, isDone, name, id, statusId, userId } = body;
+    const task = await this.repo.findOne({ where: { id }, relations: { todoList: true } });
+
     if (!task) return new MethodNotAllowedException();
     task.isActive = isActive === undefined ? task.isActive : isActive;
     task.isDone = isDone === undefined ? task.isDone : isDone;
     task.name = name ? name : task.name;
     task.statusId = statusId ? statusId : task.statusId;
-    console.log(task.name);
-
+    // As a task created from read-only list or private list. Only list owner can update this task.
+    if (task.todoList.visibility !== this.todolist.visibilityList.public && task.userId !== userId)
+      return new MethodNotAllowedException(
+        'As a task created from read-only list or private list. Only list owner can update this task.',
+      );
     return this.repo.save(task);
   }
 
-  async reAllIndex(todoListId: string) {
-    const tasks = await this.repo.find({ where: { todoListId: todoListId }, order: { index: 'ASC' } });
-    tasks.forEach(async (task, index) => {
-      task.index = (index + 1) * this.indexStep;
-      console.log(task);
-      await this.repo.save(task);
-    });
-  }
-
-  async reIndex({ taskFirstId, taskReorderId, taskSecondId }: ReIndexDto) {
-    const task = await this.repo.findOneBy({ id: taskReorderId });
+  async reIndex({ taskFirstId, taskReorderId, taskSecondId, userId }: IReIndex) {
+    const task = await this.repo.findOne({ where: { id: taskReorderId }, relations: { todoList: true } });
+    if (task.todoList.visibility !== this.todolist.visibilityList.public && task.todoList.userId !== userId)
+      return new MethodNotAllowedException('As a private list or read-only list. Only list owner can drag and drop');
     const index1 = Number(taskFirstId ? (await this.repo.findOneBy({ id: taskFirstId })).index : 0);
     const index2 = Number(
       taskSecondId ? (await this.repo.findOneBy({ id: taskSecondId })).index : index1 + this.indexStep,
@@ -76,5 +78,15 @@ export class TaskService {
 
     if (index - index1 < 32 || index2 - index < 32) this.reAllIndex(task.todoListId);
     return task;
+  }
+
+  async reAllIndex(todoListId: string) {
+    // As a private list or read-only list. Only list owner can drag and drop
+    const tasks = await this.repo.find({ where: { todoListId: todoListId }, order: { index: 'ASC' } });
+    tasks.forEach(async (task, index) => {
+      task.index = (index + 1) * this.indexStep;
+      console.log(task);
+      await this.repo.save(task);
+    });
   }
 }
