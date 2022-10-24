@@ -13,4 +13,12 @@ export interface IUpdate {
   statusId: number;
   isActive?: boolean;
   isDone?: boolean;
+  userId?: string;
+}
+
+export interface IReIndex {
+  taskFirstId: string;
+  taskSecondId: string;
+  taskReorderId: string;
+  userId: string;
 }

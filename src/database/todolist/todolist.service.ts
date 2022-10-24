@@ -7,6 +7,7 @@ import { ICreate, IGetMyList, IGetOne, IUpdate } from './todolist.type';
 import { StatusService } from '../status/status.service';
 @Injectable()
 export class TodolistService {
+  readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
   constructor(
     @InjectRepository(Todolist) readonly repo: Repository<Todolist>,
     readonly poolService: PoolService,
@@ -23,7 +24,7 @@ export class TodolistService {
     return result;
   }
 
-  async getOne({ id }: IGetOne) {
+  async getOne({ id, userId }: IGetOne) {
     if (!id) return new MethodNotAllowedException();
     const result = await this.repo.findOne({
       where: { id, isActive: true },

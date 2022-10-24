@@ -1,5 +1,6 @@
 export interface IGetOne {
   id: string;
+  userId?: string;
 }
 
 export interface IGetMyList {
