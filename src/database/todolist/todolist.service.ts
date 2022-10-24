@@ -40,7 +40,8 @@ export class TodolistService {
     const { id } = await this.poolService.getOne();
     const { name, userId } = body;
     if (name.trim().length == 0) return new BadRequestException();
-    const listEntity = this.repo.create({ name, userId, id });
+    const visibility = this.visibilityList.public;
+    const listEntity = this.repo.create({ name, userId, id, visibility });
     const list = await this.repo.save(listEntity);
     if (!list) return new BadRequestException();
     await this.statusService.init({ todoListId: list.id });
@@ -55,6 +56,10 @@ export class TodolistService {
     list.isActive = isActive === undefined ? list.isActive : isActive;
     list.name = name === undefined ? list.name : name;
     list.visibility = visibility === undefined ? list.visibility : visibility;
+    // As a read-only list or private list. Only list owner can update this list.
+    if (list.visibility === this.visibilityList.private && list.userId !== userId)
+      return new BadRequestException('As a read-only list or private list. Only list owner can update this list.');
+    if (Object.values(this.visibilityList).includes(visibility)) list.visibility = visibility;
     return this.repo.save(list);
   }
 }
