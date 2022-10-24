@@ -7,11 +7,22 @@ import { ICreate, IGetMyList, IGetOne, IUpdate } from './todolist.type';
 import { StatusService } from '../status/status.service';
 @Injectable()
 export class TodolistService {
+  readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
   constructor(
     @InjectRepository(Todolist) readonly repo: Repository<Todolist>,
     readonly poolService: PoolService,
     readonly statusService: StatusService,
   ) {}
+
+  async sync() {
+    const all = await this.repo.find();
+    for (let i = 0; i < all.length; i++) {
+      console.log('🚀 ~ file: todolist.service.ts ~ line 20 ~ TodolistService ~ sync ~ i', i);
+      const list = all[i];
+      list.visibility = this.visibilityList.public;
+      await this.repo.save(list);
+    }
+  }
 
   get() {
     return this.repo.findBy({ isActive: true });
@@ -39,7 +50,8 @@ export class TodolistService {
     const { id } = await this.poolService.getOne();
     const { name, userId } = body;
     if (name.trim().length == 0) return new BadRequestException();
-    const listEntity = this.repo.create({ name, userId, id });
+    const visibility = this.visibilityList.public;
+    const listEntity = this.repo.create({ name, userId, id, visibility });
     const list = await this.repo.save(listEntity);
     if (!list) return new BadRequestException();
     await this.statusService.init({ todoListId: list.id });
@@ -48,11 +60,16 @@ export class TodolistService {
   }
 
   async update(body: IUpdate) {
-    const { isActive, id, name } = body;
+    const { isActive, id, name, visibility, userId } = body;
     const list = await this.repo.findOneBy({ id });
     if (!list) return new MethodNotAllowedException();
     list.isActive = isActive === undefined ? list.isActive : isActive;
     list.name = name === undefined ? list.name : name;
+    list.visibility = visibility === undefined ? list.visibility : visibility;
+    // As a read-only list or private list. Only list owner can update this list.
+    if (list.userId !== userId)
+      return new BadRequestException('As a read-only list or private list. Only list owner can update this list.');
+    if (Object.values(this.visibilityList).includes(visibility)) list.visibility = visibility;
     return this.repo.save(list);
   }
 }
