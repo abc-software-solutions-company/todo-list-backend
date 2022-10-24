@@ -24,7 +24,7 @@ export class TodolistService {
     return result;
   }
 
-  async getOne({ id, userId }: IGetOne) {
+  async getOne({ id }: IGetOne) {
     if (!id) return new MethodNotAllowedException();
     const result = await this.repo.findOne({
       where: { id, isActive: true },
