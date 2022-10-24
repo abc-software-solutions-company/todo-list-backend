@@ -16,4 +16,7 @@ export class UpdateListDto {
 
   @ApiProperty()
   isDone?: boolean;
+
+  @ApiProperty()
+  visibility?: string;
 }
