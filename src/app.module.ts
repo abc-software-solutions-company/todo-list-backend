@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import appConfig from './configs/app.config';
 import databaseConfig from './configs/database.config';
+import { FavoriteModule } from './database/favorite/favorite.module';
 import { PoolModule } from './database/pool/pool.module';
 import { StatusModule } from './database/status/status.module';
 import { TasksModule } from './database/task/task.module';
@@ -37,10 +38,11 @@ import { SocketsModule } from './websocket/socket.module';
     }),
     PoolModule,
     AuthModule,
+    UsersModule,
     TodolistModule,
+    FavoriteModule,
     StatusModule,
     TasksModule,
-    UsersModule,
     SocketsModule,
   ],
   providers: [

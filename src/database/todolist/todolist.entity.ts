@@ -10,6 +10,7 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
+import { Favorite } from '../favorite/favorite.entity';
 import { Pool } from '../pool/pool.entity';
 import { Status } from '../status/status.entity';
 import { User } from '../user/user.entity';
@@ -37,6 +38,10 @@ export class Todolist {
   @UpdateDateColumn({ select: false })
   updatedDate: Date;
 
+  @OneToOne(() => Pool, (pool) => pool.id)
+  @JoinColumn({ name: 'id' })
+  pool: Pool;
+
   @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'userId' })
   user: User;
@@ -47,7 +52,6 @@ export class Todolist {
   @OneToMany(() => Status, (status) => status.todoList)
   status: Status[];
 
-  @OneToOne(() => Pool, (pool) => pool.id)
-  @JoinColumn({ name: 'id' })
-  pool: Pool;
+  @OneToMany(() => Favorite, (favorite) => favorite.todolist)
+  favorites: Favorite[];
 }
