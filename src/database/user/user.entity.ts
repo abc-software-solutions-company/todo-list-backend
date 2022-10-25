@@ -2,6 +2,7 @@ import { Entity, Column, OneToMany, CreateDateColumn, PrimaryColumn, UpdateDateC
 
 import { Task } from 'src/database/task/task.entity';
 import { Todolist } from 'src/database/todolist/todolist.entity';
+import { Favorite } from '../favorite/favorite.entity';
 
 @Entity()
 export class User {
@@ -14,15 +15,18 @@ export class User {
   @Column({ nullable: true })
   email: string;
 
+  @CreateDateColumn({ select: false })
+  createdDate: Date;
+
+  @UpdateDateColumn({ select: false })
+  updatedDate: Date;
+
   @OneToMany(() => Todolist, (list) => list.user)
   lists: Todolist[];
 
   @OneToMany(() => Task, (task) => task.user)
   tasks: Task[];
 
-  @CreateDateColumn({ select: false })
-  createdDate: Date;
-
-  @UpdateDateColumn({ select: false })
-  updatedDate: Date;
+  @OneToMany(() => Favorite, (favorite) => favorite.user)
+  favorites: Favorite[];
 }

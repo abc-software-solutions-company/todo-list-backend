@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import appConfig from './configs/app.config';
 import databaseConfig from './configs/database.config';
+import { FavoriteModule } from './database/favorite/favorite.module';
 import { PoolModule } from './database/pool/pool.module';
 import { StatusModule } from './database/status/status.module';
 import { TasksModule } from './database/task/task.module';
@@ -14,7 +15,7 @@ import { TodolistModule } from './database/todolist/todolist.module';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { UsersModule } from './database/user/users.module';
 import { AllExceptionsFilter } from './utils/all-exception.filter';
-import { ApiKeyMiddleware } from './utils/api-key.middleware';
+import { LoggerMiddleware } from './utils/logger.middleware';
 import { SocketsModule } from './websocket/socket.module';
 
 @Module({
@@ -37,10 +38,11 @@ import { SocketsModule } from './websocket/socket.module';
     }),
     PoolModule,
     AuthModule,
+    UsersModule,
     TodolistModule,
+    FavoriteModule,
     StatusModule,
     TasksModule,
-    UsersModule,
     SocketsModule,
   ],
   providers: [
@@ -56,6 +58,6 @@ import { SocketsModule } from './websocket/socket.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ApiKeyMiddleware).forRoutes('*');
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

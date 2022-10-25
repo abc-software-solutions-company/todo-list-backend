@@ -1,3 +1,4 @@
+import { Favorite } from 'src/database/favorite/favorite.entity';
 import { Pool } from 'src/database/pool/pool.entity';
 import { Status } from 'src/database/status/status.entity';
 import { Task } from 'src/database/task/task.entity';
@@ -13,7 +14,7 @@ const config: DataSourceOptions = {
   password: process.env.DATABASE_PASSWORD || 'postgres',
   database: process.env.DATABASE_NAME || 'postgres',
   schema: process.env.DATABASE_SCHEMA || 'public',
-  entities: [Task, User, Todolist, Pool, Status],
+  entities: [Task, User, Todolist, Pool, Status, Favorite],
   migrations: ['src/migrations/*'],
 };
 

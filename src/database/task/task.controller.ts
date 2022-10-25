@@ -10,28 +10,31 @@ import { TaskService } from './task.service';
 @ApiBearerAuth()
 @Controller('tasks')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly service: TaskService) {}
 
   // @Get('/sync')
   // @SkipThrottle()
   // async sync() {
-  //   return this.taskService.sync();
+  //   return this.service.sync();
   // }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/:todoListId')
+  @Get()
   @SkipThrottle()
-  async getByListId(@Param('todoListId') todoListId: string) {
-    const result = await this.taskService.getByListId({ todoListId });
-    if (result instanceof HttpException) throw result;
-    return result;
+  async get() {
+    return this.service.get();
+  }
+
+  @Get(':id')
+  @SkipThrottle()
+  async getOne(@Param('id') id: string) {
+    return this.service.getOne({ id });
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() body: CreateTaskDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
-    const result = await this.taskService.create({ ...body, userId });
+    const result = await this.service.create({ ...body, userId });
     if (result instanceof HttpException) throw result;
     return result;
   }
@@ -40,7 +43,7 @@ export class TaskController {
   @Patch('/update')
   async update(@Body() body: UpdateTaskDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
-    const result = await this.taskService.update({ ...body, userId });
+    const result = await this.service.update({ ...body, userId });
     if (result instanceof HttpException) throw result;
     return result;
   }
@@ -50,7 +53,7 @@ export class TaskController {
   async reIndex(@Body() body: ReIndexDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
 
-    const result = await this.taskService.reIndex({ ...body, userId });
+    const result = await this.service.reIndex({ ...body, userId });
     if (result instanceof HttpException) throw result;
   }
 }

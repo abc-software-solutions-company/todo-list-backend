@@ -29,12 +29,12 @@ export class TaskService {
     //   await this.repo.save(task);
     // }
   }
+  get() {
+    return this.repo.findBy({ isActive: true });
+  }
 
-  getByListId({ todoListId }: IGet) {
-    if (!todoListId) return new MethodNotAllowedException();
-    const TaskList = this.repo.find({ where: { todoListId, isActive: true }, order: { index: 'ASC' } });
-    if (!TaskList) return new MethodNotAllowedException();
-    return TaskList;
+  getOne({ id }: IGet) {
+    return this.repo.findOneBy({ id, isActive: true });
   }
 
   async create({ name, todoListId, userId }: ICreate) {
@@ -75,15 +75,21 @@ export class TaskService {
       );
     const ascendingStatus = task.todoList.status.sort((a, b) => a.index - b.index);
     const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
-    if (isDone === true || statusId == endStatus) {
-      task.isDone = true;
-      task.statusId = endStatus;
-    } else {
-      task.isDone = false;
-      if (task.statusId == endStatus) {
-        const statStatus = ascendingStatus[0].id;
-        task.statusId = statStatus;
-      } else task.statusId = statusId ? statusId : task.statusId;
+    if (isDone !== undefined) {
+      if (isDone === true) {
+        task.statusId = endStatus;
+      } else {
+        if (task.statusId == endStatus) {
+          const statStatus = ascendingStatus[0].id;
+          task.statusId = statStatus;
+        }
+      }
+      task.isDone = isDone;
+    }
+    if (statusId) {
+      if (statusId == endStatus) task.isDone = true;
+      else task.isDone = false;
+      task.statusId = statusId;
     }
 
     return this.repo.save(task);

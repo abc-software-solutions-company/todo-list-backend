@@ -27,18 +27,31 @@ export class TodolistService {
   get() {
     return this.repo.findBy({ isActive: true });
   }
-
-  async getByUserId({ userId }: IGetMyList) {
-    const result = await this.repo.findBy({ isActive: true, userId });
+  async getByUser({ userId }: IGetMyList) {
+    const result = await this.repo.find({
+      where: { isActive: true, userId },
+      relations: { favorites: true },
+      select: { id: true, name: true, isActive: true, userId: true, visibility: true, createdDate: true },
+      order: { createdDate: 'ASC' },
+    });
     if (!result) return new BadRequestException();
     return result;
+  }
+
+  getFavorite({ userId }: IGetMyList) {
+    return this.repo.find({
+      where: { isActive: true, favorites: { userId, isActive: true } },
+      relations: { favorites: true },
+      select: { favorites: { userId: true, todolistId: true, isActive: true, updatedDate: true } },
+      order: { favorites: { updatedDate: 'ASC' } },
+    });
   }
 
   async getOne({ id }: IGetOne) {
     if (!id) return new MethodNotAllowedException();
     const result = await this.repo.findOne({
       where: { id, isActive: true },
-      relations: { tasks: true, status: true },
+      relations: { tasks: true, status: true, favorites: true },
       order: { tasks: { index: 'ASC' } },
     });
     if (!result) return new BadRequestException();
