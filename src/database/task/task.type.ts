@@ -4,12 +4,14 @@ export interface IGet {
 
 export interface ICreate {
   name: string;
+  description?: string;
   userId: string;
   todoListId: string;
 }
 
 export interface IUpdate extends IGet {
   name?: string;
+  description?: string;
   statusId: number;
   isActive?: boolean;
   isDone?: boolean;

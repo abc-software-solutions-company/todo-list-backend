@@ -37,7 +37,7 @@ export class TaskService {
     return this.repo.findOneBy({ id, isActive: true });
   }
 
-  async create({ name, todoListId, userId }: ICreate) {
+  async create({ name, todoListId, description, userId }: ICreate) {
     let i = 0;
     if (name.trim().length == 0) return new BadRequestException('Emty name');
     while (i < 3) {
@@ -46,13 +46,9 @@ export class TaskService {
         const index = ((await this.repo.countBy({ todoListId })) + 1) * this.indexStep;
         const list = await this.todolist.repo.findOne({ where: { id: todoListId }, relations: { status: true } });
         const statusId = Number(list.status[0].id);
-        const user = this.repo.create({ name, todoListId, userId, id, index, statusId });
-        // As a readonly list or private list, Only list owner can create task for this list.
+        const user = this.repo.create({ name, todoListId, description, userId, id, index, statusId });
         if (list.visibility !== this.todolist.visibilityList.public && list.userId !== userId)
-          return new MethodNotAllowedException(
-            'As a readonly list or private list, Only list owner can create task for this list.',
-          );
-
+          return new MethodNotAllowedException();
         return this.repo.save(user);
       } catch {
         i = i + 1;
@@ -62,17 +58,15 @@ export class TaskService {
   }
 
   async update(body: IUpdate) {
-    if (!body) return new BadRequestException();
-    const { isActive, isDone, name, id, statusId, userId } = body;
+    if (!body) return new BadRequestException('Params');
+    const { isActive, isDone, description, name, id, statusId, userId } = body;
     const task = await this.repo.findOne({ where: { id }, relations: { todoList: { status: true } } });
     if (!task) return new MethodNotAllowedException();
+    if (task.todoList.visibility !== this.todolist.visibilityList.public && task.todoList.userId !== userId)
+      return new MethodNotAllowedException();
     task.isActive = isActive === undefined ? task.isActive : isActive;
     task.name = name ? name : task.name;
-    // As a task created from read-only list or private list. Only list owner can update this task.
-    if (task.todoList.visibility !== this.todolist.visibilityList.public && task.todoList.userId !== userId)
-      return new MethodNotAllowedException(
-        'As a task created from read-only list or private list. Only list owner can update this task.',
-      );
+    task.description = description ? description : task.description;
     const ascendingStatus = task.todoList.status.sort((a, b) => a.index - b.index);
     const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
     if (isDone !== undefined) {
