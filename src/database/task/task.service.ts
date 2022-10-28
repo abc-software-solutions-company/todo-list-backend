@@ -74,8 +74,7 @@ export class TaskService {
         task.statusId = endStatus;
       } else {
         if (task.statusId == endStatus) {
-          const statStatus = ascendingStatus[0].id;
-          task.statusId = statStatus;
+          task.statusId = ascendingStatus[0].id;
         }
       }
       task.isDone = isDone;
