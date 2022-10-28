@@ -15,13 +15,13 @@ export class TodolistService {
   ) {}
 
   async sync() {
-    const all = await this.repo.find();
-    for (let i = 0; i < all.length; i++) {
-      console.log('🚀 ~ file: todolist.service.ts ~ line 20 ~ TodolistService ~ sync ~ i', i);
-      const list = all[i];
-      list.visibility = this.visibilityList.public;
-      await this.repo.save(list);
-    }
+    // const all = await this.repo.find();
+    // for (let i = 0; i < all.length; i++) {
+    //   console.log('🚀 ~ file: todolist.service.ts ~ line 20 ~ TodolistService ~ sync ~ i', i);
+    //   const list = all[i];
+    //   list.visibility = this.visibilityList.public;
+    //   await this.repo.save(list);
+    // }
   }
 
   get() {

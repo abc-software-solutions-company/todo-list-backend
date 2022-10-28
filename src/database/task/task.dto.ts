@@ -5,6 +5,9 @@ export class CreateTaskDto {
   name: string;
 
   @ApiProperty()
+  description: string;
+
+  @ApiProperty()
   todoListId: string;
 }
 
@@ -14,6 +17,9 @@ export class UpdateTaskDto {
 
   @ApiProperty()
   name: string;
+
+  @ApiProperty()
+  description: string;
 
   @ApiProperty()
   isDone: boolean;
