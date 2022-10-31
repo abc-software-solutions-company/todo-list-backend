@@ -1,18 +1,26 @@
-import { Injectable, MethodNotAllowedException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, MethodNotAllowedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { uuid } from 'uuidv4';
+import { ImageService } from '../image/image.service';
+import { TaskImageService } from '../taskImage/taskImage.service';
 import { TodolistService } from '../todolist/todolist.service';
 import { Task } from './task.entity';
-import { ICreate, IGet, IReIndex, IUpdate } from './task.type';
+import { IGet, ICreate, IUpdate, IReIndex } from './task.type';
 
 @Injectable()
 export class TaskService {
   readonly indexStep: number = Math.pow(2, 30);
-  constructor(@InjectRepository(Task) readonly repo: Repository<Task>, readonly todolist: TodolistService) {}
+  constructor(
+    @InjectRepository(Task)
+    readonly repository: Repository<Task>,
+    readonly todolist: TodolistService,
+    readonly taskImage: TaskImageService,
+    readonly image: ImageService,
+  ) {}
 
   async sync() {
-    // const all = await this.repo.find({ relations: { todoList: { status: true } } });
+    // const all = await this.repository.find({ relations: { todoList: { status: true } } });
     // for (let i = 0; i < all.length; i++) {
     //   console.log('🚀 ~ file: task.service.ts ~ line 18 ~ TaskService ~ sync ~ i', i);
     //   const task = all[i];
@@ -26,15 +34,16 @@ export class TaskService {
     //     task.isDone = false;
     //     if (task.statusId === endStatus) task.statusId = statStatus;
     //   }
-    //   await this.repo.save(task);
+    //   await this.repository.save(task);
     // }
   }
+
   get() {
-    return this.repo.findBy({ isActive: true });
+    return this.repository.find({ where: { isActive: true }, relations: { taskImages: true } });
   }
 
   getOne({ id }: IGet) {
-    return this.repo.findOneBy({ id, isActive: true });
+    return this.repository.findOne({ where: { id, isActive: true }, relations: { taskImages: { image: true } } });
   }
 
   async create({ name, todoListId, description, userId }: ICreate) {
@@ -43,13 +52,13 @@ export class TaskService {
     while (i < 3) {
       const id = uuid();
       try {
-        const index = ((await this.repo.countBy({ todoListId })) + 1) * this.indexStep;
-        const list = await this.todolist.repo.findOne({ where: { id: todoListId }, relations: { status: true } });
+        const index = ((await this.repository.countBy({ todoListId })) + 1) * this.indexStep;
+        const list = await this.todolist.repository.findOne({ where: { id: todoListId }, relations: { status: true } });
         const statusId = Number(list.status[0].id);
-        const user = this.repo.create({ name, todoListId, description, userId, id, index, statusId });
+        const user = this.repository.create({ name, todoListId, description, userId, id, index, statusId });
         if (list.visibility !== this.todolist.visibilityList.public && list.userId !== userId)
           return new MethodNotAllowedException();
-        return this.repo.save(user);
+        return this.repository.save(user);
       } catch {
         i = i + 1;
       }
@@ -59,8 +68,11 @@ export class TaskService {
 
   async update(body: IUpdate) {
     if (!body) return new BadRequestException('Params');
-    const { isActive, isDone, description, name, id, statusId, userId } = body;
-    const task = await this.repo.findOne({ where: { id }, relations: { todoList: { status: true } } });
+    const { isActive, isDone, description, name, id, statusId, userId, images } = body;
+    const task = await this.repository.findOne({
+      where: { id },
+      relations: { todoList: { status: true }, taskImages: true },
+    });
     if (!task) return new MethodNotAllowedException();
     if (task.todoList.visibility !== this.todolist.visibilityList.public && task.todoList.userId !== userId)
       return new MethodNotAllowedException();
@@ -79,22 +91,43 @@ export class TaskService {
       }
       task.isDone = isDone;
     }
+
     if (statusId) {
       if (statusId == endStatus) task.isDone = true;
       else task.isDone = false;
       task.statusId = statusId;
     }
 
-    return this.repo.save(task);
+    if (!images) return this.repository.save(task);
+    else {
+      await this.repository.save(task);
+      if (images.add && images.add.length > 0) {
+        for (let i = 0; i < images.add.length; i++) {
+          const link = images.add[i];
+          const image = await this.image.create({ link });
+          await this.taskImage.create({ imageId: image.id, taskId: task.id });
+        }
+      }
+      if (images.remove && images.remove.length > 0) {
+        for (let i = 0; i < images.remove.length; i++) {
+          const imageId = images.remove[i];
+          await this.taskImage.update({ imageId, taskId: task.id, isActive: false });
+        }
+      }
+      return this.repository.findOne({
+        where: { id },
+        relations: { todoList: { status: true }, taskImages: true },
+      });
+    }
   }
 
   async reIndex({ taskFirstId, taskReorderId, taskSecondId, userId }: IReIndex) {
-    const task = await this.repo.findOne({ where: { id: taskReorderId }, relations: { todoList: true } });
+    const task = await this.repository.findOne({ where: { id: taskReorderId }, relations: { todoList: true } });
     if (task.todoList.visibility !== this.todolist.visibilityList.public && task.todoList.userId !== userId)
       return new MethodNotAllowedException('As a private list or read-only list. Only list owner can drag and drop');
-    const index1 = Number(taskFirstId ? (await this.repo.findOneBy({ id: taskFirstId })).index : 0);
+    const index1 = Number(taskFirstId ? (await this.repository.findOneBy({ id: taskFirstId })).index : 0);
     const index2 = Number(
-      taskSecondId ? (await this.repo.findOneBy({ id: taskSecondId })).index : index1 + this.indexStep,
+      taskSecondId ? (await this.repository.findOneBy({ id: taskSecondId })).index : index1 + this.indexStep,
     );
 
     if (!task) return new BadRequestException();
@@ -102,7 +135,7 @@ export class TaskService {
     const index = Math.round((index1 + index2) / 2);
     task.index = index;
 
-    await this.repo.save(task);
+    await this.repository.save(task);
 
     if (index - index1 < 32 || index2 - index < 32) this.reAllIndex(task.todoListId);
     return task;
@@ -110,11 +143,11 @@ export class TaskService {
 
   async reAllIndex(todoListId: string) {
     // As a private list or read-only list. Only list owner can drag and drop
-    const tasks = await this.repo.find({ where: { todoListId: todoListId }, order: { index: 'ASC' } });
+    const tasks = await this.repository.find({ where: { todoListId: todoListId }, order: { index: 'ASC' } });
     tasks.forEach(async (task, index) => {
       task.index = (index + 1) * this.indexStep;
       console.log(task);
-      await this.repo.save(task);
+      await this.repository.save(task);
     });
   }
 }
