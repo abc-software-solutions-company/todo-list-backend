@@ -1,5 +1,5 @@
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
-import {Response } from 'express';
+import { Response } from 'express';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -8,10 +8,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     // const request = ctx.getRequest<Request>();
     // console.log(exception);
-    
+
     response.status(exception.status || 400).json({
       message: 'Bad Request',
-      err: exception
+      err: exception,
     });
   }
 }

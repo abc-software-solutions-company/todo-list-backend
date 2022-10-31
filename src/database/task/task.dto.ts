@@ -22,6 +22,12 @@ export class UpdateTaskDto {
   description: string;
 
   @ApiProperty()
+  images: {
+    add: string[];
+    remove: number[];
+  };
+
+  @ApiProperty()
   isDone: boolean;
 
   @ApiProperty()

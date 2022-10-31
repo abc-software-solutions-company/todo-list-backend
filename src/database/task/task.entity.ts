@@ -1,5 +1,15 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Status } from '../status/status.entity';
+import { TaskImage } from '../taskImage/taskImage.entity';
 import { Todolist } from '../todolist/todolist.entity';
 import { User } from '../user/user.entity';
 
@@ -49,4 +59,7 @@ export class Task {
   @ManyToOne(() => Status, (status) => status.id)
   @JoinColumn({ name: 'statusId' })
   status: Status;
+
+  @OneToMany(() => TaskImage, (taskImage) => taskImage.task)
+  taskImages: TaskImage[];
 }

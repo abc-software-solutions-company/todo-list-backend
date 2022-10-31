@@ -8,9 +8,11 @@ import { AuthModule } from './auth/auth.module';
 import appConfig from './configs/app.config';
 import databaseConfig from './configs/database.config';
 import { FavoriteModule } from './database/favorite/favorite.module';
+import { ImageModule } from './database/image/image.module';
 import { PoolModule } from './database/pool/pool.module';
 import { StatusModule } from './database/status/status.module';
 import { TasksModule } from './database/task/task.module';
+import { TaskImageModule } from './database/taskImage/taskImage.module';
 import { TodolistModule } from './database/todolist/todolist.module';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { UsersModule } from './database/user/users.module';
@@ -36,6 +38,7 @@ import { SocketsModule } from './websocket/socket.module';
       ttl: 30,
       limit: 100,
     }),
+    ImageModule,
     PoolModule,
     AuthModule,
     UsersModule,
@@ -43,6 +46,7 @@ import { SocketsModule } from './websocket/socket.module';
     FavoriteModule,
     StatusModule,
     TasksModule,
+    TaskImageModule,
     SocketsModule,
   ],
   providers: [

@@ -9,26 +9,26 @@ import { StatusService } from '../status/status.service';
 export class TodolistService {
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
   constructor(
-    @InjectRepository(Todolist) readonly repo: Repository<Todolist>,
+    @InjectRepository(Todolist) readonly repository: Repository<Todolist>,
     readonly poolService: PoolService,
     readonly statusService: StatusService,
   ) {}
 
   async sync() {
-    // const all = await this.repo.find();
+    // const all = await this.repository.find();
     // for (let i = 0; i < all.length; i++) {
     //   console.log('🚀 ~ file: todolist.service.ts ~ line 20 ~ TodolistService ~ sync ~ i', i);
     //   const list = all[i];
     //   list.visibility = this.visibilityList.public;
-    //   await this.repo.save(list);
+    //   await this.repository.save(list);
     // }
   }
 
   get() {
-    return this.repo.findBy({ isActive: true });
+    return this.repository.findBy({ isActive: true });
   }
   async getByUser({ userId }: IGetMyList) {
-    const result = await this.repo.find({
+    const result = await this.repository.find({
       where: { isActive: true, userId },
       relations: { favorites: true },
       select: { id: true, name: true, isActive: true, userId: true, visibility: true, createdDate: true },
@@ -39,7 +39,7 @@ export class TodolistService {
   }
 
   getFavorite({ userId }: IGetMyList) {
-    return this.repo.find({
+    return this.repository.find({
       where: { isActive: true, favorites: { userId, isActive: true } },
       relations: { favorites: true },
       select: { favorites: { userId: true, todolistId: true, isActive: true, updatedDate: true } },
@@ -49,7 +49,7 @@ export class TodolistService {
 
   async getOne({ id }: IGetOne) {
     if (!id) return new MethodNotAllowedException();
-    const result = await this.repo.findOne({
+    const result = await this.repository.findOne({
       where: { id, isActive: true },
       relations: { tasks: true, status: true, favorites: true },
       order: { tasks: { index: 'ASC' } },
@@ -64,8 +64,8 @@ export class TodolistService {
     const { name, userId } = body;
     if (name.trim().length == 0) return new BadRequestException();
     const visibility = this.visibilityList.public;
-    const listEntity = this.repo.create({ name, userId, id, visibility });
-    const list = await this.repo.save(listEntity);
+    const listEntity = this.repository.create({ name, userId, id, visibility });
+    const list = await this.repository.save(listEntity);
     if (!list) return new BadRequestException();
     await this.statusService.init({ todoListId: list.id });
     await this.poolService.use(id);
@@ -74,7 +74,7 @@ export class TodolistService {
 
   async update(body: IUpdate) {
     const { isActive, id, name, visibility, userId } = body;
-    const list = await this.repo.findOneBy({ id });
+    const list = await this.repository.findOneBy({ id });
     if (!list) return new MethodNotAllowedException();
     list.isActive = isActive === undefined ? list.isActive : isActive;
     list.name = name === undefined ? list.name : name;
@@ -83,6 +83,6 @@ export class TodolistService {
     if (list.userId !== userId)
       return new BadRequestException('As a read-only list or private list. Only list owner can update this list.');
     if (Object.values(this.visibilityList).includes(visibility)) list.visibility = visibility;
-    return this.repo.save(list);
+    return this.repository.save(list);
   }
 }
