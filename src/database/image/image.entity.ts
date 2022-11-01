@@ -6,6 +6,9 @@ export class Image {
   @PrimaryGeneratedColumn({ type: 'int8' })
   id: number;
 
+  @Column({ default: 'Image' })
+  name: string;
+
   @Column({ type: 'text' })
   link: string;
 

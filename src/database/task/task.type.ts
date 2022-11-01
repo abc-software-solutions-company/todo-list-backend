@@ -12,7 +12,7 @@ export interface ICreate {
 export interface IUpdate extends IGet {
   name?: string;
   description?: string;
-  images?: { add?: string[]; remove?: number[] };
+  images?: { add?: { name: string; link: string }[]; remove?: number[] };
   statusId: number;
   isActive?: boolean;
   isDone?: boolean;

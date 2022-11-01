@@ -13,9 +13,9 @@ export class ImageService {
   }
 
   create(param: IImageCreate) {
-    const { link } = param;
-    if (!link) throw new BadRequestException();
-    const newImage = this.repository.create({ link, isActive: true });
+    const { link, name } = param;
+    if (!link || !name) throw new BadRequestException();
+    const newImage = this.repository.create({ ...param, isActive: true });
     return this.repository.save(newImage);
   }
 

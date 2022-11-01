@@ -3,6 +3,7 @@ export interface ITaskImageCreate {
 
   imageId: number;
 }
+
 export interface ITaskImageUpdate extends ITaskImageCreate {
   isActive: boolean;
 }

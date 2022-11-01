@@ -103,8 +103,8 @@ export class TaskService {
       await this.repository.save(task);
       if (images.add && images.add.length > 0) {
         for (let i = 0; i < images.add.length; i++) {
-          const link = images.add[i];
-          const image = await this.image.create({ link });
+          const { link, name } = images.add[i];
+          const image = await this.image.create({ link, name });
           await this.taskImage.create({ imageId: image.id, taskId: task.id });
         }
       }
