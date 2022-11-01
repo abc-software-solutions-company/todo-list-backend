@@ -43,7 +43,11 @@ export class TaskService {
   }
 
   getOne({ id }: IGet) {
-    return this.repository.findOne({ where: { id, isActive: true }, relations: { taskImages: { image: true } } });
+    return this.repository.findOne({
+      where: { id, isActive: true },
+      relations: { taskImages: { image: true }, status: true, todoList: { status: true } },
+      order: { taskImages: { image: { createdDate: 'ASC' } } },
+    });
   }
 
   async create({ name, todoListId, description, userId }: ICreate) {
@@ -103,9 +107,15 @@ export class TaskService {
       await this.repository.save(task);
       if (images.add && images.add.length > 0) {
         for (let i = 0; i < images.add.length; i++) {
-          const link = images.add[i];
-          const image = await this.image.create({ link });
+          const { link, name } = images.add[i];
+          const image = await this.image.create({ link, name });
           await this.taskImage.create({ imageId: image.id, taskId: task.id });
+        }
+      }
+      if (images.edit && images.edit.length > 0) {
+        for (let i = 0; i < images.edit.length; i++) {
+          const { id, name } = images.edit[i];
+          await this.image.update({ id, name });
         }
       }
       if (images.remove && images.remove.length > 0) {
@@ -114,10 +124,7 @@ export class TaskService {
           await this.taskImage.update({ imageId, taskId: task.id, isActive: false });
         }
       }
-      return this.repository.findOne({
-        where: { id },
-        relations: { todoList: { status: true }, taskImages: true },
-      });
+      return this.getOne({ id });
     }
   }
 

@@ -6,16 +6,19 @@ export class Image {
   @PrimaryGeneratedColumn({ type: 'int8' })
   id: number;
 
+  @Column({ default: 'Image' })
+  name: string;
+
   @Column({ type: 'text' })
   link: string;
 
   @Column({ type: 'boolean' })
   isActive: boolean;
 
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdDate: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedDate: Date;
 
   @OneToMany(() => TaskImage, (taskImage) => taskImage.image)

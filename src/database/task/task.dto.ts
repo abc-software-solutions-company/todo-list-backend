@@ -23,8 +23,9 @@ export class UpdateTaskDto {
 
   @ApiProperty()
   images: {
-    add: string[];
+    add: { name: string; link: string }[];
     remove: number[];
+    edit: { id: number; name: string }[];
   };
 
   @ApiProperty()
