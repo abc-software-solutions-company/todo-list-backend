@@ -7,10 +7,12 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
+
   const configService = app.get(ConfigService);
   const config = new DocumentBuilder().setTitle('Todo List API').setVersion('').addBearerAuth().build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('swagger', app, document);
 
   app.enableCors({ origin: '*' });
   app.useGlobalPipes(new ValidationPipe());

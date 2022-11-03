@@ -1,11 +1,11 @@
-import { Favorite } from 'src/database/favorite/favorite.entity';
-import { Image } from 'src/database/image/image.entity';
-import { Pool } from 'src/database/pool/pool.entity';
-import { Status } from 'src/database/status/status.entity';
-import { Task } from 'src/database/task/task.entity';
-import { TaskImage } from 'src/database/taskImage/taskImage.entity';
-import { Todolist } from 'src/database/todolist/todolist.entity';
-import { User } from 'src/database/user/user.entity';
+import { Attachment } from 'src/database/attachment/index.entity';
+import { Favorite } from 'src/database/favorite/index.entity';
+import { Pool } from 'src/database/pool/index.entity';
+import { Status } from 'src/database/status/index.entity';
+import { TaskAttachment } from 'src/database/task-attachment/index.entity';
+import { Task } from 'src/database/task/index.entity';
+import { Todolist } from 'src/database/todolist/index.entity';
+import { User } from 'src/database/user/index.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 const config: DataSourceOptions = {
@@ -16,7 +16,7 @@ const config: DataSourceOptions = {
   password: process.env.DATABASE_PASSWORD || 'postgres',
   database: process.env.DATABASE_NAME || 'postgres',
   schema: process.env.DATABASE_SCHEMA || 'public',
-  entities: [Task, User, Todolist, Pool, Status, Favorite, Image, TaskImage],
+  entities: [Attachment, Favorite, Pool, Status, Task, TaskAttachment, Todolist, User],
   migrations: ['src/migrations/*'],
 };
 

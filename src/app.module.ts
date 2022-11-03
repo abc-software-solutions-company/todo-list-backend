@@ -4,18 +4,18 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth/index.module';
 import appConfig from './configs/app.config';
 import databaseConfig from './configs/database.config';
-import { FavoriteModule } from './database/favorite/favorite.module';
-import { ImageModule } from './database/image/image.module';
-import { PoolModule } from './database/pool/pool.module';
-import { StatusModule } from './database/status/status.module';
-import { TasksModule } from './database/task/task.module';
-import { TaskImageModule } from './database/taskImage/taskImage.module';
-import { TodolistModule } from './database/todolist/todolist.module';
+import { AttachmentModule } from './database/attachment/index.module';
+import { FavoriteModule } from './database/favorite/index.module';
+import { PoolModule } from './database/pool/index.module';
+import { StatusModule } from './database/status/index.module';
+import { TaskAttachmentModule } from './database/task-attachment/index.module';
+import { TaskModule } from './database/task/index.module';
+import { TodolistModule } from './database/todolist/index.module';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
-import { UsersModule } from './database/user/users.module';
+import { UserModule } from './database/user/index.module';
 import { AllExceptionsFilter } from './utils/all-exception.filter';
 import { LoggerMiddleware } from './utils/logger.middleware';
 import { SocketsModule } from './websocket/socket.module';
@@ -38,15 +38,15 @@ import { SocketsModule } from './websocket/socket.module';
       ttl: 30,
       limit: 100,
     }),
-    ImageModule,
+    AttachmentModule,
+    TaskAttachmentModule,
     PoolModule,
     AuthModule,
-    UsersModule,
+    UserModule,
     TodolistModule,
     FavoriteModule,
     StatusModule,
-    TasksModule,
-    TaskImageModule,
+    TaskModule,
     SocketsModule,
   ],
   providers: [
