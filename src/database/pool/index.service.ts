@@ -34,12 +34,8 @@ export class PoolService implements OnModuleInit {
     return `Generated ${pools} id suceessful`;
   }
 
-  getOne() {
-    return this.repository.findOneBy({ isUsed: false });
-  }
-
-  async use(id: string) {
-    const pool = await this.repository.findOneBy({ id });
+  async use() {
+    const pool = await this.repository.findOneBy({ isUsed: false });
     pool.isUsed = true;
     return this.repository.save(pool);
   }

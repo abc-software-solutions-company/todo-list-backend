@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, MethodNotAllowedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { uuid } from 'uuidv4';
+import { v4 } from 'uuid';
 import { AttachmentService } from '../attachment/index.service';
 import { CommentService } from '../comment/index.service';
 import { TodolistService } from '../todolist/index.service';
@@ -11,6 +11,7 @@ import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindex } from './index.type';
 @Injectable()
 export class TaskService {
   readonly indexStep: number = Math.pow(2, 30);
+
   constructor(
     @InjectRepository(Task)
     readonly repository: Repository<Task>,
@@ -19,10 +20,6 @@ export class TaskService {
     readonly comment: CommentService,
   ) {}
 
-  async sync() {
-    console.log('sync');
-  }
-
   get() {
     return this.repository.find({ where: { isActive: true } });
   }
@@ -30,34 +27,26 @@ export class TaskService {
   getOne({ id }: ITaskGet) {
     return this.repository.findOne({
       where: { id, isActive: true },
-      relations: { status: true, todolist: { status: true }, attachmens: true },
-      order: { attachmens: { createdDate: 'ASC' } },
+      relations: { status: true, todolist: { status: true }, attachments: { user: true }, comments: { user: true } },
+      order: { attachments: { createdDate: 'ASC' }, comments: { createdDate: 'ASC' } },
     });
   }
 
-  async create({ name, todolistId, description, userId }: ITaskCreate) {
-    let i = 0;
-    if (name.trim().length == 0) throw new BadRequestException('Emty name');
-    while (i < 3) {
-      const id = uuid();
-      try {
-        const index = ((await this.repository.countBy({ todolistId })) + 1) * this.indexStep;
-        const list = await this.todolist.repository.findOne({ where: { id: todolistId }, relations: { status: true } });
-        const statusId = Number(list.status[0].id);
-        const user = this.repository.create({ name, todolistId, description, userId, id, index, statusId });
-        console.log('🚀 ~ file: index.service.ts ~ line 63 ~ TaskService ~ create ~ user', user);
-        if (list.visibility !== this.todolist.visibilityList.public && list.userId !== userId)
-          throw new MethodNotAllowedException();
-        return this.repository.save(user);
-      } catch {
-        i = i + 1;
-      }
-    }
-    throw new BadRequestException('Server Err');
+  async create(param: ITaskCreate) {
+    const { name, todolistId, description, userId } = param;
+    if (!name.trim()) throw new BadRequestException('empty name ');
+    const list = await this.todolist.getOne({ id: todolistId });
+    if (list.visibility !== this.todolist.visibilityList.public && list.userId !== userId)
+      throw new MethodNotAllowedException();
+    const id = v4();
+    const index = (list.tasks.length + 1) * this.indexStep;
+    const statusId = Number(list.status[0].id);
+    const user = this.repository.create({ name, todolistId, description, userId, id, index, statusId });
+    return this.repository.save(user);
   }
 
   async update(param: ITaskUpdate) {
-    const { id, description, name, isActive, isDone, statusId, userId, attachments, comments } = param;
+    const { id, description, name, isActive, isDone, statusId, userId, attachment, comment } = param;
 
     if (!id) throw new BadRequestException('Task no existed');
 
@@ -66,16 +55,14 @@ export class TaskService {
       relations: { todolist: { status: true } },
     });
 
-    if (!task) throw new MethodNotAllowedException();
-
     if (task.todolist.visibility !== this.todolist.visibilityList.public && task.todolist.userId !== userId)
       throw new MethodNotAllowedException();
 
-    if (name) {
+    if (name && name.trim()) {
       task.name = name;
     }
 
-    if (description) {
+    if (description !== undefined) {
       task.description = description;
     }
 
@@ -105,14 +92,14 @@ export class TaskService {
 
     await this.repository.save(task);
 
-    if (attachments) {
-      if (attachments.create) await this.attachment.create({ ...attachments.create, taskId: id });
-      if (attachments.update) await this.attachment.update({ ...attachments.update, taskId: id });
+    if (attachment) {
+      if (attachment.create) await this.attachment.create({ ...attachment.create, taskId: id, userId });
+      if (attachment.update) await this.attachment.update({ ...attachment.update, taskId: id, userId });
     }
 
-    if (comments) {
-      if (comments.create) await this.comment.create({ ...comments.create, taskId: id });
-      if (comments.update) await this.comment.update({ ...comments.update, taskId: id });
+    if (comment) {
+      if (comment.create) await this.comment.create({ ...comment.create, taskId: id, userId });
+      if (comment.update) await this.comment.update({ ...comment.update, taskId: id, userId });
     }
 
     return this.getOne({ id });
@@ -120,8 +107,10 @@ export class TaskService {
 
   async reindex({ taskFirstId, taskReorderId, taskSecondId, userId }: ITaskReindex) {
     const task = await this.repository.findOne({ where: { id: taskReorderId }, relations: { todolist: true } });
+
     if (task.todolist.visibility !== this.todolist.visibilityList.public && task.todolist.userId !== userId)
       throw new MethodNotAllowedException('As a private list or read-only list. Only list owner can drag and drop');
+
     const index1 = Number(taskFirstId ? (await this.repository.findOneBy({ id: taskFirstId })).index : 0);
     const index2 = Number(
       taskSecondId ? (await this.repository.findOneBy({ id: taskSecondId })).index : index1 + this.indexStep,
@@ -134,17 +123,19 @@ export class TaskService {
 
     await this.repository.save(task);
 
-    if (index - index1 < 32 || index2 - index < 32) this.reindexAll(task.todolistId);
-    return task;
+    if (index - index1 < 32 || index2 - index < 32) await this.reindexAll(task.todolistId);
+
+    return this.getOne({ id: taskReorderId });
   }
 
   async reindexAll(todolistId: string) {
-    // As a private list or read-only list. Only list owner can drag and drop
     const tasks = await this.repository.find({ where: { todolistId: todolistId }, order: { index: 'ASC' } });
-    tasks.forEach(async (task, index) => {
+    const promises: Promise<any>[] = [];
+    tasks.forEach((task, index) => {
       task.index = (index + 1) * this.indexStep;
       console.log(task);
-      await this.repository.save(task);
+      promises.push(this.repository.save(task));
     });
+    await Promise.all(promises);
   }
 }

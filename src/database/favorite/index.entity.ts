@@ -10,13 +10,13 @@ export class Favorite {
   @PrimaryColumn()
   todolistId: string;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdDate: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedDate: Date;
 
   @ManyToOne(() => User, (user) => user.id)

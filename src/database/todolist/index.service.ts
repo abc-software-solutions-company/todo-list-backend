@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, MethodNotAllowedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, MethodNotAllowedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './index.entity';
@@ -15,16 +15,6 @@ export class TodolistService {
     readonly statusService: StatusService,
   ) {}
 
-  async sync() {
-    // const all = await this.repository.find();
-    // for (let i = 0; i < all.length; i++) {
-    //   console.log('🚀 ~ file: todolist.service.ts ~ line 20 ~ TodolistService ~ sync ~ i', i);
-    //   const list = all[i];
-    //   list.visibility = this.visibilityList.public;
-    //   await this.repository.save(list);
-    // }
-  }
-
   get() {
     return this.repository.findBy({ isActive: true });
   }
@@ -33,7 +23,6 @@ export class TodolistService {
     const result = await this.repository.find({
       where: { isActive: true, userId },
       relations: { favorites: true },
-      select: { id: true, name: true, isActive: true, userId: true, visibility: true, createdDate: true },
       order: { createdDate: 'ASC' },
     });
     if (!result) throw new BadRequestException();
@@ -44,7 +33,6 @@ export class TodolistService {
     return this.repository.find({
       where: { isActive: true, favorites: { userId, isActive: true } },
       relations: { favorites: true },
-      select: { favorites: { userId: true, todolistId: true, isActive: true, updatedDate: true } },
       order: { favorites: { updatedDate: 'ASC' } },
     });
   }
@@ -60,31 +48,37 @@ export class TodolistService {
     return result;
   }
 
-  async create(body: ICreate) {
-    if (!body) throw new MethodNotAllowedException();
-    const { id } = await this.poolService.getOne();
-    const { name, userId } = body;
-    if (name.trim().length == 0) throw new BadRequestException();
+  async create(param: ICreate) {
+    const { name } = param;
+    if (!name.trim()) throw new MethodNotAllowedException('Empty name');
+    const { id } = await this.poolService.use();
     const visibility = this.visibilityList.public;
-    const listEntity = this.repository.create({ name, userId, id, visibility });
-    const list = await this.repository.save(listEntity);
-    if (!list) throw new BadRequestException();
-    await this.statusService.init({ todolistId: list.id });
-    await this.poolService.use(id);
-    return list;
+    const todolistEntity = this.repository.create({ ...param, id, visibility });
+    const todolist = await this.repository.save(todolistEntity);
+    await this.statusService.init({ todolistId: todolist.id });
+    return todolist;
   }
 
   async update(body: IUpdate) {
-    const { isActive, id, name, visibility, userId } = body;
-    const list = await this.repository.findOneBy({ id });
-    if (!list) throw new MethodNotAllowedException();
-    list.isActive = isActive === undefined ? list.isActive : isActive;
-    list.name = name === undefined ? list.name : name;
-    list.visibility = visibility === undefined ? list.visibility : visibility;
-    // As a read-only list or private list. Only list owner can update this list.
-    if (list.userId !== userId)
-      throw new BadRequestException('As a read-only list or private list. Only list owner can update this list.');
-    if (Object.values(this.visibilityList).includes(visibility)) list.visibility = visibility;
-    return this.repository.save(list);
+    const { id, name, isActive, visibility, userId } = body;
+    if (!id) throw new BadRequestException();
+    const todolist = await this.repository.findOneBy({ id });
+    if (todolist.userId !== userId) throw new ForbiddenException();
+    if (!todolist) throw new MethodNotAllowedException();
+
+    if (name && name.trim()) {
+      todolist.name = name;
+    }
+
+    if (isActive !== undefined) {
+      todolist.isActive = isActive;
+    }
+
+    if (visibility) {
+      if (!Object.values(this.visibilityList).includes(visibility)) throw new BadRequestException('visibility error');
+      todolist.visibility = visibility;
+    }
+
+    return this.repository.save(todolist);
   }
 }

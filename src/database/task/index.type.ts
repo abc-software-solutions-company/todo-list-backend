@@ -1,14 +1,14 @@
 import { IAttachmentCreate, IAttachmentUpdate } from '../attachment/index.type';
 import { ICommentCreate, ICommentUpdate } from '../comment/index.type';
 
-export interface IAttachments {
-  create?: Omit<IAttachmentCreate, 'taskId'>;
-  update?: Omit<IAttachmentUpdate, 'taskId'>;
+export interface IAttachment {
+  create?: Omit<IAttachmentCreate, 'taskId' | 'userId'>;
+  update?: Omit<IAttachmentUpdate, 'taskId' | 'userId'>;
 }
 
-export interface IComments {
-  create?: Omit<ICommentCreate, 'taskId'>;
-  update?: Omit<ICommentUpdate, 'taskId'>;
+export interface IComment {
+  create?: Omit<ICommentCreate, 'taskId' | 'userId'>;
+  update?: Omit<ICommentUpdate, 'taskId' | 'userId'>;
 }
 
 export interface ITaskGet {
@@ -25,8 +25,8 @@ export interface ITaskCreate {
 export interface ITaskUpdate extends ITaskGet {
   name?: string;
   description?: string;
-  attachments?: IAttachments;
-  comments?: IComments;
+  attachment?: IAttachment;
+  comment?: IComment;
   statusId: number;
   isActive?: boolean;
   isDone?: boolean;

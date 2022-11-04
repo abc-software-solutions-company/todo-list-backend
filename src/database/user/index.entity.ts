@@ -17,10 +17,10 @@ export class User {
   @Column({ nullable: true })
   email: string;
 
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdDate: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedDate: Date;
 
   @OneToMany(() => Todolist, (list) => list.user)

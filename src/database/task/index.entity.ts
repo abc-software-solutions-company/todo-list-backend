@@ -43,10 +43,10 @@ export class Task {
   @Column({ default: true })
   isActive: boolean;
 
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdDate: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedDate: Date;
 
   @ManyToOne(() => User, (user) => user.id)
@@ -62,7 +62,7 @@ export class Task {
   status: Status;
 
   @OneToMany(() => Attachment, (attachment) => attachment.task)
-  attachmens: Attachment[];
+  attachments: Attachment[];
 
   @OneToMany(() => Comment, (comment) => comment.task)
   comments: Comment;

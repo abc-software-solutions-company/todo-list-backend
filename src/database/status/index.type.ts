@@ -1,10 +1,12 @@
-export interface IInit {
+export interface IStatusInit {
   todolistId: string;
 }
-export interface ICreate extends IInit {
+export interface IStatusCreate extends IStatusInit {
   name: string;
 }
 
-export interface IUpdate extends ICreate {
+export interface IStatusUpdate extends IStatusInit {
   id: number;
+  name?: string;
+  isActive?: boolean;
 }

@@ -10,7 +10,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  @Post('/login')
+  @Post()
   login(@Body() param: LoginDto) {
     return this.authService.login(param);
   }

@@ -8,9 +8,9 @@ export class Pool {
   @Column({ type: 'boolean', default: false })
   isUsed: boolean;
 
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdDate: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedDate: Date;
 }

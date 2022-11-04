@@ -12,12 +12,6 @@ import { TodolistService } from './index.service';
 export class TodolistController {
   constructor(private readonly service: TodolistService) {}
 
-  // @Get('sync')
-  // @SkipThrottle()
-  // async sync() {
-  //   return this.service.sync();
-  // }
-
   @Get()
   @SkipThrottle()
   async get() {
