@@ -18,7 +18,7 @@ export class AttachmentService {
   async update(param: IAttachmentUpdate) {
     const { id, taskId, userId } = param;
     if (!id || !taskId || !userId) throw new BadRequestException();
-    const attachment = await this.repository.findOneBy({ id });
+    const attachment = await this.repository.findOneBy({ id, taskId, userId });
     if (!attachment) throw new BadRequestException();
     const newAttachment = this.repository.create(param);
     return this.repository.save(newAttachment);

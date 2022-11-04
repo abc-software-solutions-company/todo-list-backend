@@ -12,12 +12,6 @@ import { TaskService } from './index.service';
 export class TaskController {
   constructor(private readonly service: TaskService) {}
 
-  // @Get('/sync')
-  // @SkipThrottle()
-  // async sync() {
-  //   return this.service.sync();
-  // }
-
   @Get()
   @SkipThrottle()
   async get() {
@@ -32,22 +26,19 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() body: CreateTaskDto, @Req() request: IRequest) {
-    const { id: userId } = request.user;
+  create(@Body() body: CreateTaskDto, @Req() { user: { id: userId } }: IRequest) {
     return this.service.create({ ...body, userId });
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/update')
-  update(@Body() body: UpdateTaskDto, @Req() request: IRequest) {
-    const { id: userId } = request.user;
+  update(@Body() body: UpdateTaskDto, @Req() { user: { id: userId } }: IRequest) {
     return this.service.update({ ...body, userId });
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/reindex')
-  reIndex(@Body() body: ReIndexDto, @Req() request: IRequest) {
-    const { id: userId } = request.user;
+  reIndex(@Body() body: ReIndexDto, @Req() { user: { id: userId } }: IRequest) {
     return this.service.reindex({ ...body, userId });
   }
 }

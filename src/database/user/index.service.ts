@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './index.entity';
-import { uuid } from 'uuidv4';
+import { v4 } from 'uuid';
 
 interface ICreate {
   name: string;
@@ -17,17 +17,9 @@ export class UserService {
   }
 
   async create({ name, email }: ICreate) {
-    if (name.trim().length === 0) throw new BadRequestException();
-    let i = 0;
-    while (i < 3) {
-      const id = uuid();
-      try {
-        const user = this.repository.create({ name, id, email });
-        return this.repository.save(user);
-      } catch {
-        i = i + 1;
-      }
-    }
-    throw new BadRequestException();
+    if (name.trim()) throw new BadRequestException();
+    const id = v4();
+    const user = this.repository.create({ name, id, email });
+    return this.repository.save(user);
   }
 }

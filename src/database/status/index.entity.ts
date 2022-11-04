@@ -25,13 +25,16 @@ export class Status {
   @Column({ type: 'bigint' })
   index: number;
 
+  @Column({ type: 'boolean', default: true })
+  isActive: boolean;
+
   @Column()
   todolistId: string;
 
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdDate: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedDate: Date;
 
   @ManyToOne(() => Todolist, (todolist) => todolist.id)

@@ -32,10 +32,10 @@ export class Todolist {
   @Column({ default: true })
   isActive: boolean;
 
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdDate: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedDate: Date;
 
   @OneToOne(() => Pool, (pool) => pool.id)

@@ -2,11 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Status } from './index.entity';
-import { ICreate, IInit, IUpdate } from './index.type';
+import { IStatusCreate, IStatusInit, IStatusUpdate } from './index.type';
 
 @Injectable()
 export class StatusService {
   readonly indexStep: number = Math.pow(2, 30);
+
   readonly defaultStatus: { name: string; color: string }[] = [
     { name: 'Backlog', color: '#78716C' },
     { name: 'To-Do', color: '#0EA5E9' },
@@ -15,9 +16,10 @@ export class StatusService {
     { name: 'In-QA', color: '#8B5CF6' },
     { name: 'Done', color: '#22C55E' },
   ];
+
   constructor(@InjectRepository(Status) readonly repository: Repository<Status>) {}
 
-  async init({ todolistId }: IInit) {
+  async init({ todolistId }: IStatusInit) {
     const result = [];
     for (let i = 0; i < this.defaultStatus.length; i++) {
       const instance = this.repository.create({
@@ -31,16 +33,28 @@ export class StatusService {
     return result;
   }
 
-  create({ todolistId, name }: ICreate) {
-    if (!todolistId || !name) throw new BadRequestException();
-    return this.repository.save(this.repository.create({ name, todolistId }));
+  create(param: IStatusCreate) {
+    const { todolistId, name } = param;
+    if (!name.trim()) throw new BadRequestException('Empty name');
+    const newTodolist = this.repository.create({ name, todolistId });
+
+    return this.repository.save(newTodolist);
   }
 
-  async update({ id, todolistId, name }: IUpdate) {
-    if (!id || !todolistId || !name) throw new BadRequestException();
+  async update(param: IStatusUpdate) {
+    const { id, todolistId, name, isActive } = param;
+    if (!id) throw new BadRequestException('Empty id');
     const status = await this.repository.findOneBy({ id, todolistId });
-    if (status.name === name) throw new BadRequestException();
-    status.name = name;
+    if (!status) throw new BadRequestException('Todolist not existed');
+
+    if (name.trim()) {
+      status.name = name;
+    }
+
+    if (isActive !== undefined) {
+      status.isActive = isActive;
+    }
+
     return this.repository.save(status);
   }
 }

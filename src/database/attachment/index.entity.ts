@@ -15,7 +15,7 @@ export class Attachment {
   @PrimaryGeneratedColumn({ type: 'int8' })
   id: number;
 
-  @Column({ default: 'Attachment' })
+  @Column({ default: 'attachment' })
   name: string;
 
   @Column({ type: 'text' })
