@@ -8,10 +8,10 @@ import { AuthModule } from './auth/index.module';
 import appConfig from './configs/app.config';
 import databaseConfig from './configs/database.config';
 import { AttachmentModule } from './database/attachment/index.module';
+import { CommentModule } from './database/comment/index.module';
 import { FavoriteModule } from './database/favorite/index.module';
 import { PoolModule } from './database/pool/index.module';
 import { StatusModule } from './database/status/index.module';
-import { TaskAttachmentModule } from './database/task-attachment/index.module';
 import { TaskModule } from './database/task/index.module';
 import { TodolistModule } from './database/todolist/index.module';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
@@ -39,7 +39,7 @@ import { SocketsModule } from './websocket/socket.module';
       limit: 100,
     }),
     AttachmentModule,
-    TaskAttachmentModule,
+    CommentModule,
     PoolModule,
     AuthModule,
     UserModule,

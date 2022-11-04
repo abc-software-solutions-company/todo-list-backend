@@ -8,20 +8,16 @@ import { IAttachmentCreate, IAttachmentUpdate } from './index.type';
 export class AttachmentService {
   constructor(@InjectRepository(Attachment) readonly repository: Repository<Attachment>) {}
 
-  get() {
-    return this.repository.find({ relations: { taskAttachments: true } });
-  }
-
   create(param: IAttachmentCreate) {
     const { link, name } = param;
     if (!link || !name) throw new BadRequestException();
-    const newAttachment = this.repository.create({ ...param, isActive: true });
+    const newAttachment = this.repository.create({ ...param });
     return this.repository.save(newAttachment);
   }
 
   async update(param: IAttachmentUpdate) {
-    const { id } = param;
-    if (!id) throw new BadRequestException();
+    const { id, taskId, userId } = param;
+    if (!id || !taskId || !userId) throw new BadRequestException();
     const attachment = await this.repository.findOneBy({ id });
     if (!attachment) throw new BadRequestException();
     const newAttachment = this.repository.create(param);

@@ -48,6 +48,6 @@ export class TaskController {
   @Patch('/reindex')
   reIndex(@Body() body: ReIndexDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
-    return this.service.reIndex({ ...body, userId });
+    return this.service.reindex({ ...body, userId });
   }
 }

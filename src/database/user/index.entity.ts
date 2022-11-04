@@ -3,6 +3,8 @@ import { Entity, Column, OneToMany, CreateDateColumn, PrimaryColumn, UpdateDateC
 import { Task } from 'src/database/task/index.entity';
 import { Todolist } from 'src/database/todolist/index.entity';
 import { Favorite } from '../favorite/index.entity';
+import { Comment } from '../comment/index.entity';
+import { Attachment } from '../attachment/index.entity';
 
 @Entity()
 export class User {
@@ -29,4 +31,10 @@ export class User {
 
   @OneToMany(() => Favorite, (favorite) => favorite.user)
   favorites: Favorite[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
+
+  @OneToMany(() => Attachment, (attachment) => attachment.user)
+  attachments: Attachment[];
 }

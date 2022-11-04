@@ -3,10 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { uuid } from 'uuidv4';
 import { AttachmentService } from '../attachment/index.service';
-import { TaskAttachmentService } from '../task-attachment/index.service';
+import { CommentService } from '../comment/index.service';
 import { TodolistService } from '../todolist/index.service';
 import { Task } from './index.entity';
-import { IGet, ICreate, IUpdate, IReIndex } from './index.type';
+import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindex } from './index.type';
 
 @Injectable()
 export class TaskService {
@@ -15,42 +15,27 @@ export class TaskService {
     @InjectRepository(Task)
     readonly repository: Repository<Task>,
     readonly todolist: TodolistService,
-    readonly taskAttachment: TaskAttachmentService,
     readonly attachment: AttachmentService,
+    readonly comment: CommentService,
   ) {}
 
   async sync() {
-    // const all = await this.repository.find({ relations: { todolist: { status: true } } });
-    // for (let i = 0; i < all.length; i++) {
-    //   console.log('🚀 ~ file: task.service.ts ~ line 18 ~ TaskService ~ sync ~ i', i);
-    //   const task = all[i];
-    //   const ascendingStatus = task.todolist.status.sort((a, b) => a.index - b.index);
-    //   const statStatus = ascendingStatus[0].id;
-    //   const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
-    //   if (task.isDone === true || task.statusId === endStatus) {
-    //     task.isDone = true;
-    //     task.statusId = endStatus;
-    //   } else {
-    //     task.isDone = false;
-    //     if (task.statusId === endStatus) task.statusId = statStatus;
-    //   }
-    //   await this.repository.save(task);
-    // }
+    console.log('sync');
   }
 
   get() {
-    return this.repository.find({ where: { isActive: true }, relations: { taskAttachments: true } });
+    return this.repository.find({ where: { isActive: true } });
   }
 
-  getOne({ id }: IGet) {
+  getOne({ id }: ITaskGet) {
     return this.repository.findOne({
       where: { id, isActive: true },
-      relations: { taskAttachments: { attachment: true }, status: true, todolist: { status: true } },
-      order: { taskAttachments: { attachment: { createdDate: 'ASC' } } },
+      relations: { status: true, todolist: { status: true }, attachmens: true },
+      order: { attachmens: { createdDate: 'ASC' } },
     });
   }
 
-  async create({ name, todolistId, description, userId }: ICreate) {
+  async create({ name, todolistId, description, userId }: ITaskCreate) {
     let i = 0;
     if (name.trim().length == 0) throw new BadRequestException('Emty name');
     while (i < 3) {
@@ -71,21 +56,36 @@ export class TaskService {
     throw new BadRequestException('Server Err');
   }
 
-  async update(body: IUpdate) {
-    if (!body) throw new BadRequestException('Params');
-    const { isActive, isDone, description, name, id, statusId, userId, attachments } = body;
+  async update(param: ITaskUpdate) {
+    const { id, description, name, isActive, isDone, statusId, userId, attachments, comments } = param;
+
+    if (!id) throw new BadRequestException('Task no existed');
+
     const task = await this.repository.findOne({
       where: { id },
-      relations: { todolist: { status: true }, taskAttachments: true },
+      relations: { todolist: { status: true } },
     });
+
     if (!task) throw new MethodNotAllowedException();
+
     if (task.todolist.visibility !== this.todolist.visibilityList.public && task.todolist.userId !== userId)
       throw new MethodNotAllowedException();
-    task.isActive = isActive === undefined ? task.isActive : isActive;
-    task.name = name ? name : task.name;
-    task.description = description ? description : task.description;
+
+    if (name) {
+      task.name = name;
+    }
+
+    if (description) {
+      task.description = description;
+    }
+
+    if (isActive !== undefined) {
+      task.isActive = isActive;
+    }
+
     const ascendingStatus = task.todolist.status.sort((a, b) => a.index - b.index);
     const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
+
     if (isDone !== undefined) {
       if (isDone === true) {
         task.statusId = endStatus;
@@ -103,27 +103,22 @@ export class TaskService {
       task.statusId = statusId;
     }
 
-    if (!attachments) return this.repository.save(task);
-    else {
-      await this.repository.save(task);
-      if (attachments.add) {
-        const { link, name } = attachments.add;
-        const attachment = await this.attachment.create({ link, name });
-        await this.taskAttachment.create({ attachmentId: attachment.id, taskId: task.id });
-      }
-      if (attachments.edit && attachments.edit) {
-        const { id, name } = attachments.edit;
-        await this.attachment.update({ id, name });
-      }
-      if (attachments.remove && attachments.remove) {
-        const { id } = attachments.remove;
-        await this.taskAttachment.update({ attachmentId: id, taskId: task.id, isActive: false });
-      }
-      return this.getOne({ id });
+    await this.repository.save(task);
+
+    if (attachments) {
+      if (attachments.create) await this.attachment.create({ ...attachments.create, taskId: id });
+      if (attachments.update) await this.attachment.update({ ...attachments.update, taskId: id });
     }
+
+    if (comments) {
+      if (comments.create) await this.comment.create({ ...comments.create, taskId: id });
+      if (comments.update) await this.comment.update({ ...comments.update, taskId: id });
+    }
+
+    return this.getOne({ id });
   }
 
-  async reIndex({ taskFirstId, taskReorderId, taskSecondId, userId }: IReIndex) {
+  async reindex({ taskFirstId, taskReorderId, taskSecondId, userId }: ITaskReindex) {
     const task = await this.repository.findOne({ where: { id: taskReorderId }, relations: { todolist: true } });
     if (task.todolist.visibility !== this.todolist.visibilityList.public && task.todolist.userId !== userId)
       throw new MethodNotAllowedException('As a private list or read-only list. Only list owner can drag and drop');
@@ -139,11 +134,11 @@ export class TaskService {
 
     await this.repository.save(task);
 
-    if (index - index1 < 32 || index2 - index < 32) this.reAllIndex(task.todolistId);
+    if (index - index1 < 32 || index2 - index < 32) this.reindexAll(task.todolistId);
     return task;
   }
 
-  async reAllIndex(todolistId: string) {
+  async reindexAll(todolistId: string) {
     // As a private list or read-only list. Only list owner can drag and drop
     const tasks = await this.repository.find({ where: { todolistId: todolistId }, order: { index: 'ASC' } });
     tasks.forEach(async (task, index) => {

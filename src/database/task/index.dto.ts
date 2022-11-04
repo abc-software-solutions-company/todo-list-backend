@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IAttachments, IComments } from './index.type';
 
 export class CreateTaskDto {
   @ApiProperty()
@@ -22,11 +23,10 @@ export class UpdateTaskDto {
   description: string;
 
   @ApiProperty()
-  attachments: {
-    add: { name: string; link: string };
-    remove: { id: number };
-    edit: { id: number; name: string };
-  };
+  attachments: IAttachments;
+
+  @ApiProperty()
+  comments: IComments;
 
   @ApiProperty()
   isDone: boolean;
