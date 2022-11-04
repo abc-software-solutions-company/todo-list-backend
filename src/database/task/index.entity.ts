@@ -8,8 +8,9 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { Attachment } from '../attachment/index.entity';
+import { Comment } from '../comment/index.entity';
 import { Status } from '../status/index.entity';
-import { TaskAttachment } from '../task-attachment/index.entity';
 import { Todolist } from '../todolist/index.entity';
 import { User } from '../user/index.entity';
 
@@ -60,6 +61,9 @@ export class Task {
   @JoinColumn({ name: 'statusId' })
   status: Status;
 
-  @OneToMany(() => TaskAttachment, (taskAttachment) => taskAttachment.task)
-  taskAttachments: TaskAttachment[];
+  @OneToMany(() => Attachment, (attachment) => attachment.task)
+  attachmens: Attachment[];
+
+  @OneToMany(() => Comment, (comment) => comment.task)
+  comments: Comment;
 }
