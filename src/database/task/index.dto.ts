@@ -29,6 +29,9 @@ export class UpdateTaskDto {
   comment: IComment;
 
   @ApiProperty()
+  priority: string;
+
+  @ApiProperty()
   isDone: boolean;
 
   @ApiProperty()

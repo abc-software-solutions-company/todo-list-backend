@@ -27,9 +27,10 @@ export interface ITaskUpdate extends ITaskGet {
   description?: string;
   attachment?: IAttachment;
   comment?: IComment;
-  statusId: number;
+  priority?: string;
   isActive?: boolean;
   isDone?: boolean;
+  statusId: number;
   userId: string;
 }
 

@@ -11,6 +11,7 @@ import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindex } from './index.type';
 @Injectable()
 export class TaskService {
   readonly indexStep: number = Math.pow(2, 30);
+  readonly priorities = { lowest: 'Lowest', low: 'Low', medium: 'Medium', high: 'High', highest: 'Highest' };
 
   constructor(
     @InjectRepository(Task)
@@ -40,13 +41,15 @@ export class TaskService {
       throw new MethodNotAllowedException();
     const id = v4();
     const index = (list.tasks.length + 1) * this.indexStep;
-    const statusId = Number(list.status[0].id);
+    const statusList = list.status.sort((a, b) => Number(a.index) - Number(b.index));
+    const statusId = Number(statusList[0].id);
+    console.log('🚀 ~ file: index.service.ts ~ line 46 ~ TaskService ~ create ~ statusList[0]', statusList[0]);
     const user = this.repository.create({ name, todolistId, description, userId, id, index, statusId });
     return this.repository.save(user);
   }
 
   async update(param: ITaskUpdate) {
-    const { id, description, name, isActive, isDone, statusId, userId, attachment, comment } = param;
+    const { id, description, priority, name, isActive, isDone, statusId, userId, attachment, comment } = param;
 
     if (!id) throw new BadRequestException('Task no existed');
 
@@ -64,6 +67,11 @@ export class TaskService {
 
     if (description !== undefined) {
       task.description = description;
+    }
+    if (priority) {
+      if (!Object.values(this.priorities).includes(priority))
+        throw new MethodNotAllowedException('Error priority value');
+      task.priority = priority;
     }
 
     if (isActive !== undefined) {

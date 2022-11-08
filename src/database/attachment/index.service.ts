@@ -9,7 +9,6 @@ export class AttachmentService {
   constructor(@InjectRepository(Attachment) readonly repository: Repository<Attachment>) {}
 
   create(param: IAttachmentCreate) {
-    console.log('🚀 ~ file: index.service.ts ~ line 12 ~ AttachmentService ~ create ~ param', param);
     const { link, name } = param;
     if (!link || !name) throw new BadRequestException();
     const newAttachment = this.repository.create({ ...param });
@@ -19,7 +18,7 @@ export class AttachmentService {
   async update(param: IAttachmentUpdate) {
     const { id, taskId, userId, name } = param;
     if (!id || !taskId || !userId) throw new BadRequestException();
-    if (name && name.trim()) throw new BadRequestException('Empty name');
+    if (!name || (name && !name.trim())) throw new BadRequestException('Empty name');
     const attachment = await this.repository.findOneBy({ id, taskId, userId });
     if (!attachment) throw new BadRequestException();
     const newAttachment = this.repository.create(param);
