@@ -40,6 +40,9 @@ export class Task {
   @Column({ type: 'bigint' })
   index: number;
 
+  @Column({ default: 'Medium' })
+  priority: string;
+
   @Column({ default: true })
   isActive: boolean;
 

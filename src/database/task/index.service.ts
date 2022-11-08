@@ -11,6 +11,7 @@ import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindex } from './index.type';
 @Injectable()
 export class TaskService {
   readonly indexStep: number = Math.pow(2, 30);
+  readonly priorities = { lowest: 'Lowest', low: 'Low', medium: 'Medium', high: 'High', highest: 'Highest' };
 
   constructor(
     @InjectRepository(Task)
@@ -46,7 +47,7 @@ export class TaskService {
   }
 
   async update(param: ITaskUpdate) {
-    const { id, description, name, isActive, isDone, statusId, userId, attachment, comment } = param;
+    const { id, description, priority, name, isActive, isDone, statusId, userId, attachment, comment } = param;
 
     if (!id) throw new BadRequestException('Task no existed');
 
@@ -64,6 +65,11 @@ export class TaskService {
 
     if (description !== undefined) {
       task.description = description;
+    }
+    if (priority) {
+      if (!Object.values(this.priorities).includes(priority))
+        throw new MethodNotAllowedException('Error priority value');
+      task.priority = priority;
     }
 
     if (isActive !== undefined) {
