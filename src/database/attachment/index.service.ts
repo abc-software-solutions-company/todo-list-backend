@@ -18,10 +18,10 @@ export class AttachmentService {
   async update(param: IAttachmentUpdate) {
     const { id, taskId, userId, name } = param;
     if (!id || !taskId || !userId) throw new BadRequestException();
-    if (!name || (name && !name.trim())) throw new BadRequestException('Empty name');
+    if (name && !name.trim()) throw new BadRequestException('Empty name');
     const attachment = await this.repository.findOneBy({ id, taskId, userId });
-    if (!attachment) throw new BadRequestException();
-    const newAttachment = this.repository.create(param);
+    if (!attachment) throw new BadRequestException('not existed');
+    const newAttachment = this.repository.create({ ...attachment, ...param });
     return this.repository.save(newAttachment);
   }
 }

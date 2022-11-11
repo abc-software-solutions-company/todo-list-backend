@@ -35,7 +35,7 @@ export class TaskService {
 
   async create(param: ITaskCreate) {
     const { name, todolistId, description, userId } = param;
-    if (!name.trim()) throw new BadRequestException('empty name ');
+    if (!name || (name && !name.trim())) throw new BadRequestException('Empty name ');
     const list = await this.todolist.getOne({ id: todolistId });
     if (list.visibility !== this.todolist.visibilityList.public && list.userId !== userId)
       throw new MethodNotAllowedException();
@@ -43,7 +43,6 @@ export class TaskService {
     const index = (list.tasks.length + 1) * this.indexStep;
     const statusList = list.status.sort((a, b) => Number(a.index) - Number(b.index));
     const statusId = Number(statusList[0].id);
-    console.log('🚀 ~ file: index.service.ts ~ line 46 ~ TaskService ~ create ~ statusList[0]', statusList[0]);
     const user = this.repository.create({ name, todolistId, description, userId, id, index, statusId });
     return this.repository.save(user);
   }
@@ -59,9 +58,9 @@ export class TaskService {
     });
 
     if (task.todolist.visibility !== this.todolist.visibilityList.public && task.todolist.userId !== userId)
-      throw new MethodNotAllowedException();
+      throw new MethodNotAllowedException('todolist is readonly');
 
-    if (name && name.trim()) {
+    if (name && !name.trim()) {
       task.name = name;
     }
 
