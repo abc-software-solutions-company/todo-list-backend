@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Attachment } from '../attachment/index.entity';
 import { Task } from '../task/index.entity';
 import { User } from '../user/index.entity';
 
@@ -25,9 +24,6 @@ export class Comment {
   @Column()
   taskId: string;
 
-  @Column({ nullable: true })
-  attachmentId: number;
-
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
@@ -44,8 +40,4 @@ export class Comment {
   @ManyToOne(() => Task, (task) => task.id)
   @JoinColumn({ name: 'taskId' })
   task: Task;
-
-  @ManyToOne(() => Attachment, (attachment) => attachment.id)
-  @JoinColumn({ name: 'attachmentId' })
-  attachment: Attachment;
 }

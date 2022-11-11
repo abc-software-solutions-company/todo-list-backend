@@ -66,7 +66,8 @@ export class TodolistService {
     if (todolist.userId !== userId) throw new ForbiddenException();
     if (!todolist) throw new MethodNotAllowedException();
 
-    if (name && name.trim()) {
+    if (name) {
+      if (!name.trim()) throw new BadRequestException('Empty name');
       todolist.name = name;
     }
 
