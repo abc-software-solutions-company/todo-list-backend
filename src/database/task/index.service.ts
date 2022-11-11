@@ -48,7 +48,8 @@ export class TaskService {
   }
 
   async update(param: ITaskUpdate) {
-    const { id, description, priority, name, isActive, isDone, statusId, userId, attachment, comment } = param;
+    const { id, description, storyPoint, priority, name, isActive, isDone, statusId, userId, attachment, comment } =
+      param;
 
     if (!id) throw new BadRequestException('Task no existed');
 
@@ -68,6 +69,11 @@ export class TaskService {
     if (description !== undefined) {
       task.description = description;
     }
+
+    if (storyPoint !== undefined) {
+      task.storyPoint = storyPoint;
+    }
+
     if (priority) {
       if (!Object.values(this.priorities).includes(priority))
         throw new MethodNotAllowedException('Error priority value');

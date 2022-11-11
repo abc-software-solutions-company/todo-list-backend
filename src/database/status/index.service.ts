@@ -35,7 +35,7 @@ export class StatusService {
 
   create(param: IStatusCreate) {
     const { todolistId, name } = param;
-    if (!name.trim()) throw new BadRequestException('Empty name');
+    if (!name || (name && !name.trim())) throw new BadRequestException('Empty name');
     const newTodolist = this.repository.create({ name, todolistId });
 
     return this.repository.save(newTodolist);
@@ -47,7 +47,8 @@ export class StatusService {
     const status = await this.repository.findOneBy({ id, todolistId });
     if (!status) throw new BadRequestException('Todolist not existed');
 
-    if (name && name.trim()) {
+    if (name) {
+      if (!name.trim()) throw new BadRequestException('Empty status name');
       status.name = name;
     }
 

@@ -27,6 +27,7 @@ export interface ITaskUpdate extends ITaskGet {
   description?: string;
   attachment?: IAttachment;
   comment?: IComment;
+  storyPoint?: string;
   priority?: string;
   isActive?: boolean;
   isDone?: boolean;
