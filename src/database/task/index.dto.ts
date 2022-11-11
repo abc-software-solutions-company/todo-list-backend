@@ -23,6 +23,9 @@ export class UpdateTaskDto {
   description: string;
 
   @ApiProperty()
+  storyPoint: string;
+
+  @ApiProperty()
   attachment: IAttachment;
 
   @ApiProperty()

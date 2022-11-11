@@ -17,7 +17,7 @@ export class UserService {
   }
 
   async create({ name, email }: ICreate) {
-    if (name && !name.trim()) throw new BadRequestException();
+    if (!name || (name && !name.trim())) throw new BadRequestException();
     const id = v4();
     const user = this.repository.create({ name, id, email });
     return this.repository.save(user);

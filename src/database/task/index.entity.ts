@@ -25,6 +25,9 @@ export class Task {
   @Column({ type: 'text', nullable: true })
   description: string;
 
+  @Column({ nullable: true })
+  storyPoint: string;
+
   @Column({ default: false })
   isDone: boolean;
 
