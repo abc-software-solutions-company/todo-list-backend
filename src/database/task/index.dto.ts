@@ -26,6 +26,12 @@ export class UpdateTaskDto {
   storyPoint: string;
 
   @ApiProperty()
+  startDate: Date;
+
+  @ApiProperty()
+  dueDate: Date;
+
+  @ApiProperty()
   attachment: IAttachment;
 
   @ApiProperty()

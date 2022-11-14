@@ -31,6 +31,12 @@ export class Task {
   @Column({ default: false })
   isDone: boolean;
 
+  @Column({ default: new Date(Date.now()) })
+  startDate: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  dueDate: Date;
+
   @Column()
   todolistId: string;
 

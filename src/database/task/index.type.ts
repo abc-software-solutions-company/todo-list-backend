@@ -28,6 +28,8 @@ export interface ITaskUpdate extends ITaskGet {
   attachment?: IAttachment;
   comment?: IComment;
   storyPoint?: string;
+  startDate?: Date;
+  dueDate?: Date;
   priority?: string;
   isActive?: boolean;
   isDone?: boolean;
