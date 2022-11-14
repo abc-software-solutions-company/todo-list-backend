@@ -48,8 +48,21 @@ export class TaskService {
   }
 
   async update(param: ITaskUpdate) {
-    const { id, description, storyPoint, priority, name, isActive, isDone, statusId, userId, attachment, comment } =
-      param;
+    const {
+      id,
+      description,
+      storyPoint,
+      priority,
+      name,
+      isActive,
+      isDone,
+      statusId,
+      userId,
+      attachment,
+      comment,
+      startDate,
+      dueDate,
+    } = param;
 
     if (!id) throw new BadRequestException('Task no existed');
 
@@ -72,6 +85,14 @@ export class TaskService {
 
     if (storyPoint !== undefined) {
       task.storyPoint = storyPoint;
+    }
+
+    if (startDate !== undefined) {
+      task.startDate = startDate;
+    }
+
+    if (dueDate !== undefined) {
+      task.dueDate = dueDate;
     }
 
     if (priority) {
