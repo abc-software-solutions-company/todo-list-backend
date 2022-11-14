@@ -7,6 +7,8 @@ on:
   push:
     branches: [main]
 
+env:
+  APP_ENV: ${{ secrets.PRODUCTION }}
 
 jobs:
   build:
@@ -23,9 +25,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: cp .env.stage.example .env
+      - name: Delete old env file
+        run: rm -r -f .env
+
+      - name: Create env_temp file
+        run: touch .env_temp
+
+      - name: Copy Secret Key Multiline environment variable to .env_temp file
+        run: echo $APP_ENV | tee .env_temp
+
+      - name: Replace space character with break-line in .env
+        run: sed 's/ /\n/g' .env_temp >> .env
 
       - run: npm install -g yarn
       - run: yarn
-        # This is nest start command, don't misread about development mode. It's ready at production mode1
+        # This is nest start command, don't misread about development mode. It's ready at production mode
       - run: yarn build
