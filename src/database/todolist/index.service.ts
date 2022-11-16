@@ -6,6 +6,7 @@ import { PoolService } from 'src/database/pool/index.service';
 import { ITodolistCreate, ITodolistGetMyList, ITodolistGetOne, ITodolistUpdate } from './index.type';
 import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
+import { defineAny } from 'src/utils/function';
 @Injectable()
 export class TodolistService {
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
@@ -61,31 +62,32 @@ export class TodolistService {
   }
 
   async update(body: ITodolistUpdate) {
-    const { id, name, isActive, visibility, favorite, userId } = body;
+    const { id, name, visibility, isActive, favorite, userId } = body;
     if (!id) throw new BadRequestException();
     const todolist = await this.repository.findOneBy({ id });
-    if (todolist.userId !== userId) throw new ForbiddenException();
-    if (!todolist) throw new MethodNotAllowedException();
 
-    if (name) {
-      if (!name.trim()) throw new BadRequestException('Empty name');
-      todolist.name = name;
-    }
+    const owner = todolist.userId === userId;
+    const write = owner || todolist.visibility === this.visibilityList.public;
 
-    if (isActive !== undefined) {
-      todolist.isActive = isActive;
+    if (defineAny(name, visibility, isActive)) {
+      if (!write) throw new ForbiddenException();
+      if (isActive !== undefined) {
+        if (!owner) throw new ForbiddenException();
+        todolist.isActive = isActive;
+      }
+      if (name) {
+        if (!name.trim()) throw new BadRequestException('Empty name');
+        todolist.name = name;
+      }
+      if (visibility) {
+        todolist.visibility = visibility;
+      }
+      await this.repository.save(todolist);
     }
 
     if (favorite != undefined) {
       this.favoriteService.set({ todolistId: id, userId, isActive: favorite });
     }
-
-    if (visibility) {
-      if (!Object.values(this.visibilityList).includes(visibility)) throw new BadRequestException('visibility error');
-      todolist.visibility = visibility;
-    }
-
-    await this.repository.save(todolist);
 
     return this.getOne({ id });
   }
