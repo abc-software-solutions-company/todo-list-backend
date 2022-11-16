@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
-import { CreateListDto, UpdateListDto } from './index.dto';
+import { CreateTodolistDto, UpdateTodolistDto } from './index.dto';
 import { TodolistService } from './index.service';
 
 @Controller('todolists')
@@ -42,14 +42,14 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() { name }: CreateListDto, @Req() request: IRequest) {
+  create(@Body() { name }: CreateTodolistDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
     return this.service.create({ name, userId });
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch()
-  update(@Body() body: UpdateListDto, @Req() request: IRequest) {
+  update(@Body() body: UpdateTodolistDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
     return this.service.update({ ...body, userId });
   }

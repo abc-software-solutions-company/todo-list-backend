@@ -1,7 +1,5 @@
-export interface IFavoriteCreate {
+export interface IFavoriteSet {
   userId: string;
   todolistId: string;
-}
-export interface IFavoriteUpdate extends IFavoriteCreate {
   isActive: boolean;
 }

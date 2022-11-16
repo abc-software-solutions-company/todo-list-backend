@@ -3,8 +3,9 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './index.entity';
 import { PoolService } from 'src/database/pool/index.service';
-import { ICreate, IGetMyList, IGetOne, IUpdate } from './index.type';
+import { ITodolistCreate, ITodolistGetMyList, ITodolistGetOne, ITodolistUpdate } from './index.type';
 import { StatusService } from '../status/index.service';
+import { FavoriteService } from '../favorite/index.service';
 @Injectable()
 export class TodolistService {
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
@@ -13,13 +14,14 @@ export class TodolistService {
     @InjectRepository(Todolist) readonly repository: Repository<Todolist>,
     readonly poolService: PoolService,
     readonly statusService: StatusService,
+    readonly favoriteService: FavoriteService,
   ) {}
 
   get() {
     return this.repository.findBy({ isActive: true });
   }
 
-  async getByUser({ userId }: IGetMyList) {
+  async getByUser({ userId }: ITodolistGetMyList) {
     const result = await this.repository.find({
       where: { isActive: true, userId },
       relations: { favorites: true },
@@ -29,7 +31,7 @@ export class TodolistService {
     return result;
   }
 
-  getFavorite({ userId }: IGetMyList) {
+  getFavorite({ userId }: ITodolistGetMyList) {
     return this.repository.find({
       where: { isActive: true, favorites: { userId, isActive: true } },
       relations: { favorites: true },
@@ -37,18 +39,17 @@ export class TodolistService {
     });
   }
 
-  async getOne({ id }: IGetOne) {
+  async getOne({ id }: ITodolistGetOne) {
     if (!id) throw new MethodNotAllowedException();
     const result = await this.repository.findOne({
       where: { id, isActive: true },
-      relations: { tasks: true, status: true, favorites: true },
-      order: { tasks: { index: 'ASC' } },
+      relations: { tasks: { status: true }, status: { tasks: true }, favorites: true },
+      order: { tasks: { index: 'ASC' }, status: { index: 'ASC' } },
     });
-    if (!result) throw new BadRequestException();
     return result;
   }
 
-  async create(param: ICreate) {
+  async create(param: ITodolistCreate) {
     const { name } = param;
     if (!name || (name && !name.trim())) throw new MethodNotAllowedException('Empty name');
     const { id } = await this.poolService.use();
@@ -59,8 +60,8 @@ export class TodolistService {
     return todolist;
   }
 
-  async update(body: IUpdate) {
-    const { id, name, isActive, visibility, userId } = body;
+  async update(body: ITodolistUpdate) {
+    const { id, name, isActive, visibility, favorite, userId } = body;
     if (!id) throw new BadRequestException();
     const todolist = await this.repository.findOneBy({ id });
     if (todolist.userId !== userId) throw new ForbiddenException();
@@ -75,11 +76,17 @@ export class TodolistService {
       todolist.isActive = isActive;
     }
 
+    if (favorite != undefined) {
+      this.favoriteService.set({ todolistId: id, userId, isActive: favorite });
+    }
+
     if (visibility) {
       if (!Object.values(this.visibilityList).includes(visibility)) throw new BadRequestException('visibility error');
       todolist.visibility = visibility;
     }
 
-    return this.repository.save(todolist);
+    await this.repository.save(todolist);
+
+    return this.getOne({ id });
   }
 }

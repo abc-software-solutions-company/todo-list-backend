@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateListDto {
+export class CreateTodolistDto {
   @ApiProperty()
   name: string;
 }
 
-export class UpdateListDto {
+export class UpdateTodolistDto {
   @ApiProperty()
   id: string;
 
@@ -13,10 +13,10 @@ export class UpdateListDto {
   name: string;
 
   @ApiProperty()
-  isActive: boolean;
+  favorite: boolean;
 
   @ApiProperty()
-  isDone: boolean;
+  isActive: boolean;
 
   @ApiProperty()
   visibility: string;

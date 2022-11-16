@@ -1,19 +1,20 @@
-export interface IGetOne {
+export interface ITodolistGetOne {
   id: string;
 }
 
-export interface IGetMyList {
+export interface ITodolistGetMyList {
   userId: string;
 }
 
-export interface ICreate extends IGetMyList {
+export interface ITodolistCreate extends ITodolistGetMyList {
   name: string;
 }
 
-export interface IUpdate {
+export interface ITodolistUpdate {
   id: string;
   name?: string;
   isActive?: boolean;
+  favorite: boolean;
   visibility?: string;
   userId: string;
 }
