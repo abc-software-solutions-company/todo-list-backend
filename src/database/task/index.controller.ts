@@ -3,7 +3,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
-import { CreateTaskDto, ReIndexDto, UpdateTaskDto } from './index.dto';
+import { CreateTaskDto, ReindexAllDto, UpdateTaskDto } from './index.dto';
 import { TaskService } from './index.service';
 
 @ApiTags('Tasks')
@@ -37,8 +37,8 @@ export class TaskController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('/reindex')
-  reIndex(@Body() body: ReIndexDto, @Req() { user: { id: userId } }: IRequest) {
-    return this.service.reindex({ ...body, userId });
+  @Patch('/reindex-all')
+  reindexAll(@Body() body: ReindexAllDto, @Req() { user: { id: userId } }: IRequest) {
+    return this.service.reindexAll({ ...body, userId });
   }
 }

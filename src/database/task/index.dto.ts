@@ -23,6 +23,9 @@ export class UpdateTaskDto {
   description: string;
 
   @ApiProperty()
+  index: number;
+
+  @ApiProperty()
   storyPoint: string;
 
   @ApiProperty()
@@ -50,13 +53,7 @@ export class UpdateTaskDto {
   statusId: number;
 }
 
-export class ReIndexDto {
+export class ReindexAllDto {
   @ApiProperty({ example: 'taskFirstId' })
-  taskFirstId: string;
-
-  @ApiProperty({ example: 'taskSecondId' })
-  taskSecondId: string;
-
-  @ApiProperty({ example: 'taskReorderId' })
-  taskReorderId: string;
+  todolistId: string;
 }
