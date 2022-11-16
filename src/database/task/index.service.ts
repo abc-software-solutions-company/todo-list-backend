@@ -6,7 +6,7 @@ import { AttachmentService } from '../attachment/index.service';
 import { CommentService } from '../comment/index.service';
 import { TodolistService } from '../todolist/index.service';
 import { Task } from './index.entity';
-import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindex } from './index.type';
+import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll } from './index.type';
 
 @Injectable()
 export class TaskService {
@@ -51,6 +51,7 @@ export class TaskService {
     const {
       id,
       description,
+      index,
       storyPoint,
       priority,
       name,
@@ -77,6 +78,10 @@ export class TaskService {
     if (name) {
       if (!name.trim()) throw new BadRequestException('Empty name');
       task.name = name;
+    }
+
+    if (index !== undefined) {
+      task.index = index;
     }
 
     if (description !== undefined) {
@@ -140,31 +145,8 @@ export class TaskService {
     return this.getOne({ id });
   }
 
-  async reindex({ taskFirstId, taskReorderId, taskSecondId, userId }: ITaskReindex) {
-    const task = await this.repository.findOne({ where: { id: taskReorderId }, relations: { todolist: true } });
-
-    if (task.todolist.visibility !== this.todolist.visibilityList.public && task.todolist.userId !== userId)
-      throw new MethodNotAllowedException('As a private list or read-only list. Only list owner can drag and drop');
-
-    const index1 = Number(taskFirstId ? (await this.repository.findOneBy({ id: taskFirstId })).index : 0);
-    const index2 = Number(
-      taskSecondId ? (await this.repository.findOneBy({ id: taskSecondId })).index : index1 + this.indexStep,
-    );
-
-    if (!task) throw new BadRequestException();
-
-    const index = Math.round((index1 + index2) / 2);
-    task.index = index;
-
-    await this.repository.save(task);
-
-    if (index - index1 < 32 || index2 - index < 32) await this.reindexAll(task.todolistId);
-
-    return this.getOne({ id: taskReorderId });
-  }
-
-  async reindexAll(todolistId: string) {
-    const tasks = await this.repository.find({ where: { todolistId: todolistId }, order: { index: 'ASC' } });
+  async reindexAll({ todolistId }: ITaskReindexAll) {
+    const tasks = await this.repository.find({ where: { todolistId }, order: { index: 'ASC' } });
     const promises: Promise<any>[] = [];
     tasks.forEach((task, index) => {
       task.index = (index + 1) * this.indexStep;

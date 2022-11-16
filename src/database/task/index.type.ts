@@ -25,6 +25,7 @@ export interface ITaskCreate {
 export interface ITaskUpdate extends ITaskGet {
   name?: string;
   description?: string;
+  index?: number;
   attachment?: IAttachment;
   comment?: IComment;
   storyPoint?: string;
@@ -37,9 +38,7 @@ export interface ITaskUpdate extends ITaskGet {
   userId: string;
 }
 
-export interface ITaskReindex {
-  taskFirstId: string;
-  taskSecondId: string;
-  taskReorderId: string;
+export interface ITaskReindexAll {
+  todolistId: string;
   userId: string;
 }
