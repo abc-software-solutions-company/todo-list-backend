@@ -41,6 +41,6 @@ export class Status {
   @JoinColumn({ name: 'todolistId' })
   todolist: Todolist;
 
-  @OneToMany(() => Task, (task) => task)
+  @OneToMany(() => Task, (task) => task.status)
   tasks: Task[];
 }

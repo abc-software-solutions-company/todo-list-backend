@@ -6,9 +6,10 @@ import { Todolist } from './index.entity';
 import { AuthModule } from 'src/auth/index.module';
 import { PoolModule } from '../pool/index.module';
 import { StatusModule } from '../status/index.module';
+import { FavoriteModule } from '../favorite/index.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Todolist]), PoolModule, StatusModule, AuthModule],
+  imports: [TypeOrmModule.forFeature([Todolist]), PoolModule, StatusModule, AuthModule, FavoriteModule],
   controllers: [TodolistController],
   providers: [TodolistService],
   exports: [TodolistService],
