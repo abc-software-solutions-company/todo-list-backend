@@ -41,13 +41,12 @@ export class TodolistService {
   }
 
   async getOne({ id }: ITodolistGetOne) {
-    if (!id) throw new MethodNotAllowedException();
-    const result = await this.repository.findOne({
+    if (!id) throw new BadRequestException('Empty Id');
+    return this.repository.findOne({
       where: { id, isActive: true },
-      relations: { tasks: { status: true }, status: { tasks: true }, favorites: true },
+      relations: { tasks: true, status: true, favorites: true },
       order: { tasks: { index: 'ASC' }, status: { index: 'ASC' } },
     });
-    return result;
   }
 
   async create(param: ITodolistCreate) {

@@ -14,7 +14,7 @@ export class TodolistController {
 
   @Get()
   @SkipThrottle()
-  async get() {
+  get() {
     return this.service.get();
   }
 
