@@ -89,6 +89,6 @@ export class TodolistService {
       this.favoriteService.set({ todolistId: id, userId, isActive: favorite });
     }
 
-    return this.getOne({ id });
+    return todolist;
   }
 }
