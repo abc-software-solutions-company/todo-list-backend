@@ -3,36 +3,42 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './index.entity';
 import { PoolService } from 'src/database/pool/index.service';
-import { ITodolistCreate, ITodolistGetMyList, ITodolistGetOne, ITodolistUpdate } from './index.type';
+import {
+  ITodolistCreate,
+  ITodolistGetByUser,
+  ITodolistGetFavorite,
+  ITodolistGetOne,
+  ITodolistUpdate,
+} from './index.type';
 import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
-import { defineAny } from 'src/utils/function';
+import { defineAll, defineAny } from 'src/utils/function';
 @Injectable()
 export class TodolistService {
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
 
   constructor(
     @InjectRepository(Todolist) readonly repository: Repository<Todolist>,
-    readonly poolService: PoolService,
-    readonly statusService: StatusService,
-    readonly favoriteService: FavoriteService,
+    readonly pool: PoolService,
+    readonly status: StatusService,
+    readonly favorite: FavoriteService,
   ) {}
 
   get() {
     return this.repository.findBy({ isActive: true });
   }
 
-  async getByUser({ userId }: ITodolistGetMyList) {
-    const result = await this.repository.find({
+  getByUser({ userId }: ITodolistGetByUser) {
+    if (!defineAll(userId)) throw new BadRequestException('Todolist getByUser Err Param');
+    return this.repository.find({
       where: { isActive: true, userId },
       relations: { favorites: true },
       order: { createdDate: 'ASC' },
     });
-    if (!result) throw new BadRequestException();
-    return result;
   }
 
-  getFavorite({ userId }: ITodolistGetMyList) {
+  getFavorite({ userId }: ITodolistGetFavorite) {
+    if (!defineAll(userId)) throw new BadRequestException('Todolist getFavorite Err Param');
     return this.repository.find({
       where: { isActive: true, favorites: { userId, isActive: true } },
       relations: { favorites: true },
@@ -40,11 +46,11 @@ export class TodolistService {
     });
   }
 
-  async getOne({ id }: ITodolistGetOne) {
-    if (!id) throw new BadRequestException('Empty Id');
+  getOne({ id }: ITodolistGetOne) {
+    if (!defineAll(id)) throw new BadRequestException('Todolist getOne Err param');
     return this.repository.findOne({
       where: { id, isActive: true },
-      relations: { tasks: true, status: true, favorites: true },
+      relations: { tasks: { assignee: true }, status: true, favorites: true },
       order: { tasks: { index: 'ASC' }, status: { index: 'ASC' } },
     });
   }
@@ -52,19 +58,18 @@ export class TodolistService {
   async create(param: ITodolistCreate) {
     const { name } = param;
     if (!name || (name && !name.trim())) throw new MethodNotAllowedException('Empty name');
-    const { id } = await this.poolService.use();
+    const { id } = await this.pool.use();
     const visibility = this.visibilityList.public;
     const todolistEntity = this.repository.create({ ...param, id, visibility });
-    const todolist = await this.repository.save(todolistEntity);
-    await this.statusService.init({ todolistId: todolist.id });
-    return todolist;
+    this.status.init({ todolistId: id });
+    return this.repository.save(todolistEntity);
   }
 
   async update(body: ITodolistUpdate) {
-    const { id, name, visibility, isActive, favorite, userId } = body;
-    if (!id) throw new BadRequestException();
-    const todolist = await this.repository.findOneBy({ id });
+    const { id, userId, name, visibility, isActive, favorite } = body;
+    if (!defineAll(id, userId)) throw new BadRequestException();
 
+    const todolist = await this.repository.findOneBy({ id });
     const owner = todolist.userId === userId;
     const write = owner || todolist.visibility === this.visibilityList.public;
 
@@ -84,8 +89,8 @@ export class TodolistService {
       await this.repository.save(todolist);
     }
 
-    if (favorite != undefined) {
-      this.favoriteService.set({ todolistId: id, userId, isActive: favorite });
+    if (defineAny(favorite)) {
+      this.favorite.set({ todolistId: id, userId, isActive: favorite });
     }
 
     return todolist;

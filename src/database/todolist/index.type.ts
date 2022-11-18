@@ -2,11 +2,13 @@ export interface ITodolistGetOne {
   id: string;
 }
 
-export interface ITodolistGetMyList {
+export interface ITodolistGetByUser {
   userId: string;
 }
 
-export interface ITodolistCreate extends ITodolistGetMyList {
+export type ITodolistGetFavorite = ITodolistGetByUser;
+
+export interface ITodolistCreate extends ITodolistGetByUser {
   name: string;
 }
 

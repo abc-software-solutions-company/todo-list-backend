@@ -31,7 +31,7 @@ export class Task {
   @Column({ default: false })
   isDone: boolean;
 
-  @Column({ default: new Date(Date.now()) })
+  @Column({ type: 'timestamp', nullable: true })
   startDate: Date;
 
   @Column({ type: 'timestamp', nullable: true })
@@ -45,6 +45,9 @@ export class Task {
 
   @Column()
   userId: string;
+
+  @Column({ nullable: true })
+  assigneeId: string;
 
   @Column({ type: 'bigint' })
   index: number;
@@ -65,6 +68,10 @@ export class Task {
   @JoinColumn({ name: 'userId' })
   user: User;
 
+  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'assigneeId' })
+  assignee: User;
+
   @ManyToOne(() => Todolist, (todolist) => todolist.id)
   @JoinColumn({ name: 'todolistId' })
   todolist: Todolist;
@@ -77,5 +84,5 @@ export class Task {
   attachments: Attachment[];
 
   @OneToMany(() => Comment, (comment) => comment.task)
-  comments: Comment;
+  comments: Comment[];
 }

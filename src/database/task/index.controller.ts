@@ -38,7 +38,7 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/reindex-all')
-  reindexAll(@Body() body: ReindexAllDto, @Req() { user: { id: userId } }: IRequest) {
-    return this.service.reindexAll({ ...body, userId });
+  reindexAll(@Body() body: ReindexAllDto) {
+    return this.service.reindexAll({ ...body });
   }
 }
