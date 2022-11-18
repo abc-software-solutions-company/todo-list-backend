@@ -6,7 +6,6 @@ import { AuthModule } from 'src/auth/index.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Attachment]), AuthModule],
-  // controllers: [AttachmentControllers],
   providers: [AttachmentService],
   exports: [AttachmentService],
 })

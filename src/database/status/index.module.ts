@@ -6,7 +6,6 @@ import { StatusService } from './index.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Status]), AuthModule],
-  // controllers: [StatusController],
   providers: [StatusService],
   exports: [StatusService],
 })

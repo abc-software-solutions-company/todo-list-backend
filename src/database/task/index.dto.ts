@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IAttachment, IComment } from './index.type';
+import { IAssignee, IAttachment, IComment } from './index.type';
 
 export class CreateTaskDto {
   @ApiProperty()
@@ -42,6 +42,9 @@ export class UpdateTaskDto {
 
   @ApiProperty()
   priority: string;
+
+  @ApiProperty()
+  assignee: IAssignee;
 
   @ApiProperty()
   isDone: boolean;
