@@ -50,7 +50,7 @@ export class TodolistService {
     if (!defineAll(id)) throw new BadRequestException('Todolist getOne Err param');
     return this.repository.findOne({
       where: { id, isActive: true },
-      relations: { tasks: { assignee: true }, status: true, favorites: true },
+      relations: { tasks: { assignees: true }, status: true, favorites: true },
       order: { tasks: { index: 'ASC' }, status: { index: 'ASC' } },
     });
   }
@@ -61,8 +61,9 @@ export class TodolistService {
     const { id } = await this.pool.use();
     const visibility = this.visibilityList.public;
     const todolistEntity = this.repository.create({ ...param, id, visibility });
-    this.status.init({ todolistId: id });
-    return this.repository.save(todolistEntity);
+    const todolist = await this.repository.save(todolistEntity);
+    await this.status.init({ todolistId: id });
+    return todolist;
   }
 
   async update(body: ITodolistUpdate) {

@@ -11,6 +11,7 @@ import {
 import { Attachment } from '../attachment/index.entity';
 import { Comment } from '../comment/index.entity';
 import { Status } from '../status/index.entity';
+import { TaskUser } from '../task-user/index.entity';
 import { Todolist } from '../todolist/index.entity';
 import { User } from '../user/index.entity';
 
@@ -46,9 +47,6 @@ export class Task {
   @Column()
   userId: string;
 
-  @Column({ nullable: true })
-  assigneeId: string;
-
   @Column({ type: 'bigint' })
   index: number;
 
@@ -68,10 +66,6 @@ export class Task {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: 'assigneeId' })
-  assignee: User;
-
   @ManyToOne(() => Todolist, (todolist) => todolist.id)
   @JoinColumn({ name: 'todolistId' })
   todolist: Todolist;
@@ -85,4 +79,7 @@ export class Task {
 
   @OneToMany(() => Comment, (comment) => comment.task)
   comments: Comment[];
+
+  @OneToMany(() => TaskUser, (TaskUser) => TaskUser.task)
+  assignees: TaskUser[];
 }

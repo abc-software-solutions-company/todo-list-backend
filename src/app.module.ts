@@ -12,6 +12,7 @@ import { CommentModule } from './database/comment/index.module';
 import { FavoriteModule } from './database/favorite/index.module';
 import { PoolModule } from './database/pool/index.module';
 import { StatusModule } from './database/status/index.module';
+import { TaskUserModule } from './database/task-user/index.module';
 import { TaskModule } from './database/task/index.module';
 import { TodolistModule } from './database/todolist/index.module';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
@@ -47,6 +48,7 @@ import { SocketsModule } from './websocket/socket.module';
     FavoriteModule,
     StatusModule,
     TaskModule,
+    TaskUserModule,
     SocketsModule,
   ],
   providers: [

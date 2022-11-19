@@ -11,7 +11,6 @@ export interface ITaskCreate {
   userId: string;
   todolistId: string;
 }
-
 export interface IAttachment {
   create?: Omit<IAttachmentCreate, 'taskId' | 'userId'>;
   update?: Omit<IAttachmentUpdate, 'taskId' | 'userId'>;
@@ -21,8 +20,10 @@ export interface IComment {
   create?: Omit<ICommentCreate, 'taskId' | 'userId'>;
   update?: Omit<ICommentUpdate, 'taskId' | 'userId'>;
 }
+
 export interface IAssignee {
-  email: string | null;
+  add: string[];
+  remove: string[];
 }
 
 export interface ITaskUpdate extends ITaskGet {

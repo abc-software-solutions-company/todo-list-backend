@@ -5,8 +5,8 @@ import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { AttachmentService } from '../attachment/index.service';
 import { CommentService } from '../comment/index.service';
+import { TaskUserService } from '../task-user/index.service';
 import { TodolistService } from '../todolist/index.service';
-import { UserService } from '../user/index.service';
 import { Task } from './index.entity';
 import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll } from './index.type';
 
@@ -21,7 +21,7 @@ export class TaskService {
     readonly todolist: TodolistService,
     readonly attachment: AttachmentService,
     readonly comment: CommentService,
-    readonly user: UserService,
+    readonly taskUser: TaskUserService,
   ) {}
 
   get() {
@@ -36,7 +36,6 @@ export class TaskService {
         todolist: { status: true },
         attachments: { user: true },
         comments: { user: true },
-        assignee: true,
       },
       order: { attachments: { createdDate: 'ASC' }, comments: { createdDate: 'ASC' } },
     });
@@ -86,7 +85,7 @@ export class TaskService {
 
     if (!write) throw new ForbiddenException(`You can't update this todolist`);
 
-    if (defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive, assignee)) {
+    if (defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive)) {
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
         task.name = name;
@@ -118,21 +117,9 @@ export class TaskService {
         task.priority = priority;
       }
 
-      if (assignee !== undefined) {
-        if (assignee.email === null) {
-          task.assigneeId = null;
-        } else {
-          const user = await this.user.repository.findOneBy({ email: assignee.email });
-          console.log('🚀 ~ file: index.service.ts ~ line 125 ~ TaskService ~ update ~ user', user);
-          if (!user) throw new BadRequestException('User not existed');
-          task.assigneeId = user.id;
-        }
-      }
-
       if (isActive !== undefined) {
         task.isActive = isActive;
       }
-
       await this.repository.save(task);
     }
 
@@ -167,6 +154,10 @@ export class TaskService {
       if (comment) {
         if (comment.create) this.comment.create({ ...comment.create, taskId: id, userId });
         if (comment.update) this.comment.update({ ...comment.update, taskId: id, userId });
+      }
+      if (assignee) {
+        if (assignee.add) this.taskUser.set({ taskId: id, identification: assignee.add });
+        if (assignee.remove) this.taskUser.set({ taskId: id, identification: assignee.remove, isActive: false });
       }
     }
 
