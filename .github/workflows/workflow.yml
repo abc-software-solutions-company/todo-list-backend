@@ -1,4 +1,4 @@
-name: Auto Deploy NestJS or Next.JS to EC2 Instance
+name: Deploy to Production
 
 on:
   push:
@@ -9,16 +9,18 @@ env:
 
 jobs:
   build:
+    name: "Deploy to Production"
+    environment:
+      name: Production
+
     runs-on: self-hosted
 
     strategy:
       matrix:
         node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -33,17 +35,30 @@ jobs:
       - name: Copy Secret Key Multiline environment variable to .env_temp file
         run: echo $APP_ENV | tee .env_temp
 
-      - name: Replace space character with break-line in .env
+      - name: Replace space character with break-line in .env file
         run: sed 's/ /\n/g' .env_temp >> .env
 
       - name: Remove .env_temp file
         run: rm -r -f .env_temp
 
-      - name: Install Yarn, PM2
+      - name: Install Yarn, PM2 (Install first time only, after that this command run quickly)
         run: npm install -g yarn pm2
 
-      - name: Install Node Module
+      - name: Remove package-lock.json (Prevent error or conflicted version of npm, yarn, etc when developer forgot to delete it in pull request)
+        run: rm -r -f package-lock.json
+
+      - name: Install or Update Node Module from package.json
         run: yarn
 
-      - name: Build,Start and Restart Web Application
-        run: RUNNER_TRACKING_ID="" && yarn build && pm2 start yarn -- start && pm2 restart yarn --cron-restart="0 0 * * *"
+      - name: Build Optimized Production Backend
+        run: yarn build
+
+      - name: Copy all file (After build successfull) to Backend Server Folder (Default Folder defined by Linux Home Directory)
+        run: cp -rf ./ $HOME/dist
+
+      - name: Change directory to Backend Server Folder and restart Backend Server. Add Crontab to restart server every 5 hour
+        run: |
+          RUNNER_TRACKING_ID="" && \
+          cd $HOME/dist && \
+          pm2 start "yarn start" --cron-restart="0 0 0/5 ? * * *" && \
+          pm2 restart "yarn start" --cron-restart="0 0 0/5 ? * * *"
