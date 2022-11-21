@@ -36,8 +36,12 @@ export class TaskService {
         todolist: { status: true },
         attachments: { user: true },
         comments: { user: true },
+        assignees: { user: true },
       },
-      order: { attachments: { createdDate: 'ASC' }, comments: { createdDate: 'ASC' } },
+      order: {
+        attachments: { createdDate: 'ASC' },
+        comments: { createdDate: 'ASC' },
+      },
     });
   }
 
@@ -156,8 +160,9 @@ export class TaskService {
         if (comment.update) this.comment.update({ ...comment.update, taskId: id, userId });
       }
       if (assignee) {
-        if (assignee.add) this.taskUser.set({ taskId: id, identification: assignee.add });
-        if (assignee.remove) this.taskUser.set({ taskId: id, identification: assignee.remove, isActive: false });
+        if (assignee.add && assignee.add.length) this.taskUser.set({ taskId: id, identification: assignee.add });
+        if (assignee.remove && assignee.remove.length)
+          this.taskUser.set({ taskId: id, identification: assignee.remove, isActive: false });
       }
     }
 

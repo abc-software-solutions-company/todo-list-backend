@@ -50,7 +50,8 @@ export class TodolistService {
     if (!defineAll(id)) throw new BadRequestException('Todolist getOne Err param');
     return this.repository.findOne({
       where: { id, isActive: true },
-      relations: { tasks: { assignees: true }, status: true, favorites: true },
+      relations: { tasks: { assignees: { user: true } }, status: true, favorites: true },
+
       order: { tasks: { index: 'ASC' }, status: { index: 'ASC' } },
     });
   }

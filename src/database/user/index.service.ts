@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './index.entity';
 import { v4 } from 'uuid';
@@ -12,8 +12,8 @@ interface ICreate {
 export class UserService {
   constructor(@InjectRepository(User) readonly repository: Repository<User>) {}
 
-  async findAll() {
-    return this.repository.find();
+  async getIndentify() {
+    return this.repository.find({ where: { email: Not(IsNull()) }, select: { id: true, name: true, email: true } });
   }
 
   async create({ name, email }: ICreate) {

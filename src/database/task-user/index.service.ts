@@ -14,6 +14,11 @@ export class TaskUserService {
     const { taskId, identification, isActive = true } = param;
 
     if (!defineAll(taskId, identification)) throw new BadRequestException('Task-User Set Err Param');
+    const oldRecords = await this.repository.find({ where: { taskId, isActive: true } });
+    oldRecords.map((e) => {
+      e.isActive = false;
+      this.repository.save(e);
+    });
     const where = identification.map((e) => {
       if (e) {
         return { email: e };
