@@ -13,6 +13,7 @@ import {
 import { Favorite } from '../favorite/index.entity';
 import { Pool } from '../pool/index.entity';
 import { Status } from '../status/index.entity';
+import { TodolistUser } from '../todolist-user/index.entity';
 import { User } from '../user/index.entity';
 
 @Entity()
@@ -54,4 +55,7 @@ export class Todolist {
 
   @OneToMany(() => Favorite, (favorite) => favorite.todolist)
   favorites: Favorite[];
+
+  @OneToMany(() => TodolistUser, (member) => member.todolist)
+  members: TodolistUser[];
 }

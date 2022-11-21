@@ -33,11 +33,15 @@ export class TaskService {
       where: { id, isActive: true },
       relations: {
         status: true,
-        todolist: { status: true },
+        todolist: { status: true, members: { user: true } },
         attachments: { user: true },
         comments: { user: true },
+        assignees: { user: true },
       },
-      order: { attachments: { createdDate: 'ASC' }, comments: { createdDate: 'ASC' } },
+      order: {
+        attachments: { createdDate: 'ASC' },
+        comments: { createdDate: 'ASC' },
+      },
     });
   }
 
@@ -147,17 +151,18 @@ export class TaskService {
 
     if (defineAny(attachment, comment, assignee)) {
       if (attachment) {
-        if (attachment.create) this.attachment.create({ ...attachment.create, taskId: id, userId });
-        if (attachment.update) this.attachment.update({ ...attachment.update, taskId: id, userId });
+        if (attachment.create) await this.attachment.create({ ...attachment.create, taskId: id, userId });
+        if (attachment.update) await this.attachment.update({ ...attachment.update, taskId: id, userId });
       }
 
       if (comment) {
-        if (comment.create) this.comment.create({ ...comment.create, taskId: id, userId });
-        if (comment.update) this.comment.update({ ...comment.update, taskId: id, userId });
+        if (comment.create) await this.comment.create({ ...comment.create, taskId: id, userId });
+        if (comment.update) await this.comment.update({ ...comment.update, taskId: id, userId });
       }
       if (assignee) {
-        if (assignee.add) this.taskUser.set({ taskId: id, identification: assignee.add });
-        if (assignee.remove) this.taskUser.set({ taskId: id, identification: assignee.remove, isActive: false });
+        if (assignee.add && assignee.add.length) await this.taskUser.set({ taskId: id, identification: assignee.add });
+        if (assignee.remove && assignee.remove.length)
+          await this.taskUser.set({ taskId: id, identification: assignee.remove, isActive: false });
       }
     }
 

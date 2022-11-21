@@ -14,6 +14,7 @@ import { PoolModule } from './database/pool/index.module';
 import { StatusModule } from './database/status/index.module';
 import { TaskUserModule } from './database/task-user/index.module';
 import { TaskModule } from './database/task/index.module';
+import { TodolistUserModule } from './database/todolist-user/index.module';
 import { TodolistModule } from './database/todolist/index.module';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { UserModule } from './database/user/index.module';
@@ -49,6 +50,7 @@ import { SocketsModule } from './websocket/socket.module';
     StatusModule,
     TaskModule,
     TaskUserModule,
+    TodolistUserModule,
     SocketsModule,
   ],
   providers: [

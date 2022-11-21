@@ -13,6 +13,7 @@ import {
 import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
 import { defineAll, defineAny } from 'src/utils/function';
+import { TodolistUserService } from '../todolist-user/index.service';
 @Injectable()
 export class TodolistService {
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
@@ -22,6 +23,7 @@ export class TodolistService {
     readonly pool: PoolService,
     readonly status: StatusService,
     readonly favorite: FavoriteService,
+    readonly member: TodolistUserService,
   ) {}
 
   get() {
@@ -50,7 +52,7 @@ export class TodolistService {
     if (!defineAll(id)) throw new BadRequestException('Todolist getOne Err param');
     return this.repository.findOne({
       where: { id, isActive: true },
-      relations: { tasks: { assignees: true }, status: true, favorites: true },
+      relations: { tasks: { assignees: { user: true } }, status: true, favorites: true, members: { user: true } },
       order: { tasks: { index: 'ASC' }, status: { index: 'ASC' } },
     });
   }
@@ -67,7 +69,7 @@ export class TodolistService {
   }
 
   async update(body: ITodolistUpdate) {
-    const { id, userId, name, visibility, isActive, favorite } = body;
+    const { id, userId, name, visibility, isActive, favorite, member } = body;
     if (!defineAll(id, userId)) throw new BadRequestException();
 
     const todolist = await this.repository.findOneBy({ id });
@@ -76,6 +78,7 @@ export class TodolistService {
 
     if (defineAny(name, visibility, isActive)) {
       if (!write) throw new ForbiddenException();
+
       if (isActive !== undefined) {
         if (!owner) throw new ForbiddenException();
         todolist.isActive = isActive;
@@ -90,8 +93,14 @@ export class TodolistService {
       await this.repository.save(todolist);
     }
 
-    if (defineAny(favorite)) {
-      this.favorite.set({ todolistId: id, userId, isActive: favorite });
+    if (defineAny(favorite, member)) {
+      if (favorite) {
+        await this.favorite.set({ todolistId: id, userId, isActive: favorite });
+      }
+
+      if (member && member.emails.length) {
+        await this.member.set({ todolistId: id, emails: member.emails });
+      }
     }
 
     return todolist;
