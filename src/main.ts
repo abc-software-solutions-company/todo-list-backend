@@ -4,13 +4,11 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './utils/all-exception.filter';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import { PinoLogger } from 'nestjs-pino';
-import './ddtrace/tracting';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
-  app.useLogger(app.get(PinoLogger));
+
   const configService = app.get(ConfigService);
   const config = new DocumentBuilder().setTitle('Todo List API').setVersion('').addBearerAuth().build();
   const document = SwaggerModule.createDocument(app, config);
