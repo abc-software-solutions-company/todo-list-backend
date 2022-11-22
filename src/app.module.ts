@@ -21,6 +21,8 @@ import { UserModule } from './database/user/index.module';
 import { AllExceptionsFilter } from './utils/all-exception.filter';
 import { LoggerMiddleware } from './utils/logger.middleware';
 import { SocketsModule } from './websocket/socket.module';
+import { LoggerModule } from 'nestjs-pino';
+import { DatadogTraceModule } from 'nestjs-ddtrace';
 
 @Module({
   imports: [
@@ -40,6 +42,12 @@ import { SocketsModule } from './websocket/socket.module';
       ttl: 30,
       limit: 100,
     }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: process.env.ENV !== 'prod' ? 'trace' : 'info',
+      },
+    }),
+    DatadogTraceModule.forRoot(),
     AttachmentModule,
     CommentModule,
     PoolModule,
