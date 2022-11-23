@@ -94,7 +94,7 @@ export class TodolistService {
     }
 
     if (defineAny(favorite, member)) {
-      if (favorite) {
+      if (favorite !== undefined) {
         await this.favorite.set({ todolistId: id, userId, isActive: favorite });
       }
 
