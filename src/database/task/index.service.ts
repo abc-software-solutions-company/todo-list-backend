@@ -159,10 +159,9 @@ export class TaskService {
         if (comment.create) await this.comment.create({ ...comment.create, taskId: id, userId });
         if (comment.update) await this.comment.update({ ...comment.update, taskId: id, userId });
       }
+
       if (assignee) {
-        if (assignee.add && assignee.add.length) await this.taskUser.set({ taskId: id, identification: assignee.add });
-        if (assignee.remove && assignee.remove.length)
-          await this.taskUser.set({ taskId: id, identification: assignee.remove, isActive: false });
+        if (assignee.emails) await this.taskUser.set({ taskId: id, emails: assignee.emails });
       }
     }
 
