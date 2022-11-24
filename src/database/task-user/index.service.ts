@@ -11,24 +11,28 @@ export class TaskUserService {
   constructor(@InjectRepository(TaskUser) readonly repository: Repository<TaskUser>, readonly user: UserService) {}
 
   async set(param: ITaskUserCreate) {
-    const { taskId, identification, isActive = true } = param;
+    console.log('🚀 ~ file: index.service.ts ~ line 14 ~ TaskUserService ~ set ~ param', param);
+    const { taskId, emails } = param;
 
-    if (!defineAll(taskId, identification)) throw new BadRequestException('Task-User Set Err Param');
-    const oldRecords = await this.repository.find({ where: { taskId, isActive: true } });
-    oldRecords.map((e) => {
-      e.isActive = false;
-      this.repository.save(e);
-    });
-    const where = identification.map((e) => {
-      if (e) {
-        return { email: e };
-      }
-    });
-    const users = await this.user.repository.findBy(where);
-    const result = users.map((e) => {
-      const newTaskUser = this.repository.create({ taskId, userId: e.id, isActive });
-      this.repository.save(newTaskUser);
-    });
-    return result;
+    if (!defineAll(taskId, emails, ...emails)) throw new BadRequestException('Task-User Set Err Param');
+    const oldAssignees = await this.repository.findBy({ taskId, isActive: true });
+    if (oldAssignees.length) {
+      const promise = [];
+      oldAssignees.map((e) => {
+        e.isActive = false;
+        promise.push(this.repository.save(e));
+      });
+      await Promise.allSettled(promise);
+    }
+    if (emails.length) {
+      const promise = [];
+      const where = emails.map((e) => ({ email: e }));
+      const users = await this.user.repository.findBy(where);
+      users.map((e) => {
+        const newAssignee = this.repository.create({ taskId, userId: e.id, isActive: true });
+        promise.push(this.repository.save(newAssignee));
+      });
+      await Promise.allSettled(promise);
+    }
   }
 }

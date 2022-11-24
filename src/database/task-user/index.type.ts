@@ -1,5 +1,5 @@
 export interface ITaskUserCreate {
   taskId: string;
-  identification: string[];
+  emails: string[];
   isActive?: boolean;
 }
