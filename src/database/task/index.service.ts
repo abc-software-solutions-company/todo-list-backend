@@ -161,7 +161,7 @@ export class TaskService {
       }
 
       if (assignee) {
-        if (assignee.emails) await this.taskUser.set({ taskId: id, emails: assignee.emails });
+        if (assignee.ids) await this.taskUser.set({ taskId: id, ...assignee });
       }
     }
 

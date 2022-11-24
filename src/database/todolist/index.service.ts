@@ -98,7 +98,7 @@ export class TodolistService {
         await this.favorite.set({ todolistId: id, userId, isActive: favorite });
       }
 
-      if (member && member.emails.length) {
+      if (member) {
         await this.member.set({ todolistId: id, emails: member.emails });
       }
     }

@@ -22,7 +22,7 @@ export interface IComment {
 }
 
 export interface IAssignee {
-  emails: string[];
+  ids: string[];
 }
 
 export interface ITaskUpdate extends ITaskGet {
