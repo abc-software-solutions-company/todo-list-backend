@@ -12,9 +12,9 @@ export class TaskUserService {
 
   async set(param: ITaskUserCreate) {
     console.log('🚀 ~ file: index.service.ts ~ line 14 ~ TaskUserService ~ set ~ param', param);
-    const { taskId, emails } = param;
+    const { taskId, ids } = param;
 
-    if (!defineAll(taskId, emails, ...emails)) throw new BadRequestException('Task-User Set Err Param');
+    if (!defineAll(taskId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
     const oldAssignees = await this.repository.findBy({ taskId, isActive: true });
     if (oldAssignees.length) {
       const promise = [];
@@ -24,9 +24,9 @@ export class TaskUserService {
       });
       await Promise.allSettled(promise);
     }
-    if (emails.length) {
+    if (ids.length) {
       const promise = [];
-      const where = emails.map((e) => ({ email: e }));
+      const where = ids.map((e) => ({ id: e }));
       const users = await this.user.repository.findBy(where);
       users.map((e) => {
         const newAssignee = this.repository.create({ taskId, userId: e.id, isActive: true });

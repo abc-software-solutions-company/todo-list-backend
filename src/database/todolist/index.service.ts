@@ -34,7 +34,7 @@ export class TodolistService {
     if (!defineAll(userId)) throw new BadRequestException('Todolist getByUser Err Param');
     return this.repository.find({
       where: { isActive: true, userId },
-      relations: { favorites: true },
+      relations: { favorites: true, members: { user: true } },
       order: { createdDate: 'ASC' },
     });
   }
@@ -43,7 +43,7 @@ export class TodolistService {
     if (!defineAll(userId)) throw new BadRequestException('Todolist getFavorite Err Param');
     return this.repository.find({
       where: { isActive: true, favorites: { userId, isActive: true } },
-      relations: { favorites: true },
+      relations: { favorites: true, members: { user: true } },
       order: { favorites: { updatedDate: 'ASC' } },
     });
   }
@@ -98,7 +98,7 @@ export class TodolistService {
         await this.favorite.set({ todolistId: id, userId, isActive: favorite });
       }
 
-      if (member && member.emails.length) {
+      if (member) {
         await this.member.set({ todolistId: id, emails: member.emails });
       }
     }
