@@ -15,7 +15,7 @@ import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
 import { defineAll, defineAny } from 'src/utils/function';
 import { TodolistUserService } from '../todolist-user/index.service';
-import { SyncTodolistDto } from './index.dto';
+import { AuthService } from 'src/auth/index.service';
 @Injectable()
 export class TodolistService {
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
@@ -26,6 +26,7 @@ export class TodolistService {
     readonly status: StatusService,
     readonly favorite: FavoriteService,
     readonly member: TodolistUserService,
+    readonly auth: AuthService,
   ) {}
 
   get() {
@@ -109,7 +110,24 @@ export class TodolistService {
   }
 
   async syncTodolist(body: ISyncTodolist) {
-    console.log('sync Todo List');
-    return body;
+    const { email, userName, userId } = body;
+    console.log('Create user with email account or login to existing email account');
+    const userHaveEmail = await this.auth.login({ email, name: userName });
+
+    console.log('Get Current list from guest account');
+    const guestList = await this.getByUser({ userId });
+
+    console.log('For each through all list from guest list');
+    guestList.forEach(async (list) => {
+      console.log('Update list from guest userId to new userId (have Email)');
+      list.userId = userHaveEmail.user.id;
+      await this.repository.save(list).then(() => console.log('ok'));
+    });
+
+    console.log('Return token for new user after sync list from guest account to email account');
+    return {
+      accessToken: userHaveEmail.accessToken,
+      user: userHaveEmail.user,
+    };
   }
 }

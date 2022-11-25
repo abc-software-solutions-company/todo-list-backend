@@ -27,5 +27,6 @@ export interface ITodolistUpdate {
 
 export interface ISyncTodolist {
   email: string;
+  userName: string;
   userId: string;
 }

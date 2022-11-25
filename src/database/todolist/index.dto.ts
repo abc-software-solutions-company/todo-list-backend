@@ -9,6 +9,9 @@ export class CreateTodolistDto {
 export class SyncTodolistDto {
   @ApiProperty()
   email: string;
+
+  @ApiProperty()
+  userName: string;
 }
 
 export class UpdateTodolistDto {
