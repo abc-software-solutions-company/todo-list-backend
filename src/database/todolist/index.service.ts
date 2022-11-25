@@ -111,20 +111,12 @@ export class TodolistService {
 
   async syncTodolist(body: ISyncTodolist) {
     const { email, userName, userId } = body;
-    console.log('Create user with email account or login to existing email account');
     const userHaveEmail = await this.auth.login({ email, name: userName });
-
-    console.log('Get Current list from guest account');
     const guestList = await this.getByUser({ userId });
-
-    console.log('For each through all list from guest list');
     guestList.forEach(async (list) => {
-      console.log('Update list from guest userId to new userId (have Email)');
       list.userId = userHaveEmail.user.id;
       await this.repository.save(list).then(() => console.log('ok'));
     });
-
-    console.log('Return token for new user after sync list from guest account to email account');
     return {
       accessToken: userHaveEmail.accessToken,
       user: userHaveEmail.user,
