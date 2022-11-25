@@ -99,7 +99,7 @@ export class TodolistService {
       }
 
       if (member) {
-        await this.member.set({ todolistId: id, emails: member.emails });
+        await this.member.set({ todolistId: id, ids: member.ids });
       }
     }
 

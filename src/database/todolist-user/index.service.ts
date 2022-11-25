@@ -14,14 +14,14 @@ export class TodolistUserService {
   ) {}
 
   async set(param: ITodolistUserCreate) {
-    const { todolistId, emails } = param;
+    const { todolistId, ids } = param;
 
-    if (!defineAll(todolistId, emails)) throw new BadRequestException('Task-User Set Err Param');
-    if (!defineAll(...emails)) throw new BadRequestException('valid Email');
+    if (!defineAll(todolistId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
 
+    const promises = [];
     const oldMembers = await this.repository.findBy({ todolistId, isActive: true });
+
     if (oldMembers.length) {
-      const promises = [];
       for (let i = 0; i < oldMembers.length; i++) {
         const member = oldMembers[i];
         member.isActive = false;
@@ -30,10 +30,9 @@ export class TodolistUserService {
       await Promise.allSettled(promises);
     }
 
-    const where = emails.map((e) => ({ email: e }));
+    const where = ids.map((e) => ({ id: e }));
     const newMembers = where.length ? await this.user.repository.findBy(where) : [];
     if (newMembers.length) {
-      const promises = [];
       for (let i = 0; i < newMembers.length; i++) {
         const user = newMembers[i];
         const member = this.repository.create({ todolistId, userId: user.id, isActive: true });

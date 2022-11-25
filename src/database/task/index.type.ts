@@ -1,5 +1,6 @@
 import { IAttachmentCreate, IAttachmentUpdate } from '../attachment/index.type';
 import { ICommentCreate, ICommentUpdate } from '../comment/index.type';
+import { ITaskUserCreate } from '../task-user/index.type';
 
 export interface ITaskGet {
   id: string;
@@ -21,9 +22,7 @@ export interface IComment {
   update?: Omit<ICommentUpdate, 'taskId' | 'userId'>;
 }
 
-export interface IAssignee {
-  ids: string[];
-}
+export type IAssignee = Omit<ITaskUserCreate, 'taskId'>;
 
 export interface ITaskUpdate extends ITaskGet {
   name?: string;
