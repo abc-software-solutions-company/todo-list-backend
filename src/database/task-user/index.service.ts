@@ -11,11 +11,11 @@ export class TaskUserService {
   constructor(@InjectRepository(TaskUser) readonly repository: Repository<TaskUser>, readonly user: UserService) {}
 
   async set(param: ITaskUserCreate) {
-    console.log('🚀 ~ file: index.service.ts ~ line 14 ~ TaskUserService ~ set ~ param', param);
     const { taskId, ids } = param;
 
     if (!defineAll(taskId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
     const oldAssignees = await this.repository.findBy({ taskId, isActive: true });
+
     if (oldAssignees.length) {
       const promise = [];
       oldAssignees.map((e) => {
@@ -24,6 +24,7 @@ export class TaskUserService {
       });
       await Promise.allSettled(promise);
     }
+
     if (ids.length) {
       const promise = [];
       const where = ids.map((e) => ({ id: e }));
