@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail } from 'class-validator';
 
-export class LinkEmailDto {
+export class SyncEmailDto {
   @ApiProperty({ example: 'email@mail.com' })
-  @IsEmail()
   email: string;
+  @ApiProperty({ example: 'guestAccountUserId' })
+  id: string;
 }
 
 export class LoginDto {
