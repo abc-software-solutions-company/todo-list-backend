@@ -6,6 +6,14 @@ export class CreateTodolistDto {
   name: string;
 }
 
+export class SyncTodolistDto {
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  name: string;
+}
+
 export class UpdateTodolistDto {
   @ApiProperty()
   id: string;

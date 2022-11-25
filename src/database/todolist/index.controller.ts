@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
-import { CreateTodolistDto, UpdateTodolistDto } from './index.dto';
+import { CreateTodolistDto, SyncTodolistDto, UpdateTodolistDto } from './index.dto';
 import { TodolistService } from './index.service';
 
 @Controller('todolists')
@@ -52,5 +52,12 @@ export class TodolistController {
   update(@Body() body: UpdateTodolistDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
     return this.service.update({ ...body, userId });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/sync')
+  syncTodolist(@Body() body: SyncTodolistDto, @Req() request: IRequest) {
+    const { id: userId } = request.user;
+    return this.service.sync({ ...body, userId });
   }
 }
