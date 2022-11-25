@@ -113,13 +113,15 @@ export class TodolistService {
     const { email, userName, userId } = body;
     const userHaveEmail = await this.auth.login({ email, name: userName });
     const guestList = await this.getByUser({ userId });
-    guestList.forEach(async (list) => {
-      list.userId = userHaveEmail.user.id;
-      await this.repository.save(list).then(() => console.log('ok'));
-    });
-    return {
-      accessToken: userHaveEmail.accessToken,
-      user: userHaveEmail.user,
-    };
+
+    if (guestList.length) {
+      const promise = [];
+      guestList.map((e) => {
+        e.userId = userHaveEmail.user.id;
+        promise.push(this.repository.save(e));
+      });
+      await Promise.allSettled(promise);
+    }
+    return userHaveEmail;
   }
 }
