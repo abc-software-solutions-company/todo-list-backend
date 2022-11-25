@@ -45,5 +45,8 @@ jobs:
       - name: Install Node Module
         run: yarn
 
+      - name: Migrations
+        run: yarn typeorm migration:run -d src/configs/data-source.ts
+
       - name: Build,Start and Restart Web Application
         run: RUNNER_TRACKING_ID="" && yarn build && pm2 start "yarn start" --exp-backoff-restart-delay=100 && pm2 restart "yarn start" --exp-backoff-restart-delay=100
