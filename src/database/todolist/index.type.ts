@@ -24,3 +24,8 @@ export interface ITodolistUpdate {
   visibility?: string;
   member?: ITodolistMember;
 }
+
+export interface ISyncTodolist {
+  email: string;
+  userId: string;
+}

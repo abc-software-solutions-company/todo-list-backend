@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './index.entity';
 import { PoolService } from 'src/database/pool/index.service';
 import {
+  ISyncTodolist,
   ITodolistCreate,
   ITodolistGetByUser,
   ITodolistGetFavorite,
@@ -14,6 +15,7 @@ import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
 import { defineAll, defineAny } from 'src/utils/function';
 import { TodolistUserService } from '../todolist-user/index.service';
+import { SyncTodolistDto } from './index.dto';
 @Injectable()
 export class TodolistService {
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
@@ -104,5 +106,10 @@ export class TodolistService {
     }
 
     return todolist;
+  }
+
+  async syncTodolist(body: ISyncTodolist) {
+    console.log('sync Todo List');
+    return body;
   }
 }

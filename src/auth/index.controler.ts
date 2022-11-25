@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpException, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IRequest } from 'src/utils/type';
-import { LoginDto, SyncEmailDto } from './index.dto';
+import { LoginDto } from './index.dto';
 import { AuthService } from './index.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -13,12 +13,6 @@ export class AuthController {
   @Post()
   login(@Body() param: LoginDto) {
     return this.authService.login(param);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('/syncEmail')
-  syncEmail(@Body() param: SyncEmailDto, @Req() { user: { id } }: IRequest) {
-    return this.authService.syncEmail(param, { id });
   }
 
   @UseGuards(JwtAuthGuard)
