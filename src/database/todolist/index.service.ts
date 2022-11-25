@@ -110,8 +110,8 @@ export class TodolistService {
   }
 
   async syncTodolist(body: ISyncTodolist) {
-    const { email, userName, userId } = body;
-    const userHaveEmail = await this.auth.login({ email, name: userName });
+    const { email, name, userId } = body;
+    const userHaveEmail = await this.auth.login({ email, name });
     const guestList = await this.getByUser({ userId });
 
     if (guestList.length) {
