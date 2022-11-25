@@ -25,7 +25,7 @@ export interface ITodolistUpdate {
   member?: ITodolistMember;
 }
 
-export interface ISyncTodolist {
+export interface ITodolistSync {
   email: string;
   name: string;
   userId: string;

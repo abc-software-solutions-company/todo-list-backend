@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './index.entity';
 import { PoolService } from 'src/database/pool/index.service';
 import {
-  ISyncTodolist,
+  ITodolistSync,
   ITodolistCreate,
   ITodolistGetByUser,
   ITodolistGetFavorite,
@@ -109,7 +109,7 @@ export class TodolistService {
     return todolist;
   }
 
-  async syncTodolist(body: ISyncTodolist) {
+  async sync(body: ITodolistSync) {
     const { email, name, userId } = body;
     const userHaveEmail = await this.auth.login({ email, name });
     const guestList = await this.getByUser({ userId });

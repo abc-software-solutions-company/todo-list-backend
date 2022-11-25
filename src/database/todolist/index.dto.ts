@@ -11,7 +11,7 @@ export class SyncTodolistDto {
   email: string;
 
   @ApiProperty()
-  userName: string;
+  name: string;
 }
 
 export class UpdateTodolistDto {

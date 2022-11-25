@@ -55,9 +55,9 @@ export class TodolistController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/sync-todolist')
+  @Post('/sync')
   syncTodolist(@Body() body: SyncTodolistDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
-    return this.service.syncTodolist({ ...body, userId });
+    return this.service.sync({ ...body, userId });
   }
 }
