@@ -24,6 +24,12 @@ export class TaskController {
     return this.service.getOne({ id });
   }
 
+  @Get('test/:id')
+  @SkipThrottle()
+  async getOne1(@Param('id') id: string) {
+    return this.service.getOne1({ id });
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() body: CreateTaskDto, @Req() { user: { id: userId } }: IRequest) {
