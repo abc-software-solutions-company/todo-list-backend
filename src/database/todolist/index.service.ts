@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Todolist } from './index.entity';
 import { PoolService } from 'src/database/pool/index.service';
 import {
+  ITodolistSync,
   ITodolistCreate,
   ITodolistGetByUser,
   ITodolistGetFavorite,
@@ -14,6 +15,7 @@ import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
 import { defineAll, defineAny } from 'src/utils/function';
 import { TodolistUserService } from '../todolist-user/index.service';
+import { AuthService } from 'src/auth/index.service';
 @Injectable()
 export class TodolistService {
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
@@ -24,6 +26,7 @@ export class TodolistService {
     readonly status: StatusService,
     readonly favorite: FavoriteService,
     readonly member: TodolistUserService,
+    readonly auth: AuthService,
   ) {}
 
   get() {
@@ -104,5 +107,21 @@ export class TodolistService {
     }
 
     return todolist;
+  }
+
+  async sync(body: ITodolistSync) {
+    const { email, name, userId } = body;
+    const userHaveEmail = await this.auth.login({ email, name });
+    const guestList = await this.getByUser({ userId });
+
+    if (guestList.length) {
+      const promise = [];
+      guestList.map((e) => {
+        e.userId = userHaveEmail.user.id;
+        promise.push(this.repository.save(e));
+      });
+      await Promise.allSettled(promise);
+    }
+    return userHaveEmail;
   }
 }

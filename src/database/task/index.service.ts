@@ -48,7 +48,10 @@ export class TaskService {
   async create(param: ITaskCreate) {
     const { name, todolistId, description, userId } = param;
     if (!name || (name && !name.trim())) throw new BadRequestException('Empty name ');
-    const list = await this.todolist.getOne({ id: todolistId });
+    const list = await this.todolist.repository.findOne({
+      where: { id: todolistId, isActive: true },
+      relations: { tasks: true, status: true },
+    });
     if (list.visibility !== this.todolist.visibilityList.public && list.userId !== userId)
       throw new MethodNotAllowedException();
     const id = v4();
