@@ -6,6 +6,11 @@ export interface ITaskGet {
   id: string;
 }
 
+export interface ITaskCreateHepler {
+  todolistId: string;
+  userId: string;
+}
+
 export interface ITaskCreate {
   name: string;
   description?: string;
