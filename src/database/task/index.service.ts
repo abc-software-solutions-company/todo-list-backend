@@ -28,6 +28,23 @@ export class TaskService {
     return this.repository.find({ where: { isActive: true } });
   }
 
+  async getOne1({ id }: ITaskGet) {
+    const task = await this.repository.findOne({
+      where: { id: id },
+    });
+    const tasks = this.repository.count({ where: { todolistId: task.todolistId } });
+    const todolist = this.todolist.repository.findOne({
+      where: { id: task.todolistId },
+      relations: { status: true },
+    });
+    await Promise.allSettled([tasks, todolist]);
+    // const list = await this.todolist.repository.findOne({
+    //   where: { id: todolistId, isActive: true },
+    //   relations: { tasks: true, status: true },
+    // });
+    return task;
+  }
+
   getOne({ id }: ITaskGet) {
     return this.repository.findOne({
       where: { id, isActive: true },
