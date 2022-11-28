@@ -36,8 +36,9 @@ export class TodolistController {
 
   @Get(':id')
   @SkipThrottle()
-  getOne(@Param('id') id: string) {
-    return this.service.getOne({ id });
+  getOne(@Param('id') id: string, @Req() request: IRequest) {
+    const userId = request.user ? request.user.id : undefined;
+    return this.service.getOne({ id, userId });
   }
 
   @UseGuards(JwtAuthGuard)

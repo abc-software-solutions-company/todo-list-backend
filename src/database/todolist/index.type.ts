@@ -2,6 +2,7 @@ import { ITodolistUserCreate } from '../todolist-user/index.type';
 
 export interface ITodolistGetOne {
   id: string;
+  userId?: string;
 }
 
 export interface ITodolistGetByUser {

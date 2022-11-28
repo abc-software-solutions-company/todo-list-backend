@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TodolistService } from './index.service';
 import { TodolistController } from './index.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,12 +8,16 @@ import { PoolModule } from '../pool/index.module';
 import { StatusModule } from '../status/index.module';
 import { FavoriteModule } from '../favorite/index.module';
 import { TodolistUserModule } from '../todolist-user/index.module';
+import { TaskModule } from '../task/index.module';
+import { TaskUserModule } from '../task-user/index.module';
 
 @Module({
   imports: [
+    forwardRef(() => TaskModule),
     TypeOrmModule.forFeature([Todolist]),
     PoolModule,
     StatusModule,
+    TaskUserModule,
     AuthModule,
     FavoriteModule,
     TodolistUserModule,

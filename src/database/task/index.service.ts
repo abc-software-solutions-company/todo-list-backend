@@ -1,14 +1,22 @@
-import { Injectable, BadRequestException, MethodNotAllowedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  MethodNotAllowedException,
+  ForbiddenException,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { defineAll, defineAny } from 'src/utils/function';
 import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { AttachmentService } from '../attachment/index.service';
 import { CommentService } from '../comment/index.service';
+import { StatusService } from '../status/index.service';
 import { TaskUserService } from '../task-user/index.service';
 import { TodolistService } from '../todolist/index.service';
 import { Task } from './index.entity';
-import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll } from './index.type';
+import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
 
 @Injectable()
 export class TaskService {
@@ -16,33 +24,16 @@ export class TaskService {
   readonly priorities = { lowest: 'Lowest', low: 'Low', medium: 'Medium', high: 'High', highest: 'Highest' };
 
   constructor(
-    @InjectRepository(Task)
-    readonly repository: Repository<Task>,
-    readonly todolist: TodolistService,
+    @InjectRepository(Task) readonly repository: Repository<Task>,
+    @Inject(forwardRef(() => TodolistService)) readonly todolist: TodolistService,
     readonly attachment: AttachmentService,
     readonly comment: CommentService,
     readonly taskUser: TaskUserService,
+    readonly status: StatusService,
   ) {}
 
   get() {
     return this.repository.find({ where: { isActive: true } });
-  }
-
-  async getOne1({ id }: ITaskGet) {
-    const task = await this.repository.findOne({
-      where: { id: id },
-    });
-    const tasks = this.repository.count({ where: { todolistId: task.todolistId } });
-    const todolist = this.todolist.repository.findOne({
-      where: { id: task.todolistId },
-      relations: { status: true },
-    });
-    await Promise.allSettled([tasks, todolist]);
-    // const list = await this.todolist.repository.findOne({
-    //   where: { id: todolistId, isActive: true },
-    //   relations: { tasks: true, status: true },
-    // });
-    return task;
   }
 
   getOne({ id }: ITaskGet) {
@@ -63,19 +54,14 @@ export class TaskService {
   }
 
   async create(param: ITaskCreate) {
-    const { name, todolistId, description, userId } = param;
-    if (!name || (name && !name.trim())) throw new BadRequestException('Empty name ');
-    const list = await this.todolist.repository.findOne({
-      where: { id: todolistId, isActive: true },
-      relations: { tasks: true, status: true },
-    });
-    if (list.visibility !== this.todolist.visibilityList.public && list.userId !== userId)
-      throw new MethodNotAllowedException();
+    const { todolistId, userId } = param;
+    if (!defineAll(param)) throw new BadRequestException('Create Task Error Param');
+
+    const { index, statusId } = await this.createHelper({ todolistId, userId });
     const id = v4();
-    const index = (list.tasks.length + 1) * this.indexStep;
-    const statusList = list.status.sort((a, b) => Number(a.index) - Number(b.index));
-    const statusId = Number(statusList[0].id);
-    const user = this.repository.create({ name, todolistId, description, userId, id, index, statusId });
+
+    const user = this.repository.create({ id, ...param, index, statusId });
+
     return this.repository.save(user);
   }
 
@@ -197,5 +183,25 @@ export class TaskService {
       promises.push(this.repository.save(task));
     });
     return Promise.all(promises);
+  }
+
+  async createHelper({ todolistId, userId: TaskUserId }: ITaskCreateHepler) {
+    const tasksLength = this.repository.count({ where: { todolistId } });
+    const todolist = this.todolist.repository.findOne({
+      select: { id: true, visibility: true, userId: true },
+      where: { id: todolistId },
+      relations: { status: true },
+    });
+
+    const status = this.status.repository.find({ where: { todolistId }, order: { index: 'ASC' } });
+
+    const promises = await Promise.all([todolist, tasksLength, status]);
+
+    const { visibility, userId } = promises[0];
+
+    if (visibility !== this.todolist.visibilityList.public && userId !== TaskUserId)
+      throw new MethodNotAllowedException();
+
+    return { index: (promises[1] + 1) * this.indexStep, statusId: promises[2][0].id };
   }
 }
