@@ -1,8 +1,11 @@
 import { ITodolistUserCreate } from '../todolist-user/index.type';
 
-export interface ITodolistGetOne {
+export interface ITodolistSeoOne {
   id: string;
-  userId?: string;
+}
+
+export interface ITodolistGetOne extends ITodolistSeoOne {
+  userId: string;
 }
 
 export interface ITodolistGetByUser {
