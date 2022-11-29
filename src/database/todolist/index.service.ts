@@ -43,6 +43,32 @@ export class TodolistService {
   get() {
     return this.repository.findBy({ isActive: true });
   }
+  async seoOne({ id }: ITodolistGetOne) {
+    if (!defineAll(id)) throw new BadRequestException('Todolist getOne Err param');
+
+    const todolistRecord = this.repository.findOne({
+      select: ['id', 'name', 'visibility'],
+      where: { id, isActive: true },
+    });
+
+    const taskRecords = this.task.repository.find({
+      select: ['id', 'name', 'index'],
+      where: { todolistId: id, isActive: true },
+      order: { index: 'DESC' },
+      take: 3,
+    });
+
+    const promises = await Promise.all([todolistRecord, taskRecords]);
+
+    const todolist = promises[0];
+    const tasks = promises[1];
+
+    const isPrivate = todolist.visibility === this.visibilityList.private;
+    const title = isPrivate ? 'Task Not Found' : todolist.name;
+    const description = isPrivate ? undefined : tasks.reduce((pre, cur) => (cur.name ? pre + cur.name : pre), '');
+
+    return { title, description };
+  }
 
   getByUser({ userId }: ITodolistGetByUser) {
     if (!defineAll(userId)) throw new BadRequestException('Todolist getByUser Err Param');
@@ -71,7 +97,7 @@ export class TodolistService {
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'userId', 'index', 'priority'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true } },
       order: { index: 'DESC' },
@@ -88,6 +114,8 @@ export class TodolistService {
     tasks.forEach((e) => {
       e.assignees = e.assignees.filter((e) => e.isActive);
     });
+
+    todolist.status = todolist.status.filter((e) => e.isActive);
 
     todolist.tasks = tasks;
 
