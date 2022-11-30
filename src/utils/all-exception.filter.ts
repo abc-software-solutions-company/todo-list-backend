@@ -7,7 +7,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     // const request = ctx.getRequest<Request>();
-    // console.log(exception);
+    console.log(exception);
 
     response.status(exception.status || 400).json({
       message: 'Bad Request',

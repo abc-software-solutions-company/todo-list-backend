@@ -18,6 +18,12 @@ export class TodolistController {
     return this.service.get();
   }
 
+  @Get('seo/:id')
+  @SkipThrottle()
+  seo(@Param('id') id: string) {
+    return this.service.seoOne({ id });
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('user')
   @SkipThrottle()
@@ -34,10 +40,12 @@ export class TodolistController {
     return this.service.getFavorite({ userId });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @SkipThrottle()
-  getOne(@Param('id') id: string) {
-    return this.service.getOne({ id });
+  getOne(@Param('id') id: string, @Req() request: IRequest) {
+    const userId = request.user.id;
+    return this.service.getOne({ id, userId });
   }
 
   @UseGuards(JwtAuthGuard)

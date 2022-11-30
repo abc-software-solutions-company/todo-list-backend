@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/index.module';
 import { AttachmentModule } from '../attachment/index.module';
@@ -13,7 +13,7 @@ import { TaskService } from './index.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Task]),
-    TodolistModule,
+    forwardRef(() => TodolistModule),
     CommentModule,
     AttachmentModule,
     TaskUserModule,

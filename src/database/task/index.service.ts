@@ -1,4 +1,11 @@
-import { Injectable, BadRequestException, MethodNotAllowedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  MethodNotAllowedException,
+  ForbiddenException,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { defineAll, defineAny } from 'src/utils/function';
 import { Repository } from 'typeorm';
@@ -17,9 +24,8 @@ export class TaskService {
   readonly priorities = { lowest: 'Lowest', low: 'Low', medium: 'Medium', high: 'High', highest: 'Highest' };
 
   constructor(
-    @InjectRepository(Task)
-    readonly repository: Repository<Task>,
-    readonly todolist: TodolistService,
+    @InjectRepository(Task) readonly repository: Repository<Task>,
+    @Inject(forwardRef(() => TodolistService)) readonly todolist: TodolistService,
     readonly attachment: AttachmentService,
     readonly comment: CommentService,
     readonly taskUser: TaskUserService,

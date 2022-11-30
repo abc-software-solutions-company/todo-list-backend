@@ -6,7 +6,7 @@ import { IFavoriteSet } from './index.type';
 
 @Injectable()
 export class FavoriteService {
-  constructor(@InjectRepository(Favorite) private readonly repository: Repository<Favorite>) {}
+  constructor(@InjectRepository(Favorite) readonly repository: Repository<Favorite>) {}
 
   set({ userId, todolistId, isActive }: IFavoriteSet) {
     if (!userId || !todolistId || isActive === undefined) throw new BadRequestException('Set Favorite Err Param');
