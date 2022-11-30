@@ -111,6 +111,18 @@ export class TodolistService {
     return response;
   }
 
+  async getMyTask({ userId }: ITodolistGetByUser) {
+    // const lists = await this.repository.find({
+    //   select: ['todolistId'],
+    //   where: { userId, isActive: true },
+    //   relations: { todolist: true },
+    // });
+
+    // return lists.map(({ todolistId, todolist: { name } }) => ({ todolistId, name }));
+
+    return userId;
+  }
+
   async getOne({ id, userId }: ITodolistGetOne) {
     if (!defineAll(id, userId)) throw new BadRequestException('Todolist getOne Err param');
 
