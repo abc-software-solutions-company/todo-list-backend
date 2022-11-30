@@ -6,6 +6,7 @@ export interface ITaskGet {
   id: string;
 }
 
+export type ITaskGetMyTask = Omit<ITaskCreateHepler, 'todolistId'>;
 export interface ITaskCreateHepler {
   todolistId: string;
   userId: string;

@@ -16,7 +16,7 @@ import { StatusService } from '../status/index.service';
 import { TaskUserService } from '../task-user/index.service';
 import { TodolistService } from '../todolist/index.service';
 import { Task } from './index.entity';
-import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
+import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler, ITaskGetMyTask } from './index.type';
 
 @Injectable()
 export class TaskService {
@@ -30,10 +30,21 @@ export class TaskService {
     readonly comment: CommentService,
     readonly taskUser: TaskUserService,
     readonly status: StatusService,
+    readonly assignee: TaskUserService,
   ) {}
 
   get() {
     return this.repository.find({ where: { isActive: true } });
+  }
+
+  getMyTask({ userId }: ITaskGetMyTask) {
+    if (!defineAll(userId)) throw new BadRequestException('getMyTask Error Param');
+    return this.assignee.repository.findAndCount({
+      select: ['task'],
+      where: { isActive: true, userId },
+      relations: { task: true },
+      order: { task: { todolistId: 'ASC' } },
+    });
   }
 
   getOne({ id }: ITaskGet) {

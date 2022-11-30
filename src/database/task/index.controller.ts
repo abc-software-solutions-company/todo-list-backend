@@ -18,6 +18,13 @@ export class TaskController {
     return this.service.get();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('my-task')
+  @SkipThrottle()
+  async getMyTask(@Req() { user: { id: userId } }: IRequest) {
+    return this.service.getMyTask({ userId });
+  }
+
   @Get(':id')
   @SkipThrottle()
   async getOne(@Param('id') id: string) {
