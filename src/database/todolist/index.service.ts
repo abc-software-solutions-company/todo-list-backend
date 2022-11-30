@@ -119,12 +119,14 @@ export class TodolistService {
     });
 
     const myTasks = lists.map((list) => {
+      const listId = list.id;
       const name = list.name;
+
       const tasks = list.tasks.map((task) => {
         return { taskId: task.id, taskName: task.name };
       });
 
-      return { name, tasks };
+      return { listId, name, tasks };
     });
 
     return myTasks;
