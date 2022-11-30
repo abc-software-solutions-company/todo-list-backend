@@ -118,18 +118,14 @@ export class TodolistService {
       relations: { tasks: true },
     });
 
-    const myTasks = lists.map((list) => {
-      const listId = list.id;
-      const name = list.name;
-
-      const tasks = list.tasks.map((task) => {
-        return { taskId: task.id, taskName: task.name };
+    return lists.map((list) => {
+      const { id, name, tasks } = list;
+      const myTasks = tasks.map(({ id, name }) => {
+        return { id, name };
       });
 
-      return { listId, name, tasks };
+      return { id, name, myTasks };
     });
-
-    return myTasks;
   }
 
   async getOne({ id, userId }: ITodolistGetOne) {
