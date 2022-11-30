@@ -114,19 +114,20 @@ export class TodolistService {
   async getMyTask({ userId }: ITodolistGetByUser) {
     const lists = await this.repository.find({
       select: ['id', 'name'],
-      where: { isActive: true, tasks: { userId } },
+      where: { isActive: true, tasks: { assignees: { isActive: true, userId } } },
       relations: { tasks: true },
     });
 
-    const temp = lists.map((e) => {
-      const { tasks, name } = e;
-      const listTaskName = tasks.map((e) => {
-        return e.name;
+    const myTasks = lists.map((list) => {
+      const name = list.name;
+      const tasks = list.tasks.map((task) => {
+        return task.id, task.name;
       });
-      return { name, listTaskName };
+
+      return { name, tasks };
     });
 
-    return temp;
+    return myTasks;
   }
 
   async getOne({ id, userId }: ITodolistGetOne) {
