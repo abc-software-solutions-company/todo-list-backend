@@ -41,6 +41,14 @@ export class TodolistController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('my-task')
+  @SkipThrottle()
+  getMyTask(@Req() request: IRequest) {
+    const userId = request.user.id;
+    return this.service.getMyTask({ userId });
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @SkipThrottle()
   getOne(@Param('id') id: string, @Req() request: IRequest) {
