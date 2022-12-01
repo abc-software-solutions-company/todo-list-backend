@@ -84,7 +84,7 @@ export class TodolistService {
     });
 
     const response = todolistRecords.map(({ favorites, members, ...rest }) => {
-      const favorite = Boolean(favorites.filter((e) => e.userId == userId).length);
+      const favorite = Boolean(favorites.filter((e) => e.userId == userId && e.isActive).length);
       return {
         ...rest,
         favorite,
