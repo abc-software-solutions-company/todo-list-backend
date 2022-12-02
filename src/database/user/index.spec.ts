@@ -14,10 +14,55 @@ describe('UsersService', () => {
     await moduleRef.close();
   });
   describe('create()', () => {
-    it('Shound return the name Huy and id 36 letters', async () => {
-      const u = await usersService.create({ name: 'Huy', email: null });
-      expect(u.id.length).toEqual(36);
-      expect(u.name).toEqual('Huy');
+    it(`Shound return 400 Status Code if User Don't type name`, async () => {
+      let response;
+      try {
+        response = await usersService.create({ name: '', email: null });
+      } catch (err) {
+        response = err.response;
+      }
+      expect(response.statusCode).toEqual(400);
+    });
+
+    it(`Shound return name only if user login by name`, async () => {
+      const name = 'Thien';
+      const email = null;
+      const response = await usersService.create({ name, email });
+      expect(response.email).toEqual(email);
+      expect(response.name).toEqual(name);
+    });
+
+    it(`Shound return name and email if user login by gmail`, async () => {
+      const name = 'Thien';
+      const email = 'lamminhthien@gmail.com';
+      const response = await usersService.create({ name, email });
+      expect(response.email).toEqual(email);
+      expect(response.name).toEqual(name);
+    });
+
+    it(`Shound return 400 Status Code If user enter space character only`, async () => {
+      const name = '    ';
+      const email = 'lamminhthien@gmail.com';
+      let response;
+      try {
+        response = await usersService.create({ name, email });
+      } catch (err) {
+        response = err.response;
+      }
+      expect(response.statusCode).toEqual(400);
+    });
+
+    it(`Shound return 400 Status Code If user enter more than 32 characters`, async () => {
+      const name =
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+      const email = 'lamminhthien@gmail.com';
+      let response;
+      try {
+        response = await usersService.create({ name, email });
+      } catch (err) {
+        response = err.response;
+      }
+      expect(response.statusCode).toEqual(400);
     });
   });
 });
