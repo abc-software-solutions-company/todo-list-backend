@@ -14,10 +14,21 @@ describe('UsersService', () => {
     await moduleRef.close();
   });
   describe('create()', () => {
-    it('Shound return the name Huy and id 36 letters', async () => {
-      const u = await usersService.create({ name: 'Huy', email: null });
-      expect(u.id.length).toEqual(36);
-      expect(u.name).toEqual('Huy');
+    it('Shound return the name Huy and email ', async () => {
+      const name = 'Thien';
+      const email = 'null';
+
+      const u = await usersService.create({ name, email });
+
+      expect(u.name).toEqual(name);
+      expect(u.email).toEqual(email);
+    });
+
+    it(`Shound return 400 BadRequest when user don't enter name `, async () => {
+      const name = '';
+      const email = 'null';
+
+      const u = await usersService.create({ name, email });
     });
   });
 });
