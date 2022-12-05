@@ -40,6 +40,32 @@ describe('TodolistService', () => {
       expect(response.name).toEqual(name);
       expect(response.link).toEqual(link);
     });
+
+    it('Should return write comment in attachment update', async () => {
+      const {id:userId} = await userService.create({email: undefined,name: "Linh"});
+      const {id:todolistId} = await todolistService.create({name: "List of Linh",userId})
+      const {id:taskId} = await taskService.create({name: "hes lloooooooo",todolistId ,userId ,description:"mo ta chi tiet noi dung task"})
+      const name = 'Hinh 1';
+      const link = 'https://images.pexels.com/photos/1518500/pexels-photo-1518500.jpeg?cs=srgb&dl=pexels-nextvoyage-1518500.jpg&fm=jpg';
+      const {id,...res}  = await attachmentService.create({name, taskId, userId, link });
+      const newName = "Hinh 1 update";
+      const response = await attachmentService.update({id,name:newName,...res})
+      expect(response.name).toEqual(name);
+      expect(response.link).toEqual(link);
+    });
+
+    it('Should return write comment in attachment detele', async () => {
+      const {id:userId} = await userService.create({email: undefined,name: "Linh"});
+      const {id:todolistId} = await todolistService.create({name: "List of Linh",userId})
+      const {id:taskId} = await taskService.create({name: "hes lloooooooo",todolistId ,userId ,description:"mo ta chi tiet noi dung task"})
+      const name = 'Hinh 1';
+      const link = 'https://images.pexels.com/photos/1518500/pexels-photo-1518500.jpeg?cs=srgb&dl=pexels-nextvoyage-1518500.jpg&fm=jpg';
+      const attachment  = await attachmentService.create({name, taskId, userId, link });
+      const isActiveNew = false;
+      const response = await attachmentService.update({id:attachment.id,taskId:attachment.taskId,userId,isActive:isActiveNew,link,name})
+      console.log(response);
+      expect(response.isActive).toEqual(isActiveNew);
+    });
   });
 });
 

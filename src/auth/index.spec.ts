@@ -9,7 +9,6 @@ describe('AUthService', () => {
   beforeEach(async () => {
     moduleRef = await testHelper();
     authService = moduleRef.get<AuthService>(AuthService);
-    console.log("123")
   });
 
   afterEach(async () => {
@@ -55,7 +54,7 @@ describe('AUthService', () => {
     it('Should return access token when user login by email', async () => {
       const email = 'a000006@abcsoftwarecompany.com';
       const name = 'Linh Pham';
-      const response = await authService.login({email, name });
+      const response = await authService.login({ email, name });
       expect(response.accessToken.length).toBeGreaterThanOrEqual(243);
     });
 
@@ -64,7 +63,7 @@ describe('AUthService', () => {
       const name = undefined;
       let response;
       try {
-        response = await authService.login({ email, name });
+        response = await authService.login({email, name });
       } catch (err) {
         response = err.response;
       }

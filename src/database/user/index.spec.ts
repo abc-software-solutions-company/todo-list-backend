@@ -14,8 +14,8 @@ describe('UsersService', () => {
     await moduleRef.close();
   });
   describe('create()', () => {
-    it('Shound return the name Huy and email ', async () => {
-      const name = 'Thien';
+    it('Shound return the name Linh and email ', async () => {
+      const name = 'Linh';
       const email = 'null';
 
       const u = await usersService.create({ name, email});
