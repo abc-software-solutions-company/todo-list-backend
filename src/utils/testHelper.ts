@@ -12,32 +12,27 @@ import { TaskModule } from 'src/database/task/index.module';
 import { TaskUserModule } from 'src/database/task-user/index.module';
 import { TodolistUserModule } from 'src/database/todolist-user/index.module';
 import { SocketsModule } from 'src/websocket/socket.module';
-import * as dotenv from 'dotenv';
-import { User } from 'src/database/user/index.entity';
-import { Attachment } from 'src/database/attachment/index.entity';
-import { Comment } from 'src/database/comment/index.entity';
-import { Favorite } from 'src/database/favorite/index.entity';
-import { Pool } from 'src/database/pool/index.entity';
-import { Status } from 'src/database/status/index.entity';
-import { Task } from 'src/database/task/index.entity';
-import { TaskUser } from 'src/database/task-user/index.entity';
-import { Todolist } from 'src/database/todolist/index.entity';
-import { TodolistUser } from 'src/database/todolist-user/index.entity';
+import { DataSource } from 'typeorm';
+import { ConfigModule } from '@nestjs/config';
+import databaseConfig from 'src/configs/database.config';
+import appConfig from 'src/configs/app.config';
+import { TypeOrmConfigService } from 'src/database/typeorm-config.service';
+
 
 export function testHelper() {
-  dotenv.config();
   const testingModuleBuilder = Test.createTestingModule({
     imports: [
-      TypeOrmModule.forRoot({
-        type: 'postgres',
-        host: process.env.DATABASE_HOST,
-        database: process.env.DATABASE_NAME,
-        schema: process.env.DATABASE_SCHEMA,
-        username: process.env.DATABASE_USERNAME,
-        password: process.env.DATABASE_PASSWORD,
-        port: parseInt(process.env.DATABASE_PORT),
-        entities: [Attachment, Comment, Favorite, Pool, Status, Task, TaskUser, Todolist, TodolistUser, User],
-        synchronize: true,
+      ConfigModule.forRoot({
+        isGlobal: true,
+        load: [databaseConfig,appConfig],
+        envFilePath: ['.env']
+      }),
+      TypeOrmModule.forRootAsync({
+        useClass: TypeOrmConfigService,
+        dataSourceFactory: async (options) => {
+          const dataSource = await new DataSource(options).initialize();
+          return dataSource;
+        },
       }),
       AttachmentModule,
       CommentModule,

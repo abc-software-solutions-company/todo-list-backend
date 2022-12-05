@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   postgres:
     image: postgres
@@ -10,4 +10,15 @@ services:
       TZ: 'Asia/Saigon'
       PGTZ: 'Asia/Saigon'
     ports:
-      - ${DATABASE_PORT:-5436}:5432
+      - 5436:5432
+  postgres-test:
+    image: postgres
+    container_name: todolist-test-db
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      POSTGRES_DB: ${DATABASE_NAME:-postgres}
+      TZ: 'Asia/Saigon'
+      PGTZ: 'Asia/Saigon'
+    ports:
+      - 5437:5432
