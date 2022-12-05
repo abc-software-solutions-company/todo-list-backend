@@ -1,5 +1,4 @@
 import { TestingModule } from '@nestjs/testing';
-import { response } from 'express';
 import { testHelper } from 'src/utils/testHelper';
 import { AuthService } from './index.service';
 
@@ -10,6 +9,7 @@ describe('AUthService', () => {
   beforeEach(async () => {
     moduleRef = await testHelper();
     authService = moduleRef.get<AuthService>(AuthService);
+    console.log("123")
   });
 
   afterEach(async () => {
@@ -18,7 +18,7 @@ describe('AUthService', () => {
 
   describe('Auth Service Test when by name not email', () => {
     it('Should return access token when user login by name', async () => {
-      const email = null;
+      const email = undefined;
       const name = 'Linh';
       const response = await authService.login({ email, name });
       expect(response.accessToken).not.toBeNull();
@@ -27,11 +27,11 @@ describe('AUthService', () => {
     });
 
     it('Should return 400 error when user enter name bank', async () => {
-      const email = null;
-      const name = null;
+      const email = undefined;
+      const name = undefined;
       let response;
       try {
-        const response = await authService.login({ email, name });
+        response = await authService.login({ email, name });
       } catch (err) {
         response = err.response;
       }
@@ -39,11 +39,11 @@ describe('AUthService', () => {
     });
 
     it('Should return 400 error when user enter name space', async () => {
-      const email = null;
+      const email = undefined;
       const name = '     ';
       let response;
       try {
-        const response = await authService.login({ email, name });
+        response = await authService.login({ email, name });
       } catch (err) {
         response = err.response;
       }
@@ -60,11 +60,11 @@ describe('AUthService', () => {
     });
 
     it('Should return  when user donot type email', async () => {
-      const email = null;
-      const name = null;
+      const email = undefined;
+      const name = undefined;
       let response;
       try {
-        const response = await authService.login({ email, name });
+        response = await authService.login({ email, name });
       } catch (err) {
         response = err.response;
       }

@@ -2,25 +2,38 @@
 import { TestingModule } from '@nestjs/testing';
 import { testHelper } from 'src/utils/testHelper';
 import { AttachmentService } from './index.service';
+import {TaskService} from '../task/index.service';
+import {UserService} from '../user/index.service'
+import {TodolistService} from '../todolist/index.service';
+import {PoolService} from '../pool/index.service';
 
 describe('TodolistService', () => {
   let attachmentService: AttachmentService;
+  let taskService: TaskService;
+  let userService: UserService;
+  let todolistService: TodolistService;
+  let poolService: PoolService;
   let moduleRef: TestingModule;
 
   beforeEach(async () => {
     moduleRef = await testHelper();
     attachmentService = moduleRef.get<AttachmentService>(AttachmentService);
+    taskService = moduleRef.get<TaskService>(TaskService);
+    userService = moduleRef.get<UserService>(UserService);
+    todolistService = moduleRef.get<TodolistService>(TodolistService);
+    poolService =moduleRef.get<PoolService>(PoolService);
+    await poolService.generate(100);
   });
-  
+
   afterEach(async () => {
     await moduleRef.close();
   });
 
-  const userId = 'ae1e1ec3-ed48-4e9d-83db-9be98aea1ea0';
-  const taskId = 'f221033d-5af5-4ec4-a82d-49f09c6caa4e';
-
   describe('Attachment Service', () => {
     it('Should return write comment in attachment', async () => {
+      const {id:userId} = await userService.create({email: undefined,name: "Linh"});
+      const {id:todolistId} = await todolistService.create({name: "List of Linh",userId})
+      const {id:taskId} = await taskService.create({name: "hes lloooooooo",todolistId ,userId ,description:"mo ta chi tiet noi dung task"})
       const name = 'Hinh 1';
       const link = 'https://images.pexels.com/photos/1518500/pexels-photo-1518500.jpeg?cs=srgb&dl=pexels-nextvoyage-1518500.jpg&fm=jpg';
       const response = await attachmentService.create({name, taskId, userId, link });
