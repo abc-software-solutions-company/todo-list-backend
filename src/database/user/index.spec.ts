@@ -18,17 +18,10 @@ describe('UsersService', () => {
       const name = 'Thien';
       const email = 'null';
 
-      const u = await usersService.create({ name, email });
+      const u = await usersService.create({ name, email});
 
       expect(u.name).toEqual(name);
       expect(u.email).toEqual(email);
-    });
-
-    it(`Shound return 400 BadRequest when user don't enter name `, async () => {
-      const name = '';
-      const email = 'null';
-
-      const u = await usersService.create({ name, email });
     });
   });
 });
