@@ -16,6 +16,7 @@ export type ITodolistGetFavorite = ITodolistGetByUser;
 
 export interface ITodolistCreate extends ITodolistGetByUser {
   name: string;
+  email?: string;
 }
 export type ITodolistMember = Omit<ITodolistUserCreate, 'todolistId'>;
 

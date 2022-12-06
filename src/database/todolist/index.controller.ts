@@ -59,8 +59,8 @@ export class TodolistController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() { name }: CreateTodolistDto, @Req() request: IRequest) {
-    const { id: userId } = request.user;
-    return this.service.create({ name, userId });
+    const { id: userId, email } = request.user;
+    return this.service.create({ name, userId, email });
   }
 
   @UseGuards(JwtAuthGuard)
