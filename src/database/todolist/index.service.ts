@@ -190,9 +190,7 @@ export class TodolistService {
     const todolistEntity = this.repository.create({ ...param, id, visibility });
     const todolist = await this.repository.save(todolistEntity);
     await this.status.init({ todolistId: id });
-    if (email) {
-      await this.member.set({ todolistId: id, ids: [userId] });
-    }
+    if (email) await this.member.set({ todolistId: id, ids: [userId] });
     return todolist;
   }
 
@@ -225,7 +223,6 @@ export class TodolistService {
       if (favorite !== undefined) {
         await this.favorite.set({ todolistId: id, userId, isActive: favorite });
       }
-
       if (member) {
         await this.member.set({ todolistId: id, ids: member.ids });
       }
@@ -241,9 +238,12 @@ export class TodolistService {
 
     if (guestList.length) {
       const promise = [];
-      guestList.map((e) => {
+      guestList.map(async (e) => {
         e.userId = userHaveEmail.user.id;
-        promise.push(this.repository.save(e));
+        const memberIds = e.members?.map((e) => e.userId) || [];
+        const { userId } = await this.repository.save(e);
+        memberIds.push(userId);
+        promise.push(this.member.set({ todolistId: e.id, ids: memberIds }));
       });
       await Promise.allSettled(promise);
     }
