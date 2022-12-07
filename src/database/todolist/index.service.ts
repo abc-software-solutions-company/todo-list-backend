@@ -118,23 +118,32 @@ export class TodolistService {
       relations: { members: { user: true }, tasks: { assignees: true }, status: true },
       order: { tasks: { index: 'DESC' } },
     });
-
-    const response = todolists.map(({ id, members, name, status, tasks, userId, visibility }) => ({
-      id,
-      name,
-      visibility,
-      userId,
-      tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId }) => ({
+    const pattern = ({ id, members, name, status, tasks, userId, visibility }) => {
+      return {
         id,
         name,
-        assignees,
-        priority,
-        isDone,
-        statusId,
-      })),
-      status,
-      members: members.map(({ user }) => ({ id: user.id, name: user.name, email: user.id })),
-    }));
+        visibility,
+        userId,
+        tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId }) => ({
+          id,
+          name,
+          assignees,
+          priority,
+          isDone,
+          statusId,
+        })),
+        status,
+        members: members.map(({ user }) => ({ id: user.id, name: user.name, email: user.id })),
+      };
+    };
+
+    const response = todolists.map((data) => {
+      if (data.visibility === this.visibilityList.private) {
+        if (data.userId === userId) return pattern(data);
+      } else {
+        return pattern(data);
+      }
+    });
 
     return response;
   }
