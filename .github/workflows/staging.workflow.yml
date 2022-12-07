@@ -1,15 +1,15 @@
-name: Auto Deploy NestJS or Next.JS to EC2 Instance
+name: Deploy Todolist Backend to Staging
 
 on:
   push:
-    branches: ["main"]
+    branches: ["staging"]
 
 env:
-  APP_ENV: ${{ secrets.PRODUCTION }}
+  APP_ENV: ${{ secrets.STAGING }}
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: [self-hosted, staging]
 
     strategy:
       matrix:
@@ -48,8 +48,5 @@ jobs:
       - name: Install Node Module
         run: yarn
 
-      - name: Migrations
-        run: yarn typeorm migration:run -d src/configs/data-source.ts
-
       - name: Build,Start and Restart Web Application
-        run: RUNNER_TRACKING_ID="" && yarn build && pm2 start "yarn start" --exp-backoff-restart-delay=100 && pm2 restart "yarn start" --exp-backoff-restart-delay=100
+        run: RUNNER_TRACKING_ID="" && yarn build && pm2 start "yarn start" --name "backend" --exp-backoff-restart-delay=100 && pm2 restart "backend" --exp-backoff-restart-delay=100
