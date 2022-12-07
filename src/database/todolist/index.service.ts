@@ -118,23 +118,79 @@ export class TodolistService {
       relations: { members: { user: true }, tasks: { assignees: true }, status: true },
       order: { tasks: { index: 'DESC' } },
     });
+    // If this list is visibility, check if user id from this list == userId logined. Then this private list can show
 
-    const response = todolists.map(({ id, members, name, status, tasks, userId, visibility }) => ({
-      id,
-      name,
-      visibility,
-      userId,
-      tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId }) => ({
-        id,
-        name,
-        assignees,
-        priority,
-        isDone,
-        statusId,
-      })),
-      status,
-      members: members.map(({ user }) => ({ id: user.id, name: user.name, email: user.id })),
-    }));
+    // const response = todolists.map(({ id, members, name, status, tasks, userId, visibility }) => ({
+    //   id,
+    //   name,
+    //   visibility,
+    //   userId,
+    //   tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId }) => ({
+    //     id,
+    //     name,
+    //     assignees,
+    //     priority,
+    //     isDone,
+    //     statusId,
+    //   })),
+    //   status,
+    //   members: members.map(({ user }) => ({ id: user.id, name: user.name, email: user.id })),
+    // }));
+
+    const response = todolists.map((data) => {
+      if (data.visibility === this.visibilityList.private) {
+        if (data.userId === userId)
+          return {
+            id: data.id,
+            name: data.name,
+            visibility: data.visibility,
+            userId: data.userId,
+            tasks: data.tasks.map((tasks) => {
+              return {
+                id: tasks.id,
+                name: tasks.name,
+                assignees: tasks.assignees,
+                priority: tasks.priority,
+                isDone: tasks.isDone,
+                statusId: tasks.statusId,
+              };
+            }),
+            status: data.status,
+            members: data.members.map(({ user }) => {
+              return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+              };
+            }),
+          };
+      } else {
+        return {
+          id: data.id,
+          name: data.name,
+          visibility: data.visibility,
+          userId: data.userId,
+          tasks: data.tasks.map((tasks) => {
+            return {
+              id: tasks.id,
+              name: tasks.name,
+              assignees: tasks.assignees,
+              priority: tasks.priority,
+              isDone: tasks.isDone,
+              statusId: tasks.statusId,
+            };
+          }),
+          status: data.status,
+          members: data.members.map(({ user }) => {
+            return {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+            };
+          }),
+        };
+      }
+    });
 
     return response;
   }
