@@ -119,9 +119,7 @@ export class TodolistService {
       order: { tasks: { index: 'DESC' } },
     });
 
-    const todolistsFilter = todolists.filter((e) => e.visibility !== 'PRIVATE' && e.userId !== userId);
-
-    const response = todolistsFilter.map(({ id, members, name, status, tasks, userId, visibility }) => ({
+    const response = todolists.map(({ id, members, name, status, tasks, userId, visibility }) => ({
       id,
       name,
       visibility,
