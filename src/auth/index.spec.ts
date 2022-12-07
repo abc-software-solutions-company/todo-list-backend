@@ -55,7 +55,7 @@ describe('AUthService', () => {
       const email = 'a000006@abcsoftwarecompany.com';
       const name = 'Linh Pham';
       const response = await authService.login({ email, name });
-      expect(response.accessToken.length).toBeGreaterThanOrEqual(243);
+      expect(response.accessToken.length).toBeGreaterThanOrEqual(200);
     });
 
     it('Should return  when user donot type email', async () => {

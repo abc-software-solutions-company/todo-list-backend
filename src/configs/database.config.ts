@@ -20,7 +20,7 @@ export default registerAs('database', () => {
   if (process.env.NODE_ENV === 'test') {
     config.port = 5437;
     config.synchronize = true;
-    config.dropSchema = true;
+    config.dropSchema = false; // nếu true xóa hết dữ liệu
   }
   return config;
 });

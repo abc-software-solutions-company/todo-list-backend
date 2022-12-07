@@ -37,7 +37,7 @@ describe('TodolistService', () => {
       const {id:todolistId} = await todolistService.create({name: "List of Linh",userId})
       const {id:taskId} = await taskService.create({name: "hes lloooooooo",todolistId ,userId ,description:"mo ta chi tiet noi dung task"})
       const comment = 'Hinh 11';
-      const response = await commentService.create({comment,taskId,userId});
+      const response = await commentService.create({comment, taskId, userId});
       expect(response.comment).toEqual(comment);
     });
   });
