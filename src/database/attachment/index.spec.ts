@@ -60,11 +60,10 @@ describe('TodolistService', () => {
       const {id:taskId} = await taskService.create({name: "hes lloooooooo",todolistId ,userId ,description:"mo ta chi tiet noi dung task"})
       const name = 'Hinh 1';
       const link = 'https://images.pexels.com/photos/1518500/pexels-photo-1518500.jpeg?cs=srgb&dl=pexels-nextvoyage-1518500.jpg&fm=jpg';
-      const attachment  = await attachmentService.create({name, taskId, userId, link });
-      const isActiveNew = false;
-      const response = await attachmentService.update({id:attachment.id,taskId:attachment.taskId,userId,isActive:isActiveNew,link,name})
-      console.log(response);
-      expect(response.isActive).toEqual(isActiveNew);
+      const {isActive,id,...res}  = await attachmentService.create({name, taskId, userId, link });
+      const response = await attachmentService.update({isActive:false,id,...res})
+      // console.log(response);
+      expect(response.isActive).toEqual(false);
     });
   });
 });
