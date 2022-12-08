@@ -5,7 +5,7 @@ import { PoolService } from '../pool/index.service';
 import { TodolistService } from '../todolist/index.service';
 import { UserService } from '../user/index.service';
 
-describe('StatusService', () =>{
+describe('TaskService', () =>{
   let taskService: TaskService;
   let poolService: PoolService;
   let moduleRef: TestingModule;
@@ -50,6 +50,21 @@ describe('StatusService', () =>{
         assignee: undefined
       });
       expect(response.name).toEqual(updateTask);
+    });
+
+    it('Should detele task', async () => {
+      const { id: userId } = await userService.create({ email: undefined, name: 'Linh' });
+      const { id: todolistId } = await todolistService.create({ name: 'List of Linh', userId });
+      const name = 'xóa task thành công';
+      const task = await taskService.create({name, todolistId, userId});
+      const response = await taskService.update({
+        id: task.id,
+        userId,
+        isActive: false,
+        statusId: 0,
+        assignee: undefined
+      });
+      expect(response.isActive).toEqual(false);
     });
   });
 });
