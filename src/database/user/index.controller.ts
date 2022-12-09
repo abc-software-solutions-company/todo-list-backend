@@ -20,10 +20,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Patch()
-  update(@Body() body: UpdateUserDto, @Req() request: IRequest) {
-    const { name } = body;
-    const { id } = request.user;
-
+  update(@Body() { name }: UpdateUserDto, @Req() { user: { id } }: IRequest) {
     return this.service.update({ id, name });
   }
 }

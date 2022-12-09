@@ -25,8 +25,7 @@ export class UserService {
     return this.repository.save(user);
   }
 
-  async update(param: IUserUpdate) {
-    const { id, name } = param;
+  async update({ id, name }: IUserUpdate) {
     if (!defineAll(id, name)) throw new BadRequestException('User update Err param');
 
     const user = await this.repository.findOneBy({ id });
