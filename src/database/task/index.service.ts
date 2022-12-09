@@ -45,6 +45,7 @@ export class TaskService {
         attachments: { user: true },
         comments: { user: true },
         assignees: { user: true },
+        user: true,
       },
       order: {
         attachments: { createdDate: 'ASC' },
