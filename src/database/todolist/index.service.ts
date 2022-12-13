@@ -188,6 +188,9 @@ export class TodolistService {
       e.assignees = e.assignees.filter((e) => e.isActive);
     });
 
+    if (todolist.visibility === this.visibilityList.private && userId !== todolist.userId)
+      throw new MethodNotAllowedException('Private list, you are not owner to view this');
+
     return { ...todolist, tasks, favorite, status, members };
   }
 
