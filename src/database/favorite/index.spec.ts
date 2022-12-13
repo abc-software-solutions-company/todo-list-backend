@@ -34,7 +34,7 @@ describe('TodolistService', () => {
       expect(response.userId).toEqual(userId);
       expect(response.isActive).toEqual(true);
     });
-    
+
     it('Should create new list and favorite list which created by other user', async () => {
       const { id: userId1 } = await userService.create({ email: undefined, name: 'Linh' });
       const { id: userId2 } = await userService.create({ email: undefined, name: 'Thiện' });
@@ -44,6 +44,21 @@ describe('TodolistService', () => {
       expect(response.todolistId).toEqual(todolistId);
       expect(response.userId).toEqual(userId1);
       expect(response.isActive).toEqual(true);
+    });
+
+    it(`
+      Should create new list and favorite list which created by other user,
+      but this list set to private in the future,
+      then this list should not be visible on user favorite list later
+    `, async () => {
+      const { id: userId1 } = await userService.create({ email: undefined, name: 'Linh' });
+      const { id: userId2 } = await userService.create({ email: undefined, name: 'Thiện' });
+      const { id: todolistId } = await todolistService.create({ name: 'List of Linh', userId: userId2 });
+
+      await favoriteService.set({ userId: userId1, isActive: true, todolistId });
+      await todolistService.update({ id: todolistId, userId: userId2, visibility: 'PRIVATE' });
+      const response = await todolistService.getFavorite({ userId: userId1 });
+      expect(response.length).toEqual(0);
     });
   });
 });

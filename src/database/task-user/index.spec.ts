@@ -51,7 +51,6 @@ describe('TaskUserService', () => {
 
       const { id: todolistId } = await todolistService.create({ name: 'List of Linh', userId: userId1 });
       const task = await taskService.create({ name: 'Task of Linh', todolistId, userId: userId1 });
-      // Assign chính user hiện tại vào chính task do họ tạo ra trong cùng 1 list cũng chính họ tạo
       await taskUserService.set({ taskId: task.id, ids: [userId2] });
 
       const response = await taskUserService.repository.findOne({ where: { userId: userId2, taskId: task.id } });
@@ -64,7 +63,6 @@ describe('TaskUserService', () => {
       const { id: userId } = await userService.create({ email: undefined, name: 'Linh' });
       const { id: todolistId } = await todolistService.create({ name: 'List of Linh', userId });
       const task = await taskService.create({ name: 'Task of Linh', todolistId, userId });
-      // Assign chính user hiện tại vào chính task do họ tạo ra trong cùng 1 list cũng chính họ tạo
       // Giai đoạn 1 là tự assign cho chính mình
       await taskUserService.set({ taskId: task.id, ids: [userId] });
       const responseFirst = await taskUserService.repository.findOne({ where: { userId, taskId: task.id } });

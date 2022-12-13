@@ -5,7 +5,7 @@ import { PoolService } from '../pool/index.service';
 import { TodolistService } from '../todolist/index.service';
 import { UserService } from '../user/index.service';
 
-describe('TaskService', () =>{
+describe('TaskService', () => {
   let taskService: TaskService;
   let poolService: PoolService;
   let moduleRef: TestingModule;
@@ -31,7 +31,7 @@ describe('TaskService', () =>{
       const { id: todolistId } = await todolistService.create({ name: 'List of Linh', userId });
       const name = 'Task 1: cần làm gì';
       const description = 'mo ta chi tiet noi dung task';
-      const response = await taskService.create({name, todolistId, userId, description});
+      const response = await taskService.create({ name, todolistId, userId, description });
       expect(response.name).toEqual(name);
     });
 
@@ -39,15 +39,19 @@ describe('TaskService', () =>{
       const { id: userId } = await userService.create({ email: undefined, name: 'Linh' });
       const { id: todolistId } = await todolistService.create({ name: 'List of Linh', userId });
       const oldTask = 'Task 1: cần làm gì';
-      const task = await taskService.create({name: oldTask, todolistId, userId});
+      const task = await taskService.create({ name: oldTask, todolistId, userId });
       const updateTask = 'Task 1: cần làm gì update';
+      const storyPoint = '16';
+      const description = 'This is task Description';
       const response = await taskService.update({
         id: task.id,
         userId,
         name: updateTask,
         isActive: task.isActive,
         statusId: 0,
-        assignee: undefined
+        assignee: undefined,
+        storyPoint,
+        description,
       });
       expect(response.name).toEqual(updateTask);
     });
@@ -56,13 +60,13 @@ describe('TaskService', () =>{
       const { id: userId } = await userService.create({ email: undefined, name: 'Linh' });
       const { id: todolistId } = await todolistService.create({ name: 'List of Linh', userId });
       const name = 'xóa task thành công';
-      const task = await taskService.create({name, todolistId, userId});
+      const task = await taskService.create({ name, todolistId, userId });
       const response = await taskService.update({
         id: task.id,
         userId,
         isActive: false,
         statusId: 0,
-        assignee: undefined
+        assignee: undefined,
       });
       expect(response.isActive).toEqual(false);
     });

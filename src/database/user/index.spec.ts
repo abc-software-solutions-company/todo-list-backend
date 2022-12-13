@@ -36,5 +36,15 @@ describe('UsersService', () => {
       expect(response.id).toEqual(id);
       expect(response.name).toEqual(newName);
     });
+
+    it('Shound create user with both name and email, no email', async () => {
+      const name = 'Linh';
+      const email = 'linhngok@gmail.com';
+
+      const u = await usersService.create({ name, email });
+
+      expect(u.name).toEqual(name);
+      expect(u.email).toEqual(email);
+    });
   });
 });
