@@ -14,14 +14,27 @@ describe('UsersService', () => {
     await moduleRef.close();
   });
   describe('create()', () => {
-    it('Shound return the name Linh and email ', async () => {
+    it('Shound create user with name Linh, no email', async () => {
       const name = 'Linh';
       const email = 'null';
 
-      const u = await usersService.create({ name, email});
+      const u = await usersService.create({ name, email });
 
       expect(u.name).toEqual(name);
       expect(u.email).toEqual(email);
+    });
+
+    it('Shound create user with name Linh, no email and update name', async () => {
+      const name = 'Linh';
+      const email = 'null';
+
+      const { id } = await usersService.create({ name, email });
+
+      const newName = 'Linh Loli Cute';
+      const response = await usersService.update({ id, name: newName });
+
+      expect(response.id).toEqual(id);
+      expect(response.name).toEqual(newName);
     });
   });
 });
