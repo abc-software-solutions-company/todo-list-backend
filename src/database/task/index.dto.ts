@@ -10,6 +10,9 @@ export class CreateTaskDto {
 
   @ApiProperty()
   todolistId: string;
+
+  @ApiProperty()
+  statusId?: number;
 }
 
 export class UpdateTaskDto {
