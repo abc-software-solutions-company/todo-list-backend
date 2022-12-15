@@ -55,13 +55,15 @@ export class TaskService {
   }
 
   async create(param: ITaskCreate) {
-    const { todolistId, userId } = param;
+    const { todolistId, userId, statusId: statusIdParam } = param;
     if (!defineAll(param)) throw new BadRequestException('Create Task Error Param');
 
     const { index, statusId } = await this.createHelper({ todolistId, userId });
     const id = v4();
 
-    const user = this.repository.create({ id, ...param, index, statusId });
+    let user: Task;
+    if (!statusIdParam) user = this.repository.create({ id, ...param, index, statusId });
+    else user = this.repository.create({ id, ...param, index, statusId: statusIdParam });
 
     return this.repository.save(user);
   }

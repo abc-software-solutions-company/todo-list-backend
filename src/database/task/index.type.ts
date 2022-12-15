@@ -16,6 +16,7 @@ export interface ITaskCreate {
   description?: string;
   userId: string;
   todolistId: string;
+  statusId?: number;
 }
 export interface IAttachment {
   create?: Omit<IAttachmentCreate, 'taskId' | 'userId'>;
