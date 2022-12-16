@@ -1,40 +1,22 @@
-import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
-import { AppModule } from "./app.module";
-import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { AllExceptionsFilter } from './interceptors/all-exception.filter';
-
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AllExceptionsFilter } from './utils/all-exception.filter';
+import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
-  (app as any).set("etag", false);
+  const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
 
-  const config = new DocumentBuilder()
-    .setTitle("Todo List")
-    .setDescription("ABC Todo List Simple Application")
-    .setVersion("1.0")
-    .build();
-
+  const configService = app.get(ConfigService);
+  const config = new DocumentBuilder().setTitle('Todo List API').setVersion('').addBearerAuth().build();
   const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
 
-  SwaggerModule.setup("api", app, document);
-
-  app.use((req, res, next) => {
-    res.removeHeader("x-powered-by");
-    res.removeHeader("date");
-    next();
-  });
-
-  app.enableCors();
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-    })
-  );
+  app.enableCors({ origin: '*' });
+  app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new AllExceptionsFilter());
-
-
-  await app.listen(3100);
+  await app.listen(configService.get('app.port'));
 }
 bootstrap();

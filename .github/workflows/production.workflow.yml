@@ -1,0 +1,55 @@
+name: Deploy Todolist Backend to Production
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  APP_ENV: ${{ secrets.PRODUCTION }}
+
+jobs:
+  build:
+    runs-on: [self-hosted, production]
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Delete old env file
+        run: rm -r -f .env
+
+      - name: Create env_temp file
+        run: touch .env_temp
+
+      - name: Copy Secret Key Multiline environment variable to .env_temp file
+        run: echo $APP_ENV | tee .env_temp
+
+      - name: Replace space character with break-line in .env
+        run: sed 's/ /\n/g' .env_temp >> .env
+
+      - name: Remove .env_temp file
+        run: rm -r -f .env_temp
+
+      - name: Install Yarn, PM2
+        run: npm install -g yarn pm2
+
+      - name: Install env-cmd
+        run: npm install -g env-cmd
+
+      - name: Install Node Module
+        run: yarn
+
+      - name: Migrations
+        run: yarn typeorm migration:run -d src/configs/data-source.ts
+
+      - name: Build,Start and Restart Web Application
+        run: RUNNER_TRACKING_ID="" && yarn build && pm2 start "yarn start" --exp-backoff-restart-delay=100 && pm2 restart "yarn start" --exp-backoff-restart-delay=100
