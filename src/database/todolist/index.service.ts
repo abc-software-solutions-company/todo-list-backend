@@ -212,12 +212,18 @@ export class TodolistService {
       where: { id, isActive: true },
     });
 
+    const taskRecords = this.task.repository.find({
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority'],
+      where: { todolistId: id, isActive: true },
+      relations: { assignees: { user: true } },
+      order: { index: 'DESC' },
+    });
+
     const favoriteRecord = this.favorite.repository.findOne({ where: { userId, todolistId: id, isActive: true } });
 
     const statusRecords = this.status.repository.find({
       select: ['id', 'name', 'color', 'index'],
       where: { todolistId: id, isActive: true },
-      relations: { tasks: true },
     });
 
     const memberRecords = this.member.repository.find({
@@ -226,15 +232,19 @@ export class TodolistService {
       relations: { user: true },
     });
 
-    const promises = await Promise.all([todolistRecord, favoriteRecord, statusRecords, memberRecords]);
+    const promises = await Promise.all([todolistRecord, taskRecords, favoriteRecord, statusRecords, memberRecords]);
 
     const todolist = promises[0];
-    const favorite = Boolean(promises[1]);
-    const status = promises[2];
-    const members = promises[3].map(({ user }) => ({ id: user.id, name: user.name, email: user.email }));
+    const tasks = promises[1];
+    const favorite = Boolean(promises[2]);
+    const status = promises[3];
+    const members = promises[4].map(({ user }) => ({ id: user.id, name: user.name, email: user.email }));
 
-    status.forEach((e) => {
-      e.tasks = e.tasks.filter((e) => e.isActive);
+    tasks.forEach((e) => {
+      e.assignees = e.assignees.filter((e) => e.isActive);
+    });
+    status.forEach((e, idx) => {
+      e.tasks = tasks.filter((e) => e.statusId == status[idx].id);
     });
 
     if (todolist.visibility === this.visibilityList.private && userId !== todolist.userId)
