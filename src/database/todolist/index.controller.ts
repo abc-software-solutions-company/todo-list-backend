@@ -57,6 +57,14 @@ export class TodolistController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @SkipThrottle()
+  getOneKanban(@Param('id') id: string, @Req() request: IRequest) {
+    const userId = request.user.id;
+    return this.service.getOneKanban({ id, userId });
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() { name }: CreateTodolistDto, @Req() request: IRequest) {
     const { id: userId, email } = request.user;
