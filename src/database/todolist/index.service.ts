@@ -204,6 +204,45 @@ export class TodolistService {
     return { ...todolist, tasks, favorite, status, members };
   }
 
+  async getOneKanban({ id, userId }: ITodolistGetOne) {
+    if (!defineAll(id, userId)) throw new BadRequestException('Todolist getOne Err param');
+
+    const todolistRecord = this.repository.findOne({
+      select: ['id', 'name', 'userId', 'visibility'],
+      where: { id, isActive: true },
+    });
+
+    const favoriteRecord = this.favorite.repository.findOne({ where: { userId, todolistId: id, isActive: true } });
+
+    const statusRecords = this.status.repository.find({
+      select: ['id', 'name', 'color', 'index'],
+      where: { todolistId: id, isActive: true },
+      relations: { tasks: true },
+    });
+
+    const memberRecords = this.member.repository.find({
+      select: ['todolistId', 'isActive'],
+      where: { todolistId: id, isActive: true },
+      relations: { user: true },
+    });
+
+    const promises = await Promise.all([todolistRecord, favoriteRecord, statusRecords, memberRecords]);
+
+    const todolist = promises[0];
+    const favorite = Boolean(promises[1]);
+    const status = promises[2];
+    const members = promises[3].map(({ user }) => ({ id: user.id, name: user.name, email: user.email }));
+
+    status.forEach((e) => {
+      e.tasks = e.tasks.filter((e) => e.isActive);
+    });
+
+    if (todolist.visibility === this.visibilityList.private && userId !== todolist.userId)
+      throw new MethodNotAllowedException('Private list, you are not owner to view this');
+
+    return { ...todolist, favorite, status, members };
+  }
+
   async create(param: ITodolistCreate) {
     const { name, userId, email } = param;
     if (!name || (name && !name.trim())) throw new MethodNotAllowedException('Empty name');
