@@ -27,7 +27,7 @@
     "test:task": "jest -- src/database/task/index.spec.ts",
     "test:task-user": "jest -- src/database/task-user/index.spec.ts",
     "test:todolist-user": "jest -- src/database/todolist-user/index.spec.ts",
-    "test:run-all": "yarn test:comment && yarn test:auth && yarn test:todolist && yarn test:user && yarn test:attachment && yarn test:favorite, && yarn test:status, && yarn test:task",
+    "test:run-all": "yarn test:comment && yarn test:auth && yarn test:todolist && yarn test:user && yarn test:attachment && yarn test:favorite && yarn test:status && yarn test:task",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
