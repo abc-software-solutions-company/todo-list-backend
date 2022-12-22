@@ -250,7 +250,7 @@ export class TodolistService {
     if (todolist.visibility === this.visibilityList.private && userId !== todolist.userId)
       throw new MethodNotAllowedException('Private list, you are not owner to view this');
 
-    return { ...todolist, favorite, status, members };
+    return { ...todolist, favorite, status, members, tasks };
   }
 
   async create(param: ITodolistCreate) {
