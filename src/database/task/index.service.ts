@@ -148,23 +148,17 @@ export class TaskService {
       if (isActive !== undefined) {
         task.isActive = isActive;
 
-        if (taskUser.userId && taskUser.userId === someone.id) {
+        if (assigneeId === someone.id) {
           this.notification.create({
             content: `${someone.name} delete to a task ${task.name}`,
             type: 'task',
-            userId: taskUser.userId,
-          });
-
-          this.notification.create({
-            content: `${someone.name} delete to a task ${task.name}`,
-            type: 'task',
-            userId: task.userId,
+            userId: reporterId,
           });
         } else {
           this.notification.create({
             content: `${someone.name} delete to a task ${task.name}`,
             type: 'task',
-            userId: task.userId,
+            userId: assigneeId,
           });
         }
       }
