@@ -101,6 +101,9 @@ export class TaskService {
       relations: { todolist: { status: true } },
     });
 
+    const assigneeId = !taskUser ? null : taskUser.userId;
+    const reporterId = task.userId;
+
     const write = task.todolist.visibility === this.todolist.visibilityList.public || task.todolist.userId === userId;
 
     if (!write) throw new ForbiddenException(`You can't update this todolist`);
@@ -190,19 +193,19 @@ export class TaskService {
         task.statusId = statusId;
       }
       await this.repository.save(task);
-      if (task.userId == someone.id) {
+      if (assigneeId == someone.id) {
         await this.notification.create({
           content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
           link: task.id,
           type: 'task',
-          userId: task.userId,
+          userId: reporterId,
         });
       } else {
         await this.notification.create({
           content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
           link: task.id,
           type: 'task',
-          userId: taskUser.userId,
+          userId: assigneeId,
         });
       }
     }
@@ -222,7 +225,7 @@ export class TaskService {
         if (assignee.ids)
           await this.taskUser.set({
             taskId: id,
-            reporterId: task.userId,
+            reporterId: reporterId,
             assignorId: someone.id,
             ...assignee,
           });
