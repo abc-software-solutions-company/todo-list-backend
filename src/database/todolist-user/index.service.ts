@@ -41,7 +41,7 @@ export class TodolistUserService {
       for (let i = 0; i < newMembers.length; i++) {
         const user = newMembers[i];
         const member = this.repository.create({ todolistId, userId: user.id, isActive: true });
-        if (user.id.localeCompare(owner.id) != 0) {
+        if (user.id !== owner.id) {
           this.notification.create({
             content: `${owner.name} invited you in a list task ${nameOfTodolist}`,
             link: todolistId,
