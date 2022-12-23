@@ -137,24 +137,28 @@ export class TaskService {
       if (priority) {
         if (!Object.values(this.priorities).includes(priority))
           throw new MethodNotAllowedException('Error priority value');
-        await this.notification.create({
-          content: `${someone.name} changed a task ${task.name} from ${task.priority} to ${priority}`,
-          type: 'task',
-          userId: assigneeId,
-        });
+        if (assigneeId && assigneeId !== reporterId) {
+          await this.notification.create({
+            content: `${someone.name} changed a task ${task.name} from ${task.priority} to ${priority}`,
+            type: 'task',
+            userId: assigneeId,
+          });
+        }
         task.priority = priority;
       }
 
       if (isActive !== undefined) {
         task.isActive = isActive;
 
-        if (assigneeId === someone.id) {
+        if (someone.id !== reporterId) {
           this.notification.create({
             content: `${someone.name} delete to a task ${task.name}`,
             type: 'task',
             userId: reporterId,
           });
-        } else {
+        }
+
+        if (assigneeId) {
           this.notification.create({
             content: `${someone.name} delete to a task ${task.name}`,
             type: 'task',
