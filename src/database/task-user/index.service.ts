@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { defineAll } from 'src/utils/function';
 import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/index.service';
-import { TaskService } from '../task/index.service';
 import { UserService } from '../user/index.service';
 import { TaskUser } from './index.entity';
 import { ITaskUserCreate } from './index.type';
@@ -17,7 +16,7 @@ export class TaskUserService {
   ) {}
 
   async set(param: ITaskUserCreate) {
-    const { taskId, name, assignorId, reporterId, ids } = param;
+    const { taskId, assignorId, reporterId, ids } = param;
 
     if (!defineAll(taskId, assignorId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
     const oldAssignees = await this.repository.findBy({ taskId, isActive: true });
@@ -40,27 +39,24 @@ export class TaskUserService {
         const newAssignee = this.repository.create({ taskId, userId: e.id, isActive: true });
 
         promise.push(this.repository.save(newAssignee));
-
-        if (assignorId !== reporterId) {
-          if (assignorId === e.id) {
-            promise.push(
-              this.notification.create({
-                content: `${assignor.name} assigned you to a task ${assignor.name}`,
-                link: taskId,
-                type: 'task',
-                userId: reporterId,
-              }),
-            );
-          } else {
-            promise.push(
-              this.notification.create({
-                content: `${assignor.name} assigned you to a task ${name}`,
-                link: taskId,
-                type: 'task',
-                userId: e.id,
-              }),
-            );
-          }
+        if (assignorId !== reporterId && assignorId === e.id) {
+          promise.push(
+            this.notification.create({
+              content: `${assignor.name} assigned you to a task to ${assignor.name}`,
+              link: taskId,
+              type: 'task',
+              userId: reporterId,
+            }),
+          );
+        } else {
+          promise.push(
+            this.notification.create({
+              content: `${assignor.name} assigned you to a task to you`,
+              link: taskId,
+              type: 'task',
+              userId: e.id,
+            }),
+          );
         }
       });
       await Promise.allSettled(promise);

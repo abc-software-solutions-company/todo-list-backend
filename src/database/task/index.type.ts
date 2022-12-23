@@ -45,7 +45,6 @@ export interface ITaskUpdate extends ITaskGet {
   statusId: number;
   userId: string;
   assignee: IAssignee;
-  someoneId?: string;
 }
 
 export interface ITaskReindexAll {

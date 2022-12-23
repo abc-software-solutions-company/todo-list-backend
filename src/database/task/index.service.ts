@@ -89,12 +89,11 @@ export class TaskService {
       attachment,
       comment,
       assignee,
-      someoneId,
     } = param;
 
-    if (!defineAll(id, someoneId, userId)) throw new BadRequestException('Task Update Error param');
+    if (!defineAll(id, userId)) throw new BadRequestException('Task Update Error param');
 
-    const someone = await this.user.repository.findOne({ where: { id: someoneId } });
+    const someone = await this.user.repository.findOne({ where: { id: userId } });
     const taskUser = await this.taskUser.repository.findOne({ where: { taskId: id, isActive: true } });
 
     const task = await this.repository.findOne({
@@ -223,7 +222,6 @@ export class TaskService {
         if (assignee.ids)
           await this.taskUser.set({
             taskId: id,
-            name: task.name,
             reporterId: task.userId,
             assignorId: someone.id,
             ...assignee,
