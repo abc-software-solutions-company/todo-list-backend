@@ -12,9 +12,11 @@ import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { AttachmentService } from '../attachment/index.service';
 import { CommentService } from '../comment/index.service';
+import { NotificationService } from '../notification/index.service';
 import { StatusService } from '../status/index.service';
 import { TaskUserService } from '../task-user/index.service';
 import { TodolistService } from '../todolist/index.service';
+import { UserService } from '../user/index.service';
 import { Task } from './index.entity';
 import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
 
@@ -28,8 +30,10 @@ export class TaskService {
     @Inject(forwardRef(() => TodolistService)) readonly todolist: TodolistService,
     readonly attachment: AttachmentService,
     readonly comment: CommentService,
+    readonly notification: NotificationService,
     readonly taskUser: TaskUserService,
     readonly status: StatusService,
+    readonly user: UserService,
   ) {}
 
   get() {
@@ -85,9 +89,13 @@ export class TaskService {
       attachment,
       comment,
       assignee,
+      someoneId,
     } = param;
 
-    if (!defineAll(id, userId)) throw new BadRequestException('Task Update Error param');
+    if (!defineAll(id, someoneId, userId)) throw new BadRequestException('Task Update Error param');
+
+    const someone = await this.user.repository.findOne({ where: { id: someoneId } });
+    const taskUser = await this.taskUser.repository.findOne({ where: { taskId: id, isActive: true } });
 
     const task = await this.repository.findOne({
       where: { id },
@@ -132,6 +140,26 @@ export class TaskService {
 
       if (isActive !== undefined) {
         task.isActive = isActive;
+
+        if (taskUser.userId && taskUser.userId === someone.id) {
+          this.notification.create({
+            content: `${someone.name} delete to a task ${task.name}`,
+            type: 'task',
+            userId: taskUser.userId,
+          });
+
+          this.notification.create({
+            content: `${someone.name} delete to a task ${task.name}`,
+            type: 'task',
+            userId: task.userId,
+          });
+        } else {
+          this.notification.create({
+            content: `${someone.name} delete to a task ${task.name}`,
+            type: 'task',
+            userId: task.userId,
+          });
+        }
       }
       await this.repository.save(task);
     }
@@ -139,6 +167,13 @@ export class TaskService {
     if (defineAny(statusId, isDone)) {
       const ascendingStatus = task.todolist.status.sort((a, b) => a.index - b.index);
       const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
+      const filterStatus = ascendingStatus.filter((e) => {
+        if (e.id == task.statusId || e.id == statusId) {
+          return e;
+        }
+      });
+      const currentStatus = filterStatus[0].name;
+      const afterStatus = filterStatus[1].name;
 
       if (isDone !== undefined) {
         if (isDone === true) {
@@ -156,6 +191,21 @@ export class TaskService {
         task.statusId = statusId;
       }
       await this.repository.save(task);
+      if (task.userId == someone.id) {
+        await this.notification.create({
+          content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
+          link: task.id,
+          type: 'task',
+          userId: task.userId,
+        });
+      } else {
+        await this.notification.create({
+          content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
+          link: task.id,
+          type: 'task',
+          userId: taskUser.userId,
+        });
+      }
     }
 
     if (defineAny(attachment, comment, assignee)) {
@@ -170,7 +220,14 @@ export class TaskService {
       }
 
       if (assignee) {
-        if (assignee.ids) await this.taskUser.set({ taskId: id, ...assignee });
+        if (assignee.ids)
+          await this.taskUser.set({
+            taskId: id,
+            name: task.name,
+            reporterId: task.userId,
+            assignorId: someone.id,
+            ...assignee,
+          });
       }
     }
 

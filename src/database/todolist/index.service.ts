@@ -261,7 +261,7 @@ export class TodolistService {
     const todolistEntity = this.repository.create({ ...param, id, visibility });
     const todolist = await this.repository.save(todolistEntity);
     await this.status.init({ todolistId: id });
-    if (email) await this.member.set({ todolistId: id, ids: [userId] });
+    if (email) await this.member.set({ todolistId: id, nameOfTodolist: name, ownerId: userId, ids: [userId] });
     return todolist;
   }
 
@@ -295,7 +295,7 @@ export class TodolistService {
         await this.favorite.set({ todolistId: id, userId, isActive: favorite });
       }
       if (member) {
-        await this.member.set({ todolistId: id, ids: member.ids });
+        await this.member.set({ todolistId: id, nameOfTodolist: name, ownerId: userId, ids: member.ids });
       }
     }
 
@@ -304,6 +304,7 @@ export class TodolistService {
 
   async sync(body: ITodolistSync) {
     const { email, name, userId } = body;
+    const ownerId = userId;
     const userHaveEmail = await this.auth.login({ email, name });
     const guestList = await this.repository.findBy({ userId });
 
@@ -314,7 +315,7 @@ export class TodolistService {
         const memberIds = e.members?.map((e) => e.userId) || [];
         const { userId } = await this.repository.save(e);
         memberIds.push(userId);
-        promise.push(this.member.set({ todolistId: e.id, ids: memberIds }));
+        promise.push(this.member.set({ todolistId: e.id, nameOfTodolist: name, ownerId: ownerId, ids: memberIds }));
       });
       await Promise.allSettled(promise);
     }

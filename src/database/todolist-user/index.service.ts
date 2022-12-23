@@ -2,6 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { defineAll } from 'src/utils/function';
 import { Repository } from 'typeorm';
+import { NotificationService } from '../notification/index.service';
+import { TodolistService } from '../todolist/index.service';
 import { UserService } from '../user/index.service';
 import { TodolistUser } from './index.entity';
 import { ITodolistUserCreate } from './index.type';
@@ -10,13 +12,16 @@ import { ITodolistUserCreate } from './index.type';
 export class TodolistUserService {
   constructor(
     @InjectRepository(TodolistUser) readonly repository: Repository<TodolistUser>,
+    readonly notification: NotificationService,
     readonly user: UserService,
   ) {}
 
   async set(param: ITodolistUserCreate) {
-    const { todolistId, ids } = param;
+    const { todolistId, nameOfTodolist, ownerId, ids } = param;
 
-    if (!defineAll(todolistId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
+    if (!defineAll(todolistId, ownerId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
+
+    const owner = await this.user.repository.findOneBy({ id: ownerId });
 
     const promises = [];
     const oldMembers = await this.repository.findBy({ todolistId, isActive: true });
@@ -36,6 +41,14 @@ export class TodolistUserService {
       for (let i = 0; i < newMembers.length; i++) {
         const user = newMembers[i];
         const member = this.repository.create({ todolistId, userId: user.id, isActive: true });
+        if (user.id.localeCompare(owner.id) != 0) {
+          this.notification.create({
+            content: `${owner.name} invited you in a list task ${nameOfTodolist}`,
+            link: todolistId,
+            type: 'todolist',
+            userId: user.id,
+          });
+        }
         promises.push(this.repository.save(member));
       }
       await Promise.allSettled(promises);

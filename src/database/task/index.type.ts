@@ -28,7 +28,7 @@ export interface IComment {
   update?: Omit<ICommentUpdate, 'taskId' | 'userId'>;
 }
 
-export type IAssignee = Omit<ITaskUserCreate, 'taskId'>;
+export type IAssignee = Omit<ITaskUserCreate, 'taskId' | 'name'>;
 
 export interface ITaskUpdate extends ITaskGet {
   name?: string;
@@ -45,6 +45,7 @@ export interface ITaskUpdate extends ITaskGet {
   statusId: number;
   userId: string;
   assignee: IAssignee;
+  someoneId?: string;
 }
 
 export interface ITaskReindexAll {
