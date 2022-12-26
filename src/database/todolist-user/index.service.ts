@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { defineAll } from 'src/utils/function';
 import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/index.service';
-import { TodolistService } from '../todolist/index.service';
 import { UserService } from '../user/index.service';
 import { TodolistUser } from './index.entity';
 import { ITodolistUserCreate } from './index.type';
@@ -46,7 +45,8 @@ export class TodolistUserService {
             content: `${owner.name} invited you in a list task ${nameOfTodolist}`,
             link: todolistId,
             type: 'todolist',
-            userId: user.id,
+            recipientID: user.id,
+            senderID: owner.id,
           });
         }
         promises.push(this.repository.save(member));

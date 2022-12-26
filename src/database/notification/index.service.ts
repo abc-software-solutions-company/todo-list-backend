@@ -2,16 +2,19 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './index.entity';
-import { INotificationCreate, INotificationGet } from './index.type';
+import { INotificationCreate } from './index.type';
 
 @Injectable()
 export class NotificationService {
   constructor(@InjectRepository(Notification) readonly repository: Repository<Notification>) {}
 
-  getOne(param: INotificationGet) {
-    const { userId } = param;
+  getOne(userId: string) {
     if (!userId) throw new BadRequestException();
-    const notifications = this.repository.find({ where: { userId }, order: { createdDate: 'DESC' } });
+    const notifications = this.repository.find({
+      where: { recipientID: userId },
+      order: { createdDate: 'DESC' },
+      relations: { sender: true },
+    });
     return notifications;
   }
 

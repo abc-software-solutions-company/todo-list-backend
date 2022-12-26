@@ -45,7 +45,8 @@ export class TaskUserService {
               content: `${assignor.name} assigned you to a task to ${assignor.name}`,
               link: taskId,
               type: 'task',
-              userId: reporterId,
+              recipientID: reporterId,
+              senderID: assignor.id,
             }),
           );
         } else {
@@ -54,7 +55,8 @@ export class TaskUserService {
               content: `${assignor.name} assigned you to a task to you`,
               link: taskId,
               type: 'task',
-              userId: e.id,
+              recipientID: e.id,
+              senderID: reporterId,
             }),
           );
         }
