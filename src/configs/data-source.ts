@@ -18,7 +18,7 @@ const config: DataSourceOptions = {
   username: process.env.DATABASE_USERNAME || 'postgres',
   password: process.env.DATABASE_PASSWORD || 'postgres',
   database: process.env.DATABASE_NAME || 'postgres',
-  schema: process.env.DATABASE_SCHEMA || 'public',
+  schema: process.env.DATABASE_SCHEMA || 'postgres',
   entities: [Attachment, Comment, Favorite, Pool, Status, Task, Todolist, User, TaskUser, TodolistUser, Notification],
   migrations: ['src/migrations/*'],
 };
