@@ -1,6 +1,8 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { IRequest } from 'src/utils/type';
 import { NotificationService } from './index.service';
 
 @ApiTags('Notifications')
@@ -9,9 +11,11 @@ import { NotificationService } from './index.service';
 export class NotificationController {
   constructor(private readonly service: NotificationService) {}
 
-  @Get(':userId')
+  @UseGuards(JwtAuthGuard)
+  @Get()
   @SkipThrottle()
-  async getOne(@Param('userId') userId: string) {
+  async getOne(@Req() request: IRequest) {
+    const { id: userId } = request.user;
     return this.service.getOne({ userId });
   }
 }
