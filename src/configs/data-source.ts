@@ -20,7 +20,7 @@ const config: DataSourceOptions = {
   database: process.env.DATABASE_NAME || 'postgres',
   schema: process.env.DATABASE_SCHEMA || 'public',
   entities: [Attachment, Comment, Favorite, Pool, Status, Task, Todolist, User, TaskUser, TodolistUser, Notification],
-  migrations: ['src/migrations/*'],
+  migrations: [process.env.NODE_ENV == 'product' ? 'src/migrations/*' : 'src/migrations-stage/*'],
 };
 
 const postgresDataSource = new DataSource(config);
