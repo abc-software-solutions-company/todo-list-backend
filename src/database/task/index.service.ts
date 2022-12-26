@@ -140,7 +140,8 @@ export class TaskService {
         await this.notification.create({
           content: `${someone.name} changed a task ${task.name} from ${task.priority} to ${priority}`,
           type: 'task',
-          userId: assigneeId,
+          recipientID: assigneeId,
+          senderID: someone.id,
         });
         task.priority = priority;
       }
@@ -152,7 +153,8 @@ export class TaskService {
           this.notification.create({
             content: `${someone.name} delete to a task ${task.name}`,
             type: 'task',
-            userId: reporterId,
+            recipientID: reporterId,
+            senderID: someone.id,
           });
         }
 
@@ -160,7 +162,8 @@ export class TaskService {
           this.notification.create({
             content: `${someone.name} delete to a task ${task.name}`,
             type: 'task',
-            userId: assigneeId,
+            recipientID: assigneeId,
+            senderID: someone.id,
           });
         }
       }
@@ -199,7 +202,8 @@ export class TaskService {
         this.notification.create({
           content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
           type: 'task',
-          userId: reporterId,
+          recipientID: reporterId,
+          senderID: someone.id,
         });
       }
 
@@ -207,7 +211,8 @@ export class TaskService {
         this.notification.create({
           content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
           type: 'task',
-          userId: assigneeId,
+          recipientID: assigneeId,
+          senderID: someone.id,
         });
       }
     }

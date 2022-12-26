@@ -15,7 +15,7 @@ export class NotificationController {
   @Get()
   @SkipThrottle()
   async getOne(@Req() request: IRequest) {
-    const { id: userId } = request.user;
-    return this.service.getOne({ userId });
+    const { id } = request.user;
+    return this.service.getOne(id);
   }
 }

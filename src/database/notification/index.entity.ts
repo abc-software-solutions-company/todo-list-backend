@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -24,7 +25,10 @@ export class Notification {
   type: string;
 
   @Column()
-  userId: string;
+  recipientID: string;
+
+  @Column()
+  senderID: string;
 
   @Column({ type: 'boolean', default: false })
   isRead: boolean;
@@ -39,6 +43,10 @@ export class Notification {
   updatedDate: Date;
 
   @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  @JoinColumn({ name: 'recipientID' })
+  recipient: User;
+
+  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'senderID' })
+  sender: User;
 }
