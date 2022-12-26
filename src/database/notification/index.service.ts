@@ -11,7 +11,7 @@ export class NotificationService {
   getOne(param: INotificationGet) {
     const { userId } = param;
     if (!userId) throw new BadRequestException();
-    const notifications = this.repository.find({ where: { userId }, order: { createdDate: 'ASC' } });
+    const notifications = this.repository.find({ where: { userId }, order: { createdDate: 'DESC' } });
     return notifications;
   }
 
