@@ -39,8 +39,6 @@ export class TodolistUserService {
     if (newMembers.length) {
       for (let i = 0; i < newMembers.length; i++) {
         const user = newMembers[i];
-        console.log(user.id);
-        console.log(owner.id);
         const member = this.repository.create({ todolistId, userId: user.id, isActive: true });
         if (user.id !== owner.id) {
           this.notification.create({
