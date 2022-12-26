@@ -194,17 +194,18 @@ export class TaskService {
         task.statusId = statusId;
       }
       await this.repository.save(task);
-      if (assigneeId == someone.id) {
-        await this.notification.create({
+
+      if (someone.id !== reporterId) {
+        this.notification.create({
           content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
-          link: task.id,
           type: 'task',
           userId: reporterId,
         });
-      } else {
-        await this.notification.create({
+      }
+
+      if (assigneeId) {
+        this.notification.create({
           content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
-          link: task.id,
           type: 'task',
           userId: assigneeId,
         });
