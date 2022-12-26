@@ -137,13 +137,11 @@ export class TaskService {
       if (priority) {
         if (!Object.values(this.priorities).includes(priority))
           throw new MethodNotAllowedException('Error priority value');
-        if (assigneeId && assigneeId !== reporterId) {
-          await this.notification.create({
-            content: `${someone.name} changed a task ${task.name} from ${task.priority} to ${priority}`,
-            type: 'task',
-            userId: assigneeId,
-          });
-        }
+        await this.notification.create({
+          content: `${someone.name} changed a task ${task.name} from ${task.priority} to ${priority}`,
+          type: 'task',
+          userId: assigneeId,
+        });
         task.priority = priority;
       }
 
