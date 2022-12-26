@@ -12,9 +12,11 @@ import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { AttachmentService } from '../attachment/index.service';
 import { CommentService } from '../comment/index.service';
+import { NotificationService } from '../notification/index.service';
 import { StatusService } from '../status/index.service';
 import { TaskUserService } from '../task-user/index.service';
 import { TodolistService } from '../todolist/index.service';
+import { UserService } from '../user/index.service';
 import { Task } from './index.entity';
 import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
 
@@ -28,8 +30,10 @@ export class TaskService {
     @Inject(forwardRef(() => TodolistService)) readonly todolist: TodolistService,
     readonly attachment: AttachmentService,
     readonly comment: CommentService,
+    readonly notification: NotificationService,
     readonly taskUser: TaskUserService,
     readonly status: StatusService,
+    readonly user: UserService,
   ) {}
 
   get() {
@@ -89,10 +93,16 @@ export class TaskService {
 
     if (!defineAll(id, userId)) throw new BadRequestException('Task Update Error param');
 
+    const someone = await this.user.repository.findOne({ where: { id: userId } });
+    const taskUser = await this.taskUser.repository.findOne({ where: { taskId: id, isActive: true } });
+
     const task = await this.repository.findOne({
       where: { id },
       relations: { todolist: { status: true } },
     });
+
+    const assigneeId = !taskUser ? null : taskUser.userId;
+    const reporterId = task.userId;
 
     const write = task.todolist.visibility === this.todolist.visibilityList.public || task.todolist.userId === userId;
 
@@ -127,11 +137,32 @@ export class TaskService {
       if (priority) {
         if (!Object.values(this.priorities).includes(priority))
           throw new MethodNotAllowedException('Error priority value');
+        await this.notification.create({
+          content: `${someone.name} changed a task ${task.name} from ${task.priority} to ${priority}`,
+          type: 'task',
+          userId: assigneeId,
+        });
         task.priority = priority;
       }
 
       if (isActive !== undefined) {
         task.isActive = isActive;
+
+        if (someone.id !== reporterId) {
+          this.notification.create({
+            content: `${someone.name} delete to a task ${task.name}`,
+            type: 'task',
+            userId: reporterId,
+          });
+        }
+
+        if (assigneeId) {
+          this.notification.create({
+            content: `${someone.name} delete to a task ${task.name}`,
+            type: 'task',
+            userId: assigneeId,
+          });
+        }
       }
       await this.repository.save(task);
     }
@@ -139,6 +170,13 @@ export class TaskService {
     if (defineAny(statusId, isDone)) {
       const ascendingStatus = task.todolist.status.sort((a, b) => a.index - b.index);
       const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
+      const filterStatus = ascendingStatus.filter((e) => {
+        if (e.id == task.statusId || e.id == statusId) {
+          return e;
+        }
+      });
+      const currentStatus = filterStatus[0].name;
+      const afterStatus = filterStatus[1].name;
 
       if (isDone !== undefined) {
         if (isDone === true) {
@@ -156,6 +194,22 @@ export class TaskService {
         task.statusId = statusId;
       }
       await this.repository.save(task);
+
+      if (someone.id !== reporterId) {
+        this.notification.create({
+          content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
+          type: 'task',
+          userId: reporterId,
+        });
+      }
+
+      if (assigneeId) {
+        this.notification.create({
+          content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
+          type: 'task',
+          userId: assigneeId,
+        });
+      }
     }
 
     if (defineAny(attachment, comment, assignee)) {
@@ -170,7 +224,13 @@ export class TaskService {
       }
 
       if (assignee) {
-        if (assignee.ids) await this.taskUser.set({ taskId: id, ...assignee });
+        if (assignee.ids)
+          await this.taskUser.set({
+            taskId: id,
+            reporterId: reporterId,
+            assignorId: someone.id,
+            ...assignee,
+          });
       }
     }
 

@@ -10,6 +10,7 @@ import databaseConfig from './configs/database.config';
 import { AttachmentModule } from './database/attachment/index.module';
 import { CommentModule } from './database/comment/index.module';
 import { FavoriteModule } from './database/favorite/index.module';
+import { NotificationModule } from './database/notification/index.module';
 import { PoolModule } from './database/pool/index.module';
 import { StatusModule } from './database/status/index.module';
 import { TaskUserModule } from './database/task-user/index.module';
@@ -47,6 +48,7 @@ import { SocketsModule } from './websocket/socket.module';
     UserModule,
     TodolistModule,
     FavoriteModule,
+    NotificationModule,
     StatusModule,
     TaskModule,
     TaskUserModule,

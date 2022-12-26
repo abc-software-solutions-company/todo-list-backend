@@ -1,6 +1,7 @@
 import { Attachment } from 'src/database/attachment/index.entity';
 import { Comment } from 'src/database/comment/index.entity';
 import { Favorite } from 'src/database/favorite/index.entity';
+import { Notification } from 'src/database/notification/index.entity';
 import { Pool } from 'src/database/pool/index.entity';
 import { Status } from 'src/database/status/index.entity';
 import { TaskUser } from 'src/database/task-user/index.entity';
@@ -18,7 +19,7 @@ const config: DataSourceOptions = {
   password: process.env.DATABASE_PASSWORD || 'postgres',
   database: process.env.DATABASE_NAME || 'postgres',
   schema: process.env.DATABASE_SCHEMA || 'public',
-  entities: [Attachment, Comment, Favorite, Pool, Status, Task, Todolist, User, TaskUser, TodolistUser],
+  entities: [Attachment, Comment, Favorite, Pool, Status, Task, Todolist, User, TaskUser, TodolistUser, Notification],
   migrations: ['src/migrations/*'],
 };
 
