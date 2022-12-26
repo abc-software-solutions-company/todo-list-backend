@@ -16,6 +16,7 @@ export default registerAs('database', () => {
   if (process.env.NODE_ENV === 'dev') {
     config.port = 5436;
     config.synchronize = true;
+    config.schema = 'public'
   }
   if (process.env.NODE_ENV === 'test') {
     config.port = 5437;
