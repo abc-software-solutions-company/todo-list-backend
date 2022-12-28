@@ -101,6 +101,9 @@ export class TaskService {
       relations: { todolist: { status: true } },
     });
 
+    const someoneName = `<span style="font-weight: 600;">${someone.name}</span>`;
+    const link = `<a href="/tasks/${task.id}">${task.name}</a>`;
+
     const assigneeId = !taskUser ? null : taskUser.userId;
     const reporterId = task.userId;
 
@@ -138,7 +141,7 @@ export class TaskService {
         if (!Object.values(this.priorities).includes(priority))
           throw new MethodNotAllowedException('Error priority value');
         await this.notification.create({
-          content: `${someone.name} changed a task ${task.name} from ${task.priority} to ${priority}`,
+          content: `${someoneName} changed a task ${link} from ${task.priority} to ${priority}`,
           type: 'task',
           recipientID: assigneeId,
           senderID: someone.id,
@@ -151,7 +154,7 @@ export class TaskService {
 
         if (someone.id !== reporterId) {
           this.notification.create({
-            content: `${someone.name} delete to a task ${task.name}`,
+            content: `${someoneName} delete to a task ${link}`,
             type: 'task',
             recipientID: reporterId,
             senderID: someone.id,
@@ -160,7 +163,7 @@ export class TaskService {
 
         if (assigneeId) {
           this.notification.create({
-            content: `${someone.name} delete to a task ${task.name}`,
+            content: `${someoneName} delete to a task ${link}`,
             type: 'task',
             recipientID: assigneeId,
             senderID: someone.id,
@@ -178,8 +181,8 @@ export class TaskService {
           return e;
         }
       });
-      const currentStatus = filterStatus[0].name;
-      const afterStatus = filterStatus[1].name;
+      const currentStatus = `<span style="color:${filterStatus[0].color}; font-weight: 600;">${filterStatus[0].name.toUpperCase()}</span>`;
+      const afterStatus = `<span style="color:${filterStatus[1].color}; font-weight: 600;">${filterStatus[1].name.toUpperCase()}</span>`;
 
       if (isDone !== undefined) {
         if (isDone === true) {
@@ -200,7 +203,8 @@ export class TaskService {
 
       if (someone.id !== reporterId) {
         this.notification.create({
-          content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
+          content: `${someoneName} changed the task ${link} from ${currentStatus} to ${afterStatus}`,
+          link: task.id,
           type: 'task',
           recipientID: reporterId,
           senderID: someone.id,
@@ -209,7 +213,8 @@ export class TaskService {
 
       if (assigneeId) {
         this.notification.create({
-          content: `${someone.name} changed a task ${task.name} from ${currentStatus} to ${afterStatus}`,
+          content: `${someoneName} changed the task ${link} from ${currentStatus} to ${afterStatus}`,
+          link: task.id,
           type: 'task',
           recipientID: assigneeId,
           senderID: someone.id,
@@ -230,12 +235,10 @@ export class TaskService {
 
       if (assignee) {
         if (assignee.ids)
-          await this.taskUser.set({
-            taskId: id,
-            reporterId: reporterId,
-            assignorId: someone.id,
-            ...assignee,
-          });
+          await this.taskUser.set(
+            { taskId: id, ...assignee },
+            { taskName: task.name, reporterId: reporterId, assignorId: someone.id },
+          );
       }
     }
 

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/index.service';
 import { UserService } from '../user/index.service';
 import { TaskUser } from './index.entity';
-import { ITaskUserCreate } from './index.type';
+import { ITaskUserCreate, ITaskUserGet } from './index.type';
 
 @Injectable()
 export class TaskUserService {
@@ -15,8 +15,9 @@ export class TaskUserService {
     readonly notification: NotificationService,
   ) {}
 
-  async set(param: ITaskUserCreate) {
-    const { taskId, assignorId, reporterId, ids } = param;
+  async set(param: ITaskUserCreate, paramGet: ITaskUserGet) {
+    const { taskId, ids } = param;
+    const { taskName, assignorId, reporterId } = paramGet;
 
     if (!defineAll(taskId, assignorId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
     const oldAssignees = await this.repository.findBy({ taskId, isActive: true });
@@ -35,6 +36,10 @@ export class TaskUserService {
       const promise = [];
       const where = ids.map((e) => ({ id: e }));
       const users = await this.user.repository.findBy(where);
+
+      const assignorName = `<span style="font-weight: 600;">${assignor.name}</span>`;
+      const link = `<a href="/tasks/${taskId}">${taskName}</a>`;
+
       users.map((e) => {
         const newAssignee = this.repository.create({ taskId, userId: e.id, isActive: true });
 
@@ -42,7 +47,7 @@ export class TaskUserService {
         if (assignorId !== reporterId && assignorId === e.id) {
           promise.push(
             this.notification.create({
-              content: `${assignor.name} assigned you to a task to ${assignor.name}`,
+              content: `${assignorName} assigned you to the task ${link} to ${assignorName}`,
               link: taskId,
               type: 'task',
               recipientID: reporterId,
@@ -52,7 +57,7 @@ export class TaskUserService {
         } else {
           promise.push(
             this.notification.create({
-              content: `${assignor.name} assigned you to a task to you`,
+              content: `${assignorName} assigned you to the task ${link} to you`,
               link: taskId,
               type: 'task',
               recipientID: e.id,
