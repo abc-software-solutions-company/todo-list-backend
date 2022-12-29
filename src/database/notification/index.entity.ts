@@ -23,11 +23,17 @@ export class Notification {
   @Column({ type: 'text', nullable: true })
   type: string;
 
-  @Column()
-  recipientID: string;
+  @Column({ type: 'text', nullable: true })
+  before: string;
+
+  @Column({ type: 'text', nullable: true })
+  after: string;
 
   @Column()
-  senderID: string;
+  recipientId: string;
+
+  @Column()
+  senderId: string;
 
   @Column({ type: 'boolean', default: false })
   isRead: boolean;
@@ -42,10 +48,10 @@ export class Notification {
   updatedDate: Date;
 
   @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: 'recipientID' })
+  @JoinColumn({ name: 'recipientId' })
   recipient: User;
 
   @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: 'senderID' })
+  @JoinColumn({ name: 'senderId' })
   sender: User;
 }

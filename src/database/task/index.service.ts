@@ -13,6 +13,7 @@ import { v4 } from 'uuid';
 import { AttachmentService } from '../attachment/index.service';
 import { CommentService } from '../comment/index.service';
 import { NotificationService } from '../notification/index.service';
+import { INotificationCreate } from '../notification/index.type';
 import { StatusService } from '../status/index.service';
 import { TaskUserService } from '../task-user/index.service';
 import { TodolistService } from '../todolist/index.service';
@@ -90,7 +91,7 @@ export class TaskService {
       comment,
       assignee,
     } = param;
-
+    const notifications: INotificationCreate[] = [];
     if (!defineAll(id, userId)) throw new BadRequestException('Task Update Error param');
 
     const someone = await this.user.repository.findOne({ where: { id: userId } });
@@ -100,9 +101,6 @@ export class TaskService {
       where: { id },
       relations: { todolist: { status: true } },
     });
-
-    const someoneName = `<span style="font-weight: 600;">${someone.name}</span>`;
-    const link = `<a href="/tasks/${task.id}">${task.name}</a>`;
 
     const assigneeId = !taskUser ? null : taskUser.userId;
     const reporterId = task.userId;
@@ -140,49 +138,55 @@ export class TaskService {
       if (priority) {
         if (!Object.values(this.priorities).includes(priority))
           throw new MethodNotAllowedException('Error priority value');
-        await this.notification.create({
-          content: `${someoneName} changed a task ${link} from ${task.priority} to ${priority}`,
-          type: 'task',
-          recipientID: assigneeId,
-          senderID: someone.id,
-        });
+
+        const beforePriority = JSON.stringify(task);
         task.priority = priority;
+        const afterPriority = JSON.stringify(task);
+
+        if (assigneeId) {
+          const priorityNotification: INotificationCreate = {
+            content: task.name,
+            before: beforePriority,
+            after: afterPriority,
+            recipientId: assigneeId,
+            senderId: someone.id,
+          };
+          notifications.push(priorityNotification);
+        }
       }
 
       if (isActive !== undefined) {
         task.isActive = isActive;
 
         if (someone.id !== reporterId) {
-          this.notification.create({
-            content: `${someoneName} delete to a task ${link}`,
-            type: 'task',
-            recipientID: reporterId,
-            senderID: someone.id,
-          });
+          const deleteNotificationForReporter: INotificationCreate = {
+            content: task.name,
+            type: 'deletedTask',
+            recipientId: reporterId,
+            senderId: someone.id,
+          };
+
+          notifications.push(deleteNotificationForReporter);
         }
 
         if (assigneeId) {
-          this.notification.create({
-            content: `${someoneName} delete to a task ${link}`,
-            type: 'task',
-            recipientID: assigneeId,
-            senderID: someone.id,
-          });
+          const deleteNotificationForAssigee: INotificationCreate = {
+            content: task.name,
+            type: 'deletedTask',
+            recipientId: assigneeId,
+            senderId: someone.id,
+          };
+
+          notifications.push(deleteNotificationForAssigee);
         }
       }
       await this.repository.save(task);
+      this.notification.createMany(notifications);
     }
 
     if (defineAny(statusId, isDone)) {
       const ascendingStatus = task.todolist.status.sort((a, b) => a.index - b.index);
       const endStatus = ascendingStatus[ascendingStatus.length - 1].id;
-      const filterStatus = ascendingStatus.filter((e) => {
-        if (e.id == task.statusId || e.id == statusId) {
-          return e;
-        }
-      });
-      const currentStatus = `<span style="color:${filterStatus[0].color}; font-weight: 600;">${filterStatus[0].name.toUpperCase()}</span>`;
-      const afterStatus = `<span style="color:${filterStatus[1].color}; font-weight: 600;">${filterStatus[1].name.toUpperCase()}</span>`;
 
       if (isDone !== undefined) {
         if (isDone === true) {
@@ -197,29 +201,40 @@ export class TaskService {
       if (statusId) {
         if (statusId == endStatus) task.isDone = true;
         else task.isDone = false;
+
+        const beforeStatus = JSON.stringify(task.status);
         task.statusId = statusId;
+        const afterStatus = JSON.stringify(this.status.repository.findOneBy({ id: statusId }));
+
+        if (someone.id !== reporterId) {
+          const statusNotificationForReporter: INotificationCreate = {
+            content: task.name,
+            link: task.id,
+            type: 'status',
+            before: beforeStatus,
+            after: afterStatus,
+            recipientId: reporterId,
+            senderId: someone.id,
+          };
+          notifications.push(statusNotificationForReporter);
+        }
+
+        if (assigneeId) {
+          const statusNotificationForAssignee: INotificationCreate = {
+            content: task.name,
+            link: task.id,
+            type: 'status',
+            before: beforeStatus,
+            after: afterStatus,
+            recipientId: assigneeId,
+            senderId: someone.id,
+          };
+          notifications.push(statusNotificationForAssignee);
+        }
       }
+
       await this.repository.save(task);
-
-      if (someone.id !== reporterId) {
-        this.notification.create({
-          content: `${someoneName} changed the task ${link} from ${currentStatus} to ${afterStatus}`,
-          link: task.id,
-          type: 'task',
-          recipientID: reporterId,
-          senderID: someone.id,
-        });
-      }
-
-      if (assigneeId) {
-        this.notification.create({
-          content: `${someoneName} changed the task ${link} from ${currentStatus} to ${afterStatus}`,
-          link: task.id,
-          type: 'task',
-          recipientID: assigneeId,
-          senderID: someone.id,
-        });
-      }
+      this.notification.createMany(notifications);
     }
 
     if (defineAny(attachment, comment, assignee)) {

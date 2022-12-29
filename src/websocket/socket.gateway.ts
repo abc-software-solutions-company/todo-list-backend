@@ -25,7 +25,7 @@ export class SocketGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('updateNotification')
-  updateNotification(recipientID: string) {
-    this.server.to(recipientID).emit('updateNotification');
+  updateNotification(recipientIds: string[]) {
+    this.server.to(recipientIds).emit('updateNotification');
   }
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { defineAll } from 'src/utils/function';
 import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/index.service';
+import { INotificationCreate } from '../notification/index.type';
 import { UserService } from '../user/index.service';
 import { TodolistUser } from './index.entity';
 import { ITodolistUserCreate, ITodolistUserGet } from './index.type';
@@ -18,6 +19,7 @@ export class TodolistUserService {
   async set(param: ITodolistUserCreate, paramGet: ITodolistUserGet) {
     const { todolistId, ids } = param;
     const { nameOfTodolist, ownerId } = paramGet;
+    const notifications: INotificationCreate[] = [];
 
     if (!defineAll(todolistId, ownerId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
 
@@ -42,21 +44,21 @@ export class TodolistUserService {
         const user = newMembers[i];
         const member = this.repository.create({ todolistId, userId: user.id, isActive: true });
 
-        const name = `<span style="font-weight: 600;">${owner.name}</span>`;
-        const link = `<a href="/lists/${todolistId}">${nameOfTodolist}</a>`;
-
         if (user.id !== owner.id) {
-          this.notification.create({
-            content: `${name} invited you in a list task ${link}`,
+          const statusNotification: INotificationCreate = {
+            content: nameOfTodolist,
             link: todolistId,
-            type: 'todolist',
-            recipientID: user.id,
-            senderID: owner.id,
-          });
+            type: 'invited',
+            recipientId: user.id,
+            senderId: owner.id,
+          };
+
+          notifications.push(statusNotification);
         }
         promises.push(this.repository.save(member));
       }
       await Promise.allSettled(promises);
+      this.notification.createMany(notifications);
     }
   }
 }
