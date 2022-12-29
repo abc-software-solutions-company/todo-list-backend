@@ -1,13 +1,15 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddNotification1672299314720 implements MigrationInterface {
-    name = 'AddNotification1672299314720'
+export class AddNotification1672299526073 implements MigrationInterface {
+    name = 'AddNotification1672299526073'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "notification" DROP CONSTRAINT "FK_31e7e90b3e52e9c24f2b5fc85ab"`);
         await queryRunner.query(`ALTER TABLE "notification" DROP CONSTRAINT "FK_3b1855ee9c8f9c171418ca17c38"`);
         await queryRunner.query(`ALTER TABLE "notification" DROP COLUMN "recipientID"`);
         await queryRunner.query(`ALTER TABLE "notification" DROP COLUMN "senderID"`);
+        await queryRunner.query(`ALTER TABLE "notification" DROP COLUMN "content"`);
+        await queryRunner.query(`ALTER TABLE "notification" ADD "content" character varying NOT NULL`);
         await queryRunner.query(`ALTER TABLE "notification" DROP COLUMN "recipientId"`);
         await queryRunner.query(`ALTER TABLE "notification" ADD "recipientId" uuid NOT NULL`);
         await queryRunner.query(`ALTER TABLE "notification" DROP COLUMN "senderId"`);
@@ -23,6 +25,8 @@ export class AddNotification1672299314720 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "notification" ADD "senderId" character varying NOT NULL`);
         await queryRunner.query(`ALTER TABLE "notification" DROP COLUMN "recipientId"`);
         await queryRunner.query(`ALTER TABLE "notification" ADD "recipientId" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "notification" DROP COLUMN "content"`);
+        await queryRunner.query(`ALTER TABLE "notification" ADD "content" text`);
         await queryRunner.query(`ALTER TABLE "notification" ADD "senderID" uuid`);
         await queryRunner.query(`ALTER TABLE "notification" ADD "recipientID" uuid`);
         await queryRunner.query(`ALTER TABLE "notification" ADD CONSTRAINT "FK_3b1855ee9c8f9c171418ca17c38" FOREIGN KEY ("senderID") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);

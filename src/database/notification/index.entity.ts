@@ -14,7 +14,7 @@ export class Notification {
   @PrimaryGeneratedColumn({ type: 'int8' })
   id: number;
 
-  @Column({ type: 'text', nullable: true })
+  @Column()
   content: string;
 
   @Column({ type: 'text', nullable: true })
