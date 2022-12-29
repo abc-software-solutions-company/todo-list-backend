@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { defineAll } from 'src/utils/function';
 import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/index.service';
+import { INotificationCreate } from '../notification/index.type';
 import { UserService } from '../user/index.service';
 import { TaskUser } from './index.entity';
 import { ITaskUserCreate, ITaskUserGet } from './index.type';
@@ -33,40 +34,37 @@ export class TaskUserService {
     }
 
     if (ids.length) {
+      const notifications: INotificationCreate[] = [];
       const promise = [];
       const where = ids.map((e) => ({ id: e }));
       const users = await this.user.repository.findBy(where);
-
-      const assignorName = `<span style="font-weight: 600;">${assignor.name}</span>`;
-      const link = `<a href="/tasks/${taskId}">${taskName}</a>`;
 
       users.map((e) => {
         const newAssignee = this.repository.create({ taskId, userId: e.id, isActive: true });
 
         promise.push(this.repository.save(newAssignee));
         if (assignorId !== reporterId && assignorId === e.id) {
-          promise.push(
-            this.notification.create({
-              content: `${assignorName} assigned you to the task ${link} to ${assignorName}`,
-              link: taskId,
-              type: 'task',
-              recipientID: reporterId,
-              senderID: assignor.id,
-            }),
-          );
+          const notificationForReporter: INotificationCreate = {
+            content: taskName,
+            link: taskId,
+            type: 'assigned',
+            recipientId: reporterId,
+            senderId: assignor.id,
+          };
+          notifications.push(notificationForReporter);
         } else {
-          promise.push(
-            this.notification.create({
-              content: `${assignorName} assigned you to the task ${link} to you`,
-              link: taskId,
-              type: 'task',
-              recipientID: e.id,
-              senderID: reporterId,
-            }),
-          );
+          const notificationForAssigee: INotificationCreate = {
+            content: taskName,
+            link: taskId,
+            type: 'assigned',
+            recipientId: e.id,
+            senderId: reporterId,
+          };
+          notifications.push(notificationForAssigee);
         }
       });
       await Promise.allSettled(promise);
+      this.notification.createMany(notifications);
     }
   }
 }

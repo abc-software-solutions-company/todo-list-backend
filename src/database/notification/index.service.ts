@@ -15,34 +15,46 @@ export class NotificationService {
   getOne(userId: string) {
     if (!userId) throw new BadRequestException();
     const notifications = this.repository.find({
-      where: { recipientID: userId },
+      where: { recipientId: userId },
       order: { createdDate: 'DESC' },
-      relations: { sender: true },
+      relations: { sender: true, recipient: true },
     });
     return notifications;
   }
 
-  async create(param: INotificationCreate) {
-    const { content, recipientID } = param;
-    if (!content) throw new BadRequestException();
+  async createMany(params: INotificationCreate[]) {
+    const promises: Promise<Notification>[] = [];
+    const recipientIds: string[] = [];
 
-    const newNotification = this.repository.create({ ...param });
-    const res = await this.repository.save(newNotification);
+    params.forEach((param) => {
+      const { recipientId, senderId } = param;
+      if (!recipientId || !senderId) throw new BadRequestException();
 
-    if (res) this.socket.updateNotification(recipientID);
+      const newNotification = this.repository.create({ ...param });
+      const res = this.repository.save(newNotification);
+      promises.push(res);
+      recipientIds.push(recipientId);
+    });
 
-    return res;
+    const result = Promise.all(promises).then(() => {
+      this.socket.updateNotification(recipientIds);
+    });
+
+    return result;
   }
 
   async update(param: INotificationUpdate) {
+    const recipientIds: string[] = [];
+
     const { id } = param;
     const notification = await this.repository.findOneBy({ id });
 
     notification.isRead = true;
     const res = await this.repository.save(notification);
 
-    const { recipientID } = notification;
-    if (res) this.socket.updateNotification(recipientID);
+    const { recipientId } = notification;
+    recipientIds.push(recipientId);
+    if (res) this.socket.updateNotification(recipientIds);
 
     return res;
   }
