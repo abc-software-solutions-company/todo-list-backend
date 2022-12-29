@@ -5,3 +5,7 @@ export interface INotificationCreate {
   recipientID: string;
   senderID: string;
 }
+
+export interface INotificationUpdate {
+  id: number;
+}

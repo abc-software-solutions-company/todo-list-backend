@@ -6,14 +6,15 @@ export class SocketGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
 
   handleConnection = async (socket: Socket) => {
-    const { listId } = socket.handshake.auth;
+    const { id, listId } = socket.handshake.auth;
+
     socket.join(listId);
+    socket.join(id);
   };
 
   @SubscribeMessage('updateList')
   updateList(socket: Socket) {
     const { listId } = socket.handshake.auth;
-
     this.server.to(listId).emit('updateList');
   }
 
@@ -21,5 +22,10 @@ export class SocketGateway implements OnGatewayConnection {
   updateListExceptMe(socket: Socket) {
     const { listId } = socket.handshake.auth;
     this.server.to(listId).except(socket.id).emit('updateList');
+  }
+
+  @SubscribeMessage('updateNotification')
+  updateNotification(recipientID: string) {
+    this.server.to(recipientID).emit('updateNotification');
   }
 }

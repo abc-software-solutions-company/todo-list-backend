@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/index.service';
 import { UserService } from '../user/index.service';
 import { TodolistUser } from './index.entity';
-import { ITodolistUserCreate } from './index.type';
+import { ITodolistUserCreate, ITodolistUserGet } from './index.type';
 
 @Injectable()
 export class TodolistUserService {
@@ -15,8 +15,9 @@ export class TodolistUserService {
     readonly user: UserService,
   ) {}
 
-  async set(param: ITodolistUserCreate) {
-    const { todolistId, nameOfTodolist, ownerId, ids } = param;
+  async set(param: ITodolistUserCreate, paramGet: ITodolistUserGet) {
+    const { todolistId, ids } = param;
+    const { nameOfTodolist, ownerId } = paramGet;
 
     if (!defineAll(todolistId, ownerId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
 
@@ -40,9 +41,13 @@ export class TodolistUserService {
       for (let i = 0; i < newMembers.length; i++) {
         const user = newMembers[i];
         const member = this.repository.create({ todolistId, userId: user.id, isActive: true });
+
+        const name = `<span style="font-weight: 600;">${owner.name}</span>`;
+        const link = `<a href="/lists/${todolistId}">${nameOfTodolist}</a>`;
+
         if (user.id !== owner.id) {
           this.notification.create({
-            content: `${owner.name} invited you in a list task ${nameOfTodolist}`,
+            content: `${name} invited you in a list task ${link}`,
             link: todolistId,
             type: 'todolist',
             recipientID: user.id,
