@@ -143,15 +143,30 @@ export class TaskService {
         task.priority = priority;
         const afterPriority = JSON.stringify(task);
 
-        if (assigneeId) {
-          const priorityNotification: INotificationCreate = {
+        if (someone.id !== reporterId) {
+          const priorityNotificationForReporter: INotificationCreate = {
             content: task.name,
+            link: task.id,
+            type: 'priority',
+            before: beforePriority,
+            after: afterPriority,
+            recipientId: reporterId,
+            senderId: someone.id,
+          };
+          notifications.push(priorityNotificationForReporter);
+        }
+
+        if (assigneeId && assigneeId !== reporterId && assigneeId !== someone.id) {
+          const priorityNotificationForAssignee: INotificationCreate = {
+            content: task.name,
+            link: task.id,
+            type: 'priority',
             before: beforePriority,
             after: afterPriority,
             recipientId: assigneeId,
             senderId: someone.id,
           };
-          notifications.push(priorityNotification);
+          notifications.push(priorityNotificationForAssignee);
         }
       }
 
@@ -161,7 +176,8 @@ export class TaskService {
         if (someone.id !== reporterId) {
           const deleteNotificationForReporter: INotificationCreate = {
             content: task.name,
-            type: 'deletedTask',
+            link: task.id,
+            type: 'deleted-task',
             recipientId: reporterId,
             senderId: someone.id,
           };
@@ -169,10 +185,11 @@ export class TaskService {
           notifications.push(deleteNotificationForReporter);
         }
 
-        if (assigneeId) {
+        if (assigneeId && assigneeId !== reporterId && assigneeId !== someone.id) {
           const deleteNotificationForAssigee: INotificationCreate = {
             content: task.name,
-            type: 'deletedTask',
+            link: task.id,
+            type: 'deleted-task',
             recipientId: assigneeId,
             senderId: someone.id,
           };
@@ -202,9 +219,13 @@ export class TaskService {
         if (statusId == endStatus) task.isDone = true;
         else task.isDone = false;
 
-        const beforeStatus = JSON.stringify(task.status);
+        const resStatusBefore = await this.status.repository.findOneBy({ id: task.statusId });
+        const resStatusAfter = await this.status.repository.findOneBy({ id: statusId });
+
+        const beforeStatus = JSON.stringify(resStatusBefore);
+        const afterStatus = JSON.stringify(resStatusAfter);
+
         task.statusId = statusId;
-        const afterStatus = JSON.stringify(this.status.repository.findOneBy({ id: statusId }));
 
         if (someone.id !== reporterId) {
           const statusNotificationForReporter: INotificationCreate = {
@@ -219,7 +240,7 @@ export class TaskService {
           notifications.push(statusNotificationForReporter);
         }
 
-        if (assigneeId) {
+        if (assigneeId && assigneeId !== reporterId && assigneeId !== someone.id) {
           const statusNotificationForAssignee: INotificationCreate = {
             content: task.name,
             link: task.id,
@@ -252,7 +273,7 @@ export class TaskService {
         if (assignee.ids)
           await this.taskUser.set(
             { taskId: id, ...assignee },
-            { taskName: task.name, reporterId: reporterId, assignorId: someone.id },
+            { taskName: task.name, reporterId: reporterId, someoneId: someone.id },
           );
       }
     }

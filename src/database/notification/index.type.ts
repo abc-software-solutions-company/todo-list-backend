@@ -1,7 +1,17 @@
 export interface INotificationCreate {
   content: string;
   link?: string;
-  type?: 'invited' | 'assigned' | 'status' | 'priority' | 'comment' | 'deletedTask' | 'renameTask';
+  type?:
+    | 'assigned'
+    | 'assigned-myself'
+    | 'comment'
+    | 'deleted-task'
+    | 'invited'
+    | 'priority'
+    | 'renameTask'
+    | 'status'
+    | 'unassigned'
+    | 'unassigned-myself';
   before?: string;
   after?: string;
   recipientId: string;
