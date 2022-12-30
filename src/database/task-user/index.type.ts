@@ -1,6 +1,6 @@
 export interface ITaskUserGet {
   taskName: string;
-  assignorId: string;
+  someoneId: string;
   reporterId: string;
 }
 

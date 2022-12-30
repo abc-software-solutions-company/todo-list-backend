@@ -18,19 +18,44 @@ export class TaskUserService {
 
   async set(param: ITaskUserCreate, paramGet: ITaskUserGet) {
     const { taskId, ids } = param;
-    const { taskName, assignorId, reporterId } = paramGet;
+    const { taskName, someoneId, reporterId } = paramGet;
 
-    if (!defineAll(taskId, assignorId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
+    if (!defineAll(taskId, someoneId, ids, ...ids)) throw new BadRequestException('Task-User Set Err Param');
     const oldAssignees = await this.repository.findBy({ taskId, isActive: true });
-    const assignor = await this.user.repository.findOneBy({ id: assignorId });
+    const someone = await this.user.repository.findOneBy({ id: someoneId });
 
     if (oldAssignees.length) {
+      const notifications: INotificationCreate[] = [];
       const promise = [];
       oldAssignees.map((e) => {
         e.isActive = false;
+
+        if (someone.id !== reporterId) {
+          const notificationForReporter: INotificationCreate = {
+            content: taskName,
+            link: taskId,
+            type: someoneId === e.userId ? 'unassigned-myself' : 'unassigned',
+            recipientId: reporterId,
+            senderId: someone.id,
+          };
+          notifications.push(notificationForReporter);
+        }
+
+        if (someone.id !== e.userId) {
+          const notificationForAssigee: INotificationCreate = {
+            content: taskName,
+            link: taskId,
+            type: 'unassigned',
+            recipientId: e.userId,
+            senderId: reporterId,
+          };
+          notifications.push(notificationForAssigee);
+        }
+
         promise.push(this.repository.save(e));
       });
       await Promise.allSettled(promise);
+      this.notification.createMany(notifications);
     }
 
     if (ids.length) {
@@ -43,13 +68,13 @@ export class TaskUserService {
         const newAssignee = this.repository.create({ taskId, userId: e.id, isActive: true });
 
         promise.push(this.repository.save(newAssignee));
-        if (assignorId !== reporterId && assignorId === e.id) {
+        if (someoneId !== reporterId && someoneId === e.id) {
           const notificationForReporter: INotificationCreate = {
             content: taskName,
             link: taskId,
-            type: 'assigned',
+            type: 'assigned-myself',
             recipientId: reporterId,
-            senderId: assignor.id,
+            senderId: someone.id,
           };
           notifications.push(notificationForReporter);
         } else {
@@ -58,11 +83,12 @@ export class TaskUserService {
             link: taskId,
             type: 'assigned',
             recipientId: e.id,
-            senderId: reporterId,
+            senderId: someone.id,
           };
           notifications.push(notificationForAssigee);
         }
       });
+
       await Promise.allSettled(promise);
       this.notification.createMany(notifications);
     }
