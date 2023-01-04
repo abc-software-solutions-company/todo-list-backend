@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { defineAll } from 'src/utils/function';
 import { Repository } from 'typeorm';
 import { Status } from './index.entity';
-import { IStatusCreate, IStatusInit, IStatusUpdate } from './index.type';
+import { IStatusCreate, IStatusInit, IStatusReindexAll, IStatusUpdate } from './index.type';
 
 @Injectable()
 export class StatusService {
@@ -59,5 +60,16 @@ export class StatusService {
     if (index > 0) status.index = index;
 
     return this.repository.save(status);
+  }
+
+  async resetIndex({ todolistId }: IStatusReindexAll) {
+    if (!defineAll(todolistId)) throw new BadRequestException('Task reindexAll err param');
+    const statusList = await this.repository.find({ where: { todolistId }, order: { index: 'ASC' } });
+    const promises: Promise<any>[] = [];
+    statusList.forEach((status, index) => {
+      status.index = (index + 1) * this.indexStep;
+      promises.push(this.repository.save(status));
+    });
+    return Promise.all(promises);
   }
 }

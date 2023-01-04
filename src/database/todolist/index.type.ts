@@ -1,4 +1,4 @@
-import { Status } from '../status/index.entity';
+import { ApiProperty } from '@nestjs/swagger';
 import { ITodolistUserCreate } from '../todolist-user/index.type';
 
 export interface ITodolistSeoOne {
@@ -31,10 +31,16 @@ export interface ITodolistUpdate {
   member?: ITodolistMember;
   statusId?: number;
   statusIndex?: number;
+  resetIndexStatus?: boolean;
+  resetIndexTask?: boolean;
 }
 
 export interface ITodolistSync {
   email: string;
   name: string;
   userId: string;
+}
+export class ReindexAllDto {
+  @ApiProperty({ example: 'taskFirstId' })
+  todolistId: string;
 }
