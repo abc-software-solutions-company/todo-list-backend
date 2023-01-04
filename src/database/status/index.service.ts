@@ -42,7 +42,7 @@ export class StatusService {
   }
 
   async update(param: IStatusUpdate) {
-    const { id, todolistId, name, isActive } = param;
+    const { id, todolistId, name, isActive, index } = param;
     if (!id) throw new BadRequestException('Empty id');
     const status = await this.repository.findOneBy({ id, todolistId });
     if (!status) throw new BadRequestException('Todolist not existed');
@@ -55,6 +55,8 @@ export class StatusService {
     if (isActive !== undefined) {
       status.isActive = isActive;
     }
+
+    if (index > 0) status.index = index;
 
     return this.repository.save(status);
   }

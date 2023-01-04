@@ -9,4 +9,5 @@ export interface IStatusUpdate extends IStatusInit {
   id: number;
   name?: string;
   isActive?: boolean;
+  index?: number;
 }
