@@ -1,3 +1,4 @@
+import { Status } from '../status/index.entity';
 import { ITodolistUserCreate } from '../todolist-user/index.type';
 
 export interface ITodolistSeoOne {
@@ -28,6 +29,8 @@ export interface ITodolistUpdate {
   favorite?: boolean;
   visibility?: string;
   member?: ITodolistMember;
+  statusId?: number;
+  statusIndex?: number;
 }
 
 export interface ITodolistSync {
