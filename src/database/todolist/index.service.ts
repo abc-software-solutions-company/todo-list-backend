@@ -178,6 +178,7 @@ export class TodolistService {
     const statusRecords = this.status.repository.find({
       select: ['id', 'name', 'color', 'index'],
       where: { todolistId: id, isActive: true },
+      order: { index: 'ASC' },
     });
 
     const memberRecords = this.member.repository.find({
