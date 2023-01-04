@@ -178,6 +178,7 @@ export class TodolistService {
     const statusRecords = this.status.repository.find({
       select: ['id', 'name', 'color', 'index'],
       where: { todolistId: id, isActive: true },
+      order: { index: 'ASC' },
     });
 
     const memberRecords = this.member.repository.find({
@@ -220,7 +221,7 @@ export class TodolistService {
   }
 
   async update(param: ITodolistUpdate) {
-    const { id, userId, name, visibility, isActive, favorite, member } = param;
+    const { id, userId, name, visibility, isActive, favorite, member, statusId, statusIndex } = param;
     if (!defineAll(id, userId)) throw new BadRequestException();
 
     const todolist = await this.repository.findOneBy({ id });
@@ -241,6 +242,7 @@ export class TodolistService {
       if (visibility) {
         todolist.visibility = visibility;
       }
+
       await this.repository.save(todolist);
     }
 
@@ -251,6 +253,10 @@ export class TodolistService {
       if (member) {
         await this.member.set({ todolistId: id, ids: member.ids }, { nameOfTodolist: name, ownerId: userId });
       }
+    }
+
+    if (defineAll(statusId, statusIndex)) {
+      await this.status.update({ id: statusId, todolistId: id, index: statusIndex });
     }
 
     return todolist;

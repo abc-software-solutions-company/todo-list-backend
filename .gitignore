@@ -1,5 +1,8 @@
 .env
 
+# Draft JSON for test in Swagger (LamMinhThien use it)
+draft.json
+
 # compiled output
 /dist
 /node_modules
