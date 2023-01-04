@@ -257,7 +257,6 @@ export class TodolistService {
 
     if (defineAll(statusId, statusIndex)) {
       await this.status.update({ id: statusId, todolistId: id, index: statusIndex });
-      console.log('Update status ok');
     }
 
     return todolist;

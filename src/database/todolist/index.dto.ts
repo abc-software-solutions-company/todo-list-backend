@@ -32,4 +32,10 @@ export class UpdateTodolistDto {
 
   @ApiProperty()
   isActive: boolean;
+
+  @ApiProperty()
+  statusId?: number;
+
+  @ApiProperty()
+  statusIndex?: number;
 }
