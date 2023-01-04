@@ -11,3 +11,7 @@ export interface IStatusUpdate extends IStatusInit {
   isActive?: boolean;
   index?: number;
 }
+
+export interface IStatusReindexAll {
+  todolistId: string;
+}

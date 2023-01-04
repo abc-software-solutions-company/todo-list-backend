@@ -221,7 +221,7 @@ export class TodolistService {
   }
 
   async update(param: ITodolistUpdate) {
-    const { id, userId, name, visibility, isActive, favorite, member, statusId, statusIndex } = param;
+    const { id, userId, name, visibility, isActive, favorite, member, statusId, statusIndex, resetIndexStatus } = param;
     if (!defineAll(id, userId)) throw new BadRequestException();
 
     const todolist = await this.repository.findOneBy({ id });
@@ -257,6 +257,7 @@ export class TodolistService {
 
     if (defineAll(statusId, statusIndex)) {
       await this.status.update({ id: statusId, todolistId: id, index: statusIndex });
+      if (resetIndexStatus) this.status.resetIndex({ todolistId: id });
     }
 
     return todolist;

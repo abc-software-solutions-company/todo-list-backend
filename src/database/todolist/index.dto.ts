@@ -38,4 +38,10 @@ export class UpdateTodolistDto {
 
   @ApiProperty()
   statusIndex?: number;
+
+  @ApiProperty()
+  resetIndexStatus?: boolean;
+
+  @ApiProperty()
+  resetIndexTask?: boolean;
 }
