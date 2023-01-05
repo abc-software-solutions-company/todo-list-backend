@@ -57,6 +57,9 @@ export class UpdateTaskDto {
 
   @ApiProperty()
   statusId: number;
+
+  @ApiProperty()
+  indexColumn: number;
 }
 
 export class ReindexAllDto {

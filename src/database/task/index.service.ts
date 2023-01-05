@@ -88,6 +88,7 @@ export class TaskService {
       attachment,
       comment,
       assignee,
+      indexColumn,
     } = param;
     const notifications: INotificationCreate[] = [];
     if (!defineAll(id, userId)) throw new BadRequestException('Task Update Error param');
@@ -107,7 +108,7 @@ export class TaskService {
 
     if (!write) throw new ForbiddenException(`You can't update this todolist`);
 
-    if (defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive)) {
+    if (defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive, indexColumn)) {
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
         task.name = name;
@@ -131,6 +132,10 @@ export class TaskService {
 
       if (dueDate !== undefined) {
         task.dueDate = dueDate;
+      }
+
+      if (indexColumn !== undefined) {
+        task.indexColumn = indexColumn;
       }
 
       if (priority) {
