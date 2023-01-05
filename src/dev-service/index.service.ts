@@ -34,6 +34,7 @@ export class DevService implements OnModuleInit {
         todolistId: 'dev',
         userId: 'e5563545-053b-4b7e-a046-3b242418f7f5',
         description: 'description',
+        statusId: 0,
       });
       let i = 0;
       while (task instanceof HttpException) {
@@ -44,6 +45,7 @@ export class DevService implements OnModuleInit {
           todolistId: 'dev',
           userId: 'e5563545-053b-4b7e-a046-3b242418f7f5',
           description: 'description',
+          statusId: 0,
         });
       }
       console.log('🚀 ~ file: index.service.ts ~ line 51 ~ DevService ~ onModuleInit ~ task', task);

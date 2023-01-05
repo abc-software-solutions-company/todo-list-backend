@@ -60,15 +60,13 @@ export class TaskService {
   }
 
   async create(param: ITaskCreate) {
-    const { todolistId, userId, statusId: statusIdParam } = param;
+    const { todolistId, userId, statusId } = param;
     if (!defineAll(param)) throw new BadRequestException('Create Task Error Param');
 
-    const { index, statusId } = await this.createHelper({ todolistId, userId });
+    const { index, indexColumn } = await this.createHelper({ todolistId, userId, statusId });
     const id = v4();
 
-    let user: Task;
-    if (!statusIdParam) user = this.repository.create({ id, ...param, index, statusId });
-    else user = this.repository.create({ id, ...param, index, statusId: statusIdParam });
+    const user = this.repository.create({ id, ...param, index, indexColumn, statusId });
 
     return this.repository.save(user);
   }
@@ -292,23 +290,25 @@ export class TaskService {
     return Promise.all(promises);
   }
 
-  async createHelper({ todolistId, userId: TaskUserId }: ITaskCreateHepler) {
+  async createHelper({ todolistId, userId: TaskUserId, statusId }: ITaskCreateHepler) {
     const tasksLength = this.repository.count({ where: { todolistId } });
+    const tasksLengthByStatus = this.repository.count({ where: { todolistId, statusId } });
+
     const todolist = this.todolist.repository.findOne({
       select: { id: true, visibility: true, userId: true },
       where: { id: todolistId },
       relations: { status: true },
     });
 
-    const status = this.status.repository.find({ where: { todolistId }, order: { index: 'ASC' } });
-
-    const promises = await Promise.all([todolist, tasksLength, status]);
+    const promises = await Promise.all([todolist, tasksLength, tasksLengthByStatus]);
 
     const { visibility, userId } = promises[0];
 
     if (visibility !== this.todolist.visibilityList.public && userId !== TaskUserId)
       throw new MethodNotAllowedException();
 
-    return { index: (promises[1] + 1) * this.indexStep, statusId: promises[2][0].id };
+    const indexColumn = (promises[2] + 1) * this.indexStep;
+
+    return { index: (promises[1] + 1) * this.indexStep, indexColumn };
   }
 }
