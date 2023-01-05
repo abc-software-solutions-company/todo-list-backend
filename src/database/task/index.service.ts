@@ -63,7 +63,7 @@ export class TaskService {
     const { todolistId, userId, statusId: statusIdParam } = param;
     if (!defineAll(param)) throw new BadRequestException('Create Task Error Param');
 
-    const { index, statusId } = await this.createHelper({ todolistId, userId });
+    const { index, statusId } = await this.createHelper({ todolistId, userId, statusId: statusIdParam });
     const id = v4();
 
     let user: Task;
@@ -292,8 +292,10 @@ export class TaskService {
     return Promise.all(promises);
   }
 
-  async createHelper({ todolistId, userId: TaskUserId }: ITaskCreateHepler) {
+  async createHelper({ todolistId, userId: TaskUserId, statusId }: ITaskCreateHepler) {
     const tasksLength = this.repository.count({ where: { todolistId } });
+    const tasksLengthByStatus = this.repository.count({ where: { todolistId, statusId } });
+
     const todolist = this.todolist.repository.findOne({
       select: { id: true, visibility: true, userId: true },
       where: { id: todolistId },
@@ -302,13 +304,15 @@ export class TaskService {
 
     const status = this.status.repository.find({ where: { todolistId }, order: { index: 'ASC' } });
 
-    const promises = await Promise.all([todolist, tasksLength, status]);
+    const promises = await Promise.all([todolist, tasksLength, status, tasksLengthByStatus]);
 
     const { visibility, userId } = promises[0];
 
     if (visibility !== this.todolist.visibilityList.public && userId !== TaskUserId)
       throw new MethodNotAllowedException();
 
-    return { index: (promises[1] + 1) * this.indexStep, statusId: promises[2][0].id };
+    const indexColumn = (promises[3] + 1) * this.indexStep;
+
+    return { index: (promises[1] + 1) * this.indexStep, indexColumn, statusId: promises[2][0].id };
   }
 }
