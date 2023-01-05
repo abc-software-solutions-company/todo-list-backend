@@ -51,6 +51,14 @@ export class TodolistController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('board/:id')
+  @SkipThrottle()
+  getOneKanban(@Param('id') id: string, @Req() request: IRequest) {
+    const userId = request.user.id;
+    return this.service.getOneKanban({ id, userId });
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @SkipThrottle()
   getOne(@Param('id') id: string, @Req() request: IRequest) {

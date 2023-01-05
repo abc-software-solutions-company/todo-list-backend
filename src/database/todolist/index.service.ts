@@ -169,7 +169,7 @@ export class TodolistService {
     const taskRecords = this.task.repository.find({
       select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate'],
       where: { todolistId: id, isActive: true },
-      relations: { assignees: { user: true }, attachments: true },
+      relations: { assignees: { user: true } },
       order: { index: 'DESC' },
     });
 
@@ -217,7 +217,7 @@ export class TodolistService {
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'indexColumn'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true }, attachments: true },
       order: { indexColumn: 'ASC' },
