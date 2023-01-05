@@ -96,6 +96,7 @@ export class TaskService {
       comment,
       assignee,
       indexColumn,
+      resetIndexColumnForTask,
     } = param;
     const notifications: INotificationCreate[] = [];
     if (!defineAll(id, userId)) throw new BadRequestException('Task Update Error param');
@@ -286,6 +287,10 @@ export class TaskService {
             { taskName: task.name, reporterId: reporterId, someoneId: someone.id },
           );
       }
+    }
+
+    if (defineAll(resetIndexColumnForTask)) {
+      await this.reindexInColumn({ todolistId: task.todolistId, statusId });
     }
 
     return task;
