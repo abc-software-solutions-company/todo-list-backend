@@ -52,3 +52,7 @@ export interface ITaskUpdate extends ITaskGet {
 export interface ITaskReindexAll {
   todolistId: string;
 }
+
+export interface ITaskReindexColumnAll extends ITaskReindexAll {
+  statusId: number;
+}

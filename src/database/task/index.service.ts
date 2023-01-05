@@ -19,7 +19,14 @@ import { TaskUserService } from '../task-user/index.service';
 import { TodolistService } from '../todolist/index.service';
 import { UserService } from '../user/index.service';
 import { Task } from './index.entity';
-import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
+import {
+  ITaskGet,
+  ITaskCreate,
+  ITaskUpdate,
+  ITaskReindexAll,
+  ITaskCreateHepler,
+  ITaskReindexColumnAll,
+} from './index.type';
 
 @Injectable()
 export class TaskService {
@@ -292,6 +299,20 @@ export class TaskService {
       task.index = (index + 1) * this.indexStep;
       promises.push(this.repository.save(task));
     });
+    return Promise.all(promises);
+  }
+
+  async reindexInColumn({ todolistId, statusId }: ITaskReindexColumnAll) {
+    if (!defineAll(todolistId, statusId)) throw new BadRequestException('Task reindexAll err param');
+    const tasks = await this.repository.find({ where: { todolistId, statusId }, order: { indexColumn: 'ASC' } });
+
+    const promises: Promise<any>[] = [];
+
+    tasks.forEach((task, index) => {
+      task.indexColumn = (index + 1) * this.indexStep;
+      promises.push(this.repository.save(task));
+    });
+
     return Promise.all(promises);
   }
 
