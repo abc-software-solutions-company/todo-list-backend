@@ -50,6 +50,12 @@ export class TodolistController {
     return this.service.getMyTasks({ userId });
   }
 
+  @Get('assign-index-column')
+  @SkipThrottle()
+  assignIndexColumn() {
+    return this.service.assignIndexColumn();
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('board/:id')
   @SkipThrottle()

@@ -29,6 +29,7 @@ import { TaskUserService } from '../task-user/index.service';
 
 @Injectable()
 export class TodolistService {
+  readonly indexStep: number = Math.pow(2, 30);
   readonly visibilityList = { public: 'PUBLIC', readonly: 'READ_ONLY', private: 'PRIVATE' };
 
   constructor(
@@ -331,5 +332,21 @@ export class TodolistService {
       await Promise.allSettled(promise);
     }
     return userHaveEmail;
+  }
+
+  async assignIndexColumn() {
+    const todolists = await this.repository.find();
+    todolists.forEach(async (list) => {
+      const taskList = await this.task.repository.find({ where: { todolistId: list.id } });
+      const taskListLength = taskList.length;
+      for (let i = 0; i < taskListLength; i++) {
+        if (taskList[i].indexColumn == undefined) {
+          taskList[i].indexColumn = (i + 1) * this.indexStep;
+          await this.task.repository.save(taskList[i]);
+          console.log(`Task ${taskList[i].name} is done`);
+        }
+      }
+    });
+    return 'OK';
   }
 }
