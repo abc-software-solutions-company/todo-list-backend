@@ -8,7 +8,7 @@ export interface INotificationCreate {
     | 'deleted-task'
     | 'invited'
     | 'priority'
-    | 'renameTask'
+    | 'rename-task'
     | 'status'
     | 'unassigned'
     | 'unassigned-myself';
