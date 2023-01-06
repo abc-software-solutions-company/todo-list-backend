@@ -68,16 +68,8 @@ export class TaskUserService {
         const newAssignee = this.repository.create({ taskId, userId: e.id, isActive: true });
 
         promise.push(this.repository.save(newAssignee));
-        if (someoneId !== reporterId && someoneId === e.id) {
-          const notificationForReporter: INotificationCreate = {
-            content: taskName,
-            link: taskId,
-            type: 'assigned-myself',
-            recipientId: reporterId,
-            senderId: someone.id,
-          };
-          notifications.push(notificationForReporter);
-        } else {
+
+        if (someone.id !== e.id) {
           const notificationForAssigee: INotificationCreate = {
             content: taskName,
             link: taskId,
@@ -86,6 +78,17 @@ export class TaskUserService {
             senderId: someone.id,
           };
           notifications.push(notificationForAssigee);
+        }
+
+        if (someone.id !== reporterId && someoneId === e.id) {
+          const notificationForReporter: INotificationCreate = {
+            content: taskName,
+            link: taskId,
+            type: 'assigned-myself',
+            recipientId: reporterId,
+            senderId: someone.id,
+          };
+          notifications.push(notificationForReporter);
         }
       });
 

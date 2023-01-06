@@ -112,6 +112,28 @@ export class TaskService {
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
         task.name = name;
+
+        if (someone.id !== reporterId) {
+          const renameTaskNotificationForReporter: INotificationCreate = {
+            content: task.name,
+            link: task.id,
+            type: 'rename-task',
+            recipientId: reporterId,
+            senderId: someone.id,
+          };
+          notifications.push(renameTaskNotificationForReporter);
+        }
+
+        if (assigneeId && assigneeId !== reporterId && assigneeId !== someone.id) {
+          const renameTaskNotificationForAssigee: INotificationCreate = {
+            content: task.name,
+            link: task.id,
+            type: 'rename-task',
+            recipientId: assigneeId,
+            senderId: someone.id,
+          };
+          notifications.push(renameTaskNotificationForAssigee);
+        }
       }
 
       if (index !== undefined) {
