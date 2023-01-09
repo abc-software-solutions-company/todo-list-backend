@@ -162,7 +162,12 @@ export class TaskService {
       }
 
       if (resetIndexColumn) {
-        await this.reindexAll({ todolistId: task.todolistId });
+        const taskInColumn = await this.repository.find({ where: { todolistId: task.todolistId, statusId } });
+        taskInColumn.forEach(async (task, index) => {
+          task.indexColumn = (index + 1) * this.indexStep;
+          await this.repository.save(task);
+          console.log(`Reset indexColumn for task ${task.id}`);
+        });
       }
 
       if (priority) {
@@ -312,7 +317,7 @@ export class TaskService {
   }
 
   async reindexAll({ todolistId }: ITaskReindexAll) {
-    console.log('Ready for reindex all');
+    console.log('Ready for reindex all task in list default');
 
     if (!defineAll(todolistId)) throw new BadRequestException('Task reindexAll err param');
     const tasks = await this.repository.find({ where: { todolistId }, order: { index: 'ASC' } });
