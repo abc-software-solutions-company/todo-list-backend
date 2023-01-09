@@ -47,6 +47,7 @@ export interface ITaskUpdate extends ITaskGet {
   userId: string;
   assignee: IAssignee;
   indexColumn?: number;
+  resetIndexColumn?: boolean;
 }
 
 export interface ITaskReindexAll {

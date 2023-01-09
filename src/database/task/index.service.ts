@@ -89,6 +89,7 @@ export class TaskService {
       comment,
       assignee,
       indexColumn,
+      resetIndexColumn,
     } = param;
     const notifications: INotificationCreate[] = [];
     if (!defineAll(id, userId)) throw new BadRequestException('Task Update Error param');
@@ -158,6 +159,10 @@ export class TaskService {
 
       if (indexColumn !== undefined) {
         task.indexColumn = indexColumn;
+      }
+
+      if (resetIndexColumn) {
+        await this.reindexAll({ todolistId: task.todolistId });
       }
 
       if (priority) {
@@ -307,6 +312,8 @@ export class TaskService {
   }
 
   async reindexAll({ todolistId }: ITaskReindexAll) {
+    console.log('Ready for reindex all');
+
     if (!defineAll(todolistId)) throw new BadRequestException('Task reindexAll err param');
     const tasks = await this.repository.find({ where: { todolistId }, order: { index: 'ASC' } });
     const promises: Promise<any>[] = [];
