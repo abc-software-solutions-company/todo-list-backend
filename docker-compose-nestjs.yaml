@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  app:
+    image: todo-list-cms-nestjs
+    build:
+      context: .
+      dockerfile: Dockerfile-nestjs
+    restart: always
+    ports:
+      - 8080:8080
