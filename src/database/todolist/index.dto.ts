@@ -4,6 +4,9 @@ import { ITodolistMember } from './index.type';
 export class CreateTodolistDto {
   @ApiProperty()
   name: string;
+
+  @ApiProperty()
+  idTask: string;
 }
 
 export class SyncTodolistDto {
