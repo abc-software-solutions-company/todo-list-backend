@@ -43,7 +43,7 @@ export class NotificationService {
     return result;
   }
 
-  async update(param: INotificationUpdate) {
+  async updateOne(param: INotificationUpdate) {
     const recipientIds: string[] = [];
 
     const { id } = param;
@@ -57,5 +57,24 @@ export class NotificationService {
     if (res) this.socket.updateNotification(recipientIds);
 
     return res;
+  }
+
+  async UpdateAll(userId: string) {
+    const recipientIds: string[] = [];
+    if (!userId) throw new BadRequestException();
+    const notifications = this.repository.find({
+      where: { recipientId: userId, isRead: false },
+      relations: { sender: true, recipient: true },
+    });
+    const promises = (await notifications).map((item) => {
+      item.isRead = true;
+      const res = this.repository.save(item);
+      const { recipientId } = item;
+      recipientIds.push(recipientId);
+      return res;
+    });
+    const results = await Promise.all(promises);
+    if (results.length > 0) this.socket.updateNotification(recipientIds);
+    return results;
   }
 }
