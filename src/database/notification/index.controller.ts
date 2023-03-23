@@ -28,7 +28,6 @@ export class NotificationController {
 
   @UseGuards(JwtAuthGuard)
   @Patch()
-  @SkipThrottle()
   async updateAll(@Req() request: IRequest) {
     const { id } = request.user;
     return this.service.UpdateAll(id);
