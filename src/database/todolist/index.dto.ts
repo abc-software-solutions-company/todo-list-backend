@@ -6,7 +6,7 @@ export class CreateTodolistDto {
   name: string;
 
   @ApiProperty()
-  idTask: string;
+  taskSymbol: string;
 }
 
 export class SyncTodolistDto {

@@ -25,7 +25,7 @@ export class Todolist {
   name: string;
 
   @Column({ nullable: true })
-  idTask: string;
+  taskSymbol: string;
 
   @Column()
   userId: string;
