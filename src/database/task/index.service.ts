@@ -328,35 +328,6 @@ export class TaskService {
     return Promise.all(promises);
   }
 
-  // async createHelper({ todolistId, userId: TaskUserId, statusId }: ITaskCreateHepler) {
-  //   const tasksLength = this.repository.count({ where: { todolistId } });
-  //   const tasksLengthByStatus = this.repository.count({ where: { todolistId, statusId } });
-
-  //   const todolist = this.todolist.repository.findOne({
-  //     select: { id: true, visibility: true, userId: true },
-  //     where: { id: todolistId },
-  //     relations: { status: true },
-  //   });
-
-  //   const tasks = await this.repository.find({
-  //     where: { todolistId },
-  //     order: { order: 'ASC' },
-  //   });
-
-  //   const promises = await Promise.all([todolist, tasksLength, tasksLengthByStatus]);
-
-  //   const { visibility, userId } = promises[0];
-
-  //   if (visibility !== this.todolist.visibilityList.public && userId !== TaskUserId)
-  //     throw new MethodNotAllowedException();
-  //   const tasksNumber = tasks.length;
-
-  //   const newTaskOrder = tasksNumber > 0 ? tasks[tasksNumber - 1].order + 1 : 1;
-
-  //   const indexColumn = (promises[2] + 1) * this.indexStep;
-
-  //   return { order: newTaskOrder, index: (promises[1] + 1) * this.indexStep, indexColumn };
-  // }
   async createHelper({ todolistId, userId: TaskUserId, statusId }: ITaskCreateHepler) {
     const [todolist, tasksLength, tasksLengthByStatus] = await Promise.all([
       this.todolist.repository.findOne({
