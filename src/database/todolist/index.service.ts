@@ -163,12 +163,12 @@ export class TodolistService {
     if (!defineAll(id, userId)) throw new BadRequestException('Todolist getOne Err param');
 
     const todolistRecord = this.repository.findOne({
-      select: ['id', 'name', 'userId', 'visibility'],
+      select: ['id', 'name', 'userId', 'visibility', 'taskSymbol'],
       where: { id, isActive: true },
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'order'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true } },
       order: { index: 'DESC' },
@@ -213,12 +213,12 @@ export class TodolistService {
     if (!defineAll(id, userId)) throw new BadRequestException('Todolist getOne Err param');
 
     const todolistRecord = this.repository.findOne({
-      select: ['id', 'name', 'userId', 'visibility'],
+      select: ['id', 'name', 'userId', 'visibility', 'taskSymbol'],
       where: { id, isActive: true },
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'indexColumn'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'indexColumn', 'order'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true }, attachments: true },
       order: { indexColumn: 'ASC' },
