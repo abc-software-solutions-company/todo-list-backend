@@ -9,7 +9,3 @@ export interface IUser {
 export interface IRequest extends Request {
   user: IUser;
 }
-
-export interface IRequest extends Request {
-  user: IUser;
-}
