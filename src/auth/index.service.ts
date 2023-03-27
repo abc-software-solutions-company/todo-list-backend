@@ -14,7 +14,8 @@ export class AuthService {
     if (!defineAll(body.name)) throw new MethodNotAllowedException('Login failed, name not empty');
     let user: IUser;
     if (body.email) user = await this.userService.repository.findOneBy({ email: body.email });
-    if (!user) {
+    // FIX Duplicate email account in user table
+    if (!user?.email) {
       user = await this.userService.create(body);
     }
     const { id, name, email } = user;
