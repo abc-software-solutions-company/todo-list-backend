@@ -4,6 +4,9 @@ import { ITodolistMember } from './index.type';
 export class CreateTodolistDto {
   @ApiProperty()
   name: string;
+
+  @ApiProperty()
+  taskSymbol: string;
 }
 
 export class SyncTodolistDto {
@@ -23,6 +26,9 @@ export class UpdateTodolistDto {
 
   @ApiProperty()
   favorite: boolean;
+
+  @ApiProperty()
+  taskSymBol?: string;
 
   @ApiProperty()
   visibility: string;

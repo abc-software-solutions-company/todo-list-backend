@@ -37,8 +37,12 @@ jobs:
         run: sed 's/ /\n/g' .env_temp >> .env
 
       - name: Remove .env_temp file
+        run: rm -r -f .env_temp
+
+      - name: Migrations
+        continue-on-error: true
         run:
-          rm -r -f .env_temp
+          yarn typeorm migration:run -d src/configs/data-source.ts
 
           # Reference from offical Docker youtube channel: https://youtu.be/aNh8iShFXto
       - name: Build Docker and deployment

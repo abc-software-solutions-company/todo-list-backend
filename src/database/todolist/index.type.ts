@@ -17,6 +17,7 @@ export type ITodolistGetFavorite = ITodolistGetByUser;
 
 export interface ITodolistCreate extends ITodolistGetByUser {
   name: string;
+  taskSymbol?: string;
   email?: string;
 }
 export type ITodolistMember = Omit<ITodolistUserCreate, 'todolistId'>;
@@ -25,6 +26,7 @@ export interface ITodolistUpdate {
   id: string;
   userId: string;
   name?: string;
+  taskSymbol?: string;
   isActive?: boolean;
   favorite?: boolean;
   visibility?: string;
