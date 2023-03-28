@@ -14,6 +14,7 @@ export interface ITaskCreateHepler {
 
 export interface ITaskCreate {
   name: string;
+  taskSymbol?: string;
   description?: string;
   userId: string;
   todolistId: string;

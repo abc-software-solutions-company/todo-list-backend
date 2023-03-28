@@ -163,12 +163,12 @@ export class TodolistService {
     if (!defineAll(id, userId)) throw new BadRequestException('Todolist getOne Err param');
 
     const todolistRecord = this.repository.findOne({
-      select: ['id', 'name', 'userId', 'visibility'],
+      select: ['id', 'name', 'userId', 'visibility', 'taskSymbol'],
       where: { id, isActive: true },
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'order'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true } },
       order: { index: 'DESC' },
@@ -213,12 +213,12 @@ export class TodolistService {
     if (!defineAll(id, userId)) throw new BadRequestException('Todolist getOne Err param');
 
     const todolistRecord = this.repository.findOne({
-      select: ['id', 'name', 'userId', 'visibility'],
+      select: ['id', 'name', 'userId', 'visibility', 'taskSymbol'],
       where: { id, isActive: true },
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'indexColumn'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'indexColumn', 'order'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true }, attachments: true },
       order: { indexColumn: 'ASC' },
@@ -272,7 +272,19 @@ export class TodolistService {
   }
 
   async update(param: ITodolistUpdate) {
-    const { id, userId, name, visibility, isActive, favorite, member, statusId, statusIndex, resetIndexStatus } = param;
+    const {
+      id,
+      userId,
+      name,
+      visibility,
+      isActive,
+      favorite,
+      member,
+      statusId,
+      statusIndex,
+      resetIndexStatus,
+      taskSymbol,
+    } = param;
     if (!defineAll(id, userId)) throw new BadRequestException();
 
     const todolist = await this.repository.findOneBy({ id });
@@ -286,10 +298,14 @@ export class TodolistService {
         if (!owner) throw new ForbiddenException();
         todolist.isActive = isActive;
       }
+
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
         todolist.name = name;
       }
+
+      todolist.taskSymbol = taskSymbol;
+
       if (visibility) {
         todolist.visibility = visibility;
       }

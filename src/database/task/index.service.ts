@@ -63,12 +63,11 @@ export class TaskService {
     const { todolistId, userId, statusId } = param;
     if (!defineAll(param)) throw new BadRequestException('Create Task Error Param');
 
-    const { index, indexColumn } = await this.createHelper({ todolistId, userId, statusId });
+    const { index, indexColumn, order } = await this.createHelper({ todolistId, userId, statusId });
     const id = v4();
+    const task = this.repository.create({ id, ...param, index, indexColumn, statusId, order });
 
-    const user = this.repository.create({ id, ...param, index, indexColumn, statusId });
-
-    return this.repository.save(user);
+    return this.repository.save(task);
   }
 
   async update(param: ITaskUpdate) {
@@ -330,24 +329,26 @@ export class TaskService {
   }
 
   async createHelper({ todolistId, userId: TaskUserId, statusId }: ITaskCreateHepler) {
-    const tasksLength = this.repository.count({ where: { todolistId } });
-    const tasksLengthByStatus = this.repository.count({ where: { todolistId, statusId } });
+    const [todolist, tasksLength, tasksLengthByStatus] = await Promise.all([
+      this.todolist.repository.findOne({
+        select: { id: true, visibility: true, userId: true },
+        where: { id: todolistId },
+        relations: { status: true },
+      }),
+      this.repository.count({ where: { todolistId } }),
+      this.repository.count({ where: { todolistId, statusId } }),
+    ]);
 
-    const todolist = this.todolist.repository.findOne({
-      select: { id: true, visibility: true, userId: true },
-      where: { id: todolistId },
-      relations: { status: true },
-    });
-
-    const promises = await Promise.all([todolist, tasksLength, tasksLengthByStatus]);
-
-    const { visibility, userId } = promises[0];
-
-    if (visibility !== this.todolist.visibilityList.public && userId !== TaskUserId)
+    if (todolist.visibility !== this.todolist.visibilityList.public && todolist.userId !== TaskUserId)
       throw new MethodNotAllowedException();
 
-    const indexColumn = (promises[2] + 1) * this.indexStep;
+    const newTaskOrder = tasksLength > 0 ? tasksLength + 1 : 1;
+    const indexColumn = (tasksLengthByStatus + 1) * this.indexStep;
 
-    return { index: (promises[1] + 1) * this.indexStep, indexColumn };
+    return {
+      order: newTaskOrder,
+      index: (tasksLength + 1) * this.indexStep,
+      indexColumn,
+    };
   }
 }
