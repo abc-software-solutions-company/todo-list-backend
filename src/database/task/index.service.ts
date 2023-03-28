@@ -65,9 +65,9 @@ export class TaskService {
 
     const { index, indexColumn, order } = await this.createHelper({ todolistId, userId, statusId });
     const id = v4();
-    const user = this.repository.create({ id, ...param, index, indexColumn, statusId, order });
+    const task = this.repository.create({ id, ...param, index, indexColumn, statusId, order });
 
-    return this.repository.save(user);
+    return this.repository.save(task);
   }
 
   async update(param: ITaskUpdate) {
