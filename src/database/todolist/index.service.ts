@@ -283,7 +283,7 @@ export class TodolistService {
       statusId,
       statusIndex,
       resetIndexStatus,
-      taskSymBol,
+      taskSymbol,
     } = param;
     if (!defineAll(id, userId)) throw new BadRequestException();
 
@@ -298,14 +298,14 @@ export class TodolistService {
         if (!owner) throw new ForbiddenException();
         todolist.isActive = isActive;
       }
+
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
         todolist.name = name;
       }
-      if (taskSymBol) {
-        // if (!name.trim()) throw new BadRequestException('Empty name');
-        todolist.taskSymbol = taskSymBol;
-      }
+
+      todolist.taskSymbol = taskSymbol;
+
       if (visibility) {
         todolist.visibility = visibility;
       }

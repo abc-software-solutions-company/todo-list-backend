@@ -339,15 +339,10 @@ export class TaskService {
       this.repository.count({ where: { todolistId, statusId } }),
     ]);
 
-    const tasks = await this.repository.find({
-      where: { todolistId },
-      order: { order: 'ASC' },
-    });
-
     if (todolist.visibility !== this.todolist.visibilityList.public && todolist.userId !== TaskUserId)
       throw new MethodNotAllowedException();
 
-    const newTaskOrder = tasks.length > 0 ? tasks[tasks.length - 1].order + 1 : 1;
+    const newTaskOrder = tasksLength > 0 ? tasksLength + 1 : 1;
     const indexColumn = (tasksLengthByStatus + 1) * this.indexStep;
 
     return {

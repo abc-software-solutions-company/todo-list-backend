@@ -26,7 +26,7 @@ export interface ITodolistUpdate {
   id: string;
   userId: string;
   name?: string;
-  taskSymBol: string;
+  taskSymbol?: string;
   isActive?: boolean;
   favorite?: boolean;
   visibility?: string;
