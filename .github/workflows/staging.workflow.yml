@@ -37,20 +37,9 @@ jobs:
         run: sed 's/ /\n/g' .env_temp >> .env
 
       - name: Remove .env_temp file
-        run: rm -r -f .env_temp
+        run:
+          rm -r -f .env_temp
 
-      - name: Install Yarn, PM2
-        run: npm install -g yarn pm2
-
-      - name: Install env-cmd
-        run: npm install -g env-cmd
-
-      - name: Install Node Module
-        run: yarn
-
-      - name: Migrations
-        run: yarn typeorm migration:run -d src/configs/data-source.ts
-
-      - name: Build,Start and Restart Web Application
-        run: RUNNER_TRACKING_ID="" && yarn build && pm2 restart backend --exp-backoff-restart-delay=100
-        # run: RUNNER_TRACKING_ID="" && yarn build && pm2 start "yarn start" --name backend --exp-backoff-restart-delay=100
+          # Reference from offical Docker youtube channel: https://youtu.be/aNh8iShFXto
+      - name: Build Docker and deployment
+        run: sudo chmod +x docker-build.sh && sudo ./docker-build.sh
