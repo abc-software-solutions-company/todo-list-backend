@@ -272,7 +272,19 @@ export class TodolistService {
   }
 
   async update(param: ITodolistUpdate) {
-    const { id, userId, name, visibility, isActive, favorite, member, statusId, statusIndex, resetIndexStatus } = param;
+    const {
+      id,
+      userId,
+      name,
+      visibility,
+      isActive,
+      favorite,
+      member,
+      statusId,
+      statusIndex,
+      resetIndexStatus,
+      taskSymBol,
+    } = param;
     if (!defineAll(id, userId)) throw new BadRequestException();
 
     const todolist = await this.repository.findOneBy({ id });
@@ -289,6 +301,10 @@ export class TodolistService {
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
         todolist.name = name;
+      }
+      if (taskSymBol) {
+        // if (!name.trim()) throw new BadRequestException('Empty name');
+        todolist.taskSymbol = taskSymBol;
       }
       if (visibility) {
         todolist.visibility = visibility;
