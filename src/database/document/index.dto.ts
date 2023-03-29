@@ -8,5 +8,11 @@ export class CreateDocumentDto {
   content: string;
 
   @ApiProperty()
+  favorite: boolean;
+
+  @ApiProperty()
+  idParent: string;
+
+  @ApiProperty()
   todolistId: string;
 }

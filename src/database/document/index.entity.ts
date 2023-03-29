@@ -12,6 +12,12 @@ export class Document {
   @Column({ type: 'text', nullable: true })
   content: string;
 
+  @Column({ default: false })
+  favorite: boolean;
+
+  @Column({nullable: true })
+  idParent: string;
+
   @Column()
   todolistId: string;
 
