@@ -124,24 +124,26 @@ export class TodolistService {
 
   async getMyTasks({ userId }: ITodolistGetByUser) {
     const todolists = await this.repository.find({
-      select: ['id', 'name', 'userId', 'visibility'],
+      select: ['id', 'name', 'userId', 'visibility', 'taskSymbol'],
       where: { isActive: true, tasks: { isActive: true, assignees: { isActive: true, userId } } },
       relations: { members: { user: true }, tasks: { assignees: true }, status: true },
       order: { tasks: { index: 'DESC' } },
     });
-    const pattern = ({ id, members, name, status, tasks, userId, visibility }) => {
+    const pattern = ({ id, members, name, status, tasks, userId, visibility, taskSymbol }) => {
       return {
         id,
         name,
         visibility,
         userId,
-        tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId }) => ({
+        taskSymbol,
+        tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId, order }) => ({
           id,
           name,
           assignees,
           priority,
           isDone,
           statusId,
+          order,
         })),
         status,
         members: members.map(({ user }) => ({ id: user.id, name: user.name, email: user.id })),
