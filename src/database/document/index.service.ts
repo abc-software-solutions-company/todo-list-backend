@@ -1,10 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { defineAll } from 'src/utils/function';
 import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { Document } from './index.entity';
-import { IDocumentCreate, IDocumentGetAll } from './index.type';
+import { IDocumentCreate, IDocumentGet, IDocumentUpdate } from './index.type';
 
 @Injectable()
 export class DocumentService {
@@ -16,7 +15,7 @@ export class DocumentService {
     return this.repository.save(document);
   }
 
-  async findAll({ id }: IDocumentGetAll): Promise<Document[]> {
+  async findAll(id: string): Promise<Document[]> {
     return this.repository.find({ where: { todolistId: id } });
   }
 
@@ -28,5 +27,19 @@ export class DocumentService {
     } else {
       return { ...doc };
     }
+  }
+
+  async getOne({ id }: IDocumentGet) {
+    return await this.repository.findOneBy({ id });
+  }
+
+  async get() {
+    return await this.repository.find();
+  }
+
+  async update({ id, content }: IDocumentUpdate) {
+    const result = await this.repository.findOneBy({ id });
+    result.content = content;
+    return result;
   }
 }

@@ -16,3 +16,11 @@ export class CreateDocumentDto {
   @ApiProperty()
   todolistId: string;
 }
+
+export class UpdateDocumentDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  content: string;
+}
