@@ -2,7 +2,7 @@ export interface IDocumentCreate {
   name: string;
   content?: string;
   favorite?: boolean;
-  idParent?: string;
+  parentId?: string;
   todolistId: string;
 }
 export interface IDocumentGet {
@@ -10,5 +10,7 @@ export interface IDocumentGet {
 }
 export interface IDocumentUpdate {
   id: string;
-  content: string;
+  name?: string;
+  content?: string;
+  favorite?: boolean;
 }

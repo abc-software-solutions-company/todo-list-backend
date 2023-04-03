@@ -11,7 +11,7 @@ export class CreateDocumentDto {
   favorite: boolean;
 
   @ApiProperty()
-  idParent: string;
+  parentId: string;
 
   @ApiProperty()
   todolistId: string;
@@ -22,5 +22,11 @@ export class UpdateDocumentDto {
   id: string;
 
   @ApiProperty()
+  name: string;
+
+  @ApiProperty()
   content: string;
+
+  @ApiProperty()
+  favorite: boolean;
 }

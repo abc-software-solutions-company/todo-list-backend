@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Todolist } from '../todolist/index.entity';
 
 @Entity()
@@ -15,8 +15,8 @@ export class Document {
   @Column({ default: false })
   favorite: boolean;
 
-  @Column({nullable: true })
-  idParent: string;
+  @Column({ nullable: true })
+  parentId: string;
 
   @Column()
   todolistId: string;
@@ -24,4 +24,11 @@ export class Document {
   @ManyToOne(() => Todolist, (todolist) => todolist.id)
   @JoinColumn({ name: 'todolistId' })
   todolist: Todolist;
+
+  @ManyToOne(() => Document, (document) => document.children, { nullable: true })
+  @JoinColumn({ name: 'parentId' })
+  parent: Document;
+
+  @OneToMany(() => Document, (document) => document.parent)
+  children: Document[];
 }

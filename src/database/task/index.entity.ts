@@ -14,6 +14,7 @@ import { Status } from '../status/index.entity';
 import { TaskUser } from '../task-user/index.entity';
 import { Todolist } from '../todolist/index.entity';
 import { User } from '../user/index.entity';
+import { Document } from '../document/index.entity';
 
 @Entity()
 export class Task {
@@ -88,4 +89,7 @@ export class Task {
 
   @OneToMany(() => TaskUser, (TaskUser) => TaskUser.task)
   assignees: TaskUser[];
+
+  @OneToMany(() => Document, (document) => document.todolist)
+  documents: Document[];
 }

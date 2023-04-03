@@ -15,31 +15,50 @@ export class DocumentService {
     return this.repository.save(document);
   }
 
-  async findAll(id: string): Promise<Document[]> {
-    return this.repository.find({ where: { todolistId: id } });
-  }
-
-  async getDocumentTree(doc: Document): Promise<any> {
-    const children = await this.repository.find({ where: { idParent: doc.id } });
-    if (children.length > 0) {
-      const childNodes = await Promise.all(children.map((child) => this.getDocumentTree(child)));
-      return { ...doc, children: childNodes };
-    } else {
-      return { ...doc };
-    }
-  }
-
   async getOne({ id }: IDocumentGet) {
     return await this.repository.findOneBy({ id });
   }
 
-  async get() {
-    return await this.repository.find();
-  }
-
-  async update({ id, content }: IDocumentUpdate) {
+  async update({ id, content, name, favorite }: IDocumentUpdate) {
     const result = await this.repository.findOneBy({ id });
     result.content = content;
+    result.name = name;
+    result.favorite = favorite;
     return result;
+  }
+
+  async findAll(id: string): Promise<Document[]> {
+    return this.repository.find({ where: { todolistId: id } });
+  }
+
+  async getAllDocumentsByTodolistId(todolistId: string): Promise<Document[]> {
+    const documents = await this.repository.find({
+      where: { todolistId },
+      order: { parentId: 'ASC', name: 'ASC' },
+    });
+    return documents;
+  }
+
+  async getDocumentTreeByTodolistId(todolistId: string): Promise<Document[]> {
+    const documents = await this.getAllDocumentsByTodolistId(todolistId);
+    const tree = this.buildTree(documents, null);
+    return tree;
+  }
+
+  private buildTree(documents: Document[], parentId: string): Document[] {
+    const tree: Document[] = [];
+
+    for (let i = 0; i < documents.length; i++) {
+      const document = documents[i];
+      if (document.parentId === parentId) {
+        const children = this.buildTree(documents, document.id);
+        if (children.length) {
+          document.children = children;
+        }
+        tree.push(document);
+      }
+    }
+
+    return tree;
   }
 }

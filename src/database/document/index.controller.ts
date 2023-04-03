@@ -18,12 +18,6 @@ export class DocumentController {
     return this.service.create({ ...body });
   }
 
-  @Get()
-  @SkipThrottle()
-  async get() {
-    return this.service.get();
-  }
-
   @Patch('update')
   @SkipThrottle()
   async Update(@Body() body: UpdateDocumentDto) {
@@ -36,12 +30,15 @@ export class DocumentController {
     return this.service.getOne({ id });
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/list-document/:id')
+  @Get()
+  async getDocuments(@Param('id') todolistId: string) {
+    return this.service.findAll(todolistId);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Get('/tree/:todolistID')
   @SkipThrottle()
-  async getAllDocByTodolist(@Param('id') id: string) {
-    const documents = await this.service.findAll(id);
-    const result = documents.map((doc) => this.service.getDocumentTree(doc));
-    return result;
+  async getDocumentTreeByTodolistId(@Param('id') todolistId: string) {
+    return this.service.getDocumentTreeByTodolistId(todolistId);
   }
 }
