@@ -35,7 +35,7 @@ export class DocumentController {
     return this.service.findAll(todolistId);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('/tree/:todolistID')
   @SkipThrottle()
   async getDocumentTreeByTodolistId(@Param('id') todolistId: string) {

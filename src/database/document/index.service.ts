@@ -24,7 +24,7 @@ export class DocumentService {
     result.content = content;
     result.name = name;
     result.favorite = favorite;
-    return result;
+    return this.repository.save(result);
   }
 
   async findAll(id: string): Promise<Document[]> {
