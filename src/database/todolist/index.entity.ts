@@ -15,6 +15,7 @@ import { Pool } from '../pool/index.entity';
 import { Status } from '../status/index.entity';
 import { TodolistUser } from '../todolist-user/index.entity';
 import { User } from '../user/index.entity';
+import { Document } from '../document/index.entity';
 
 @Entity()
 export class Todolist {

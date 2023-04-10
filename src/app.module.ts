@@ -9,6 +9,7 @@ import appConfig from './configs/app.config';
 import databaseConfig from './configs/database.config';
 import { AttachmentModule } from './database/attachment/index.module';
 import { CommentModule } from './database/comment/index.module';
+import { DocumentModule } from './database/document/index.module';
 import { FavoriteModule } from './database/favorite/index.module';
 import { NotificationModule } from './database/notification/index.module';
 import { PoolModule } from './database/pool/index.module';
@@ -54,6 +55,7 @@ import { SocketsModule } from './websocket/socket.module';
     TaskUserModule,
     TodolistUserModule,
     SocketsModule,
+    DocumentModule,
   ],
   providers: [
     {
