@@ -2,7 +2,7 @@ name: Deploy Todolist Backend to Production
 
 on:
   push:
-    branches: ["main"]
+    branches: ["release"]
 
 env:
   APP_ENV: ${{ secrets.PRODUCTION }}

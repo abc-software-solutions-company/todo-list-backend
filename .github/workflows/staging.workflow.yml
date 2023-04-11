@@ -2,7 +2,7 @@ name: Deploy Todolist Backend to Staging
 
 on:
   push:
-    branches: ["staging"]
+    branches: ["main"]
 
 env:
   APP_ENV: ${{ secrets.STAGING }}
