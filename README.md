@@ -34,11 +34,11 @@ $ yarn start:dev
 
 ```
 
-## Migration To Server
+## Migration To Server (Example)
 
 ```bash
 # For Stage Server
-yarn typeorm  migration:generate ./src/migrations-stage/AddFeautureTaskSymbol -d ./src/configs/data-source.ts
+yarn typeorm  migration:generate ./src/migrations-stage/NameOfFeature -d ./src/configs/data-source.ts
 # For Product Server
-yarn typeorm  migration:generate ./src/migrations/AddFeautureTaskSymbol -d ./src/configs/data-source.ts
+yarn typeorm  migration:generate ./src/migrations/NameOfFeature -d ./src/configs/data-source.ts
 ```
