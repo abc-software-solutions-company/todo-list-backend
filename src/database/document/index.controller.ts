@@ -24,21 +24,16 @@ export class DocumentController {
     return this.service.update({ ...body });
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/tree/:todolistId')
+  @SkipThrottle()
+  async getDocumentTreeByTodolistId(@Param('todolistId') todolistId: string) {
+    return this.service.getDocumentTreeByTodolistId(todolistId);
+  }
+
   @Get(':id')
   @SkipThrottle()
   async getOne(@Param('id') id: string) {
     return this.service.getOne({ id });
-  }
-
-  @Get()
-  async getDocuments(@Param('id') todolistId: string) {
-    return this.service.findAll(todolistId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/tree/:todolistID')
-  @SkipThrottle()
-  async getDocumentTreeByTodolistId(@Param('id') todolistId: string) {
-    return this.service.getDocumentTreeByTodolistId(todolistId);
   }
 }

@@ -27,20 +27,11 @@ export class DocumentService {
     return this.repository.save(result);
   }
 
-  async findAll(id: string): Promise<Document[]> {
-    return this.repository.find({ where: { todolistId: id } });
-  }
-
-  async getAllDocumentsByTodolistId(todolistId: string): Promise<Document[]> {
+  async getDocumentTreeByTodolistId(todolistId: string): Promise<Document[]> {
     const documents = await this.repository.find({
       where: { todolistId },
       order: { parentId: 'ASC', name: 'ASC' },
     });
-    return documents;
-  }
-
-  async getDocumentTreeByTodolistId(todolistId: string): Promise<Document[]> {
-    const documents = await this.getAllDocumentsByTodolistId(todolistId);
     const tree = this.buildTree(documents, null);
     return tree;
   }
