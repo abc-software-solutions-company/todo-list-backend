@@ -18,6 +18,7 @@ import {
   ITodolistGetOne,
   ITodolistUpdate,
   ITodolistSeoOne,
+  ISeedListTask,
 } from './index.type';
 import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
@@ -26,6 +27,7 @@ import { TodolistUserService } from '../todolist-user/index.service';
 import { AuthService } from 'src/auth/index.service';
 import { TaskService } from '../task/index.service';
 import { TaskUserService } from '../task-user/index.service';
+import Jabber from 'jabber';
 
 @Injectable()
 export class TodolistService {
@@ -366,5 +368,21 @@ export class TodolistService {
       }
     });
     return 'OK';
+  }
+
+  async seedListTask(body: ISeedListTask) {
+    const { id, quantity, wordCount, userId } = body;
+    if (!defineAll(id, quantity, wordCount)) throw new BadRequestException('Params not enough');
+    if (isNaN(quantity) || isNaN(wordCount)) throw new BadRequestException('Quantity or Word count must be number')
+    const list = await this.repository.findOne({ where: { id }, relations: { status: true } });
+    if (!list) throw new BadRequestException('List not found');
+    const { id: todolistId, status } = list;
+    const jabber = new Jabber();
+    const promises = [];
+    for (let i = 0; i < quantity; i++) {
+      const name = jabber.createParagraph(wordCount);
+      promises.push(this.task.create({ name, userId, statusId: status[0].id, todolistId }));
+    }
+    await Promise.allSettled(promises);
   }
 }
