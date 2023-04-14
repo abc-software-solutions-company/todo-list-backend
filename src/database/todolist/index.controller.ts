@@ -4,7 +4,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
 import { StatusService } from '../status/index.service';
-import { CreateTodolistDto, SyncTodolistDto, UpdateTodolistDto } from './index.dto';
+import { CreateTodolistDto, SeedListTaskDto, SyncTodolistDto, UpdateTodolistDto } from './index.dto';
 import { TodolistService } from './index.service';
 import { ReindexAllDto } from './index.type';
 
@@ -91,5 +91,12 @@ export class TodolistController {
   syncTodolist(@Body() body: SyncTodolistDto, @Req() request: IRequest) {
     const { id: userId } = request.user;
     return this.service.sync({ ...body, userId });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/seed')
+  seedListTask(@Body() body: SeedListTaskDto, @Req() request: IRequest) {
+    const {id: userId} = request.user;
+    return this.service.seedListTask({...body, userId})
   }
 }

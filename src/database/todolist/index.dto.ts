@@ -51,3 +51,14 @@ export class UpdateTodolistDto {
   @ApiProperty()
   resetIndexTask?: boolean;
 }
+
+export class SeedListTaskDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  quantity: number
+
+  @ApiProperty()
+  wordCount: number
+}

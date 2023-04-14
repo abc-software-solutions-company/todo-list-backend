@@ -46,3 +46,10 @@ export class ReindexAllDto {
   @ApiProperty({ example: 'taskFirstId' })
   todolistId: string;
 }
+
+export interface ISeedListTask {
+  id: string;
+  quantity: number;
+  wordCount: number;
+  userId: string;
+}
