@@ -21,6 +21,9 @@ export class Document {
   @Column()
   todolistId: string;
 
+  @Column({ default: true })
+  isActive: boolean;
+
   @ManyToOne(() => Todolist, (todolist) => todolist.id)
   @JoinColumn({ name: 'todolistId' })
   todolist: Todolist;
