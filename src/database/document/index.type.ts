@@ -13,4 +13,5 @@ export interface IDocumentUpdate {
   name?: string;
   content?: string;
   favorite?: boolean;
+  isActive?: boolean;
 }
