@@ -15,11 +15,14 @@ export class Document {
   @Column({ default: false })
   favorite: boolean;
 
-  @Column({ nullable: true })
-  parentId: string;
+  @Column({ nullable: true, default: null })
+  parentId: string | null;
 
   @Column()
   todolistId: string;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 
   @ManyToOne(() => Todolist, (todolist) => todolist.id)
   @JoinColumn({ name: 'todolistId' })
