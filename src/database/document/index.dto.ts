@@ -29,4 +29,7 @@ export class UpdateDocumentDto {
 
   @ApiProperty()
   favorite: boolean;
+
+  @ApiProperty()
+  isActive: boolean;
 }

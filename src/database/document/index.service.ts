@@ -19,17 +19,18 @@ export class DocumentService {
     return await this.repository.findOneBy({ id });
   }
 
-  async update({ id, content, name, favorite }: IDocumentUpdate) {
+  async update({ id, content, name, favorite, isActive }: IDocumentUpdate) {
     const result = await this.repository.findOneBy({ id });
     result.content = content;
     result.name = name;
     result.favorite = favorite;
+    result.isActive = isActive;
     return this.repository.save(result);
   }
 
   async getDocumentTreeByTodolistId(todolistId: string): Promise<Document[]> {
     const documents = await this.repository.find({
-      where: { todolistId },
+      where: { todolistId, isActive: true },
       order: { createdAt: 'DESC' },
     });
     const tree = this.buildTree(documents, null);

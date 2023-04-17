@@ -378,11 +378,9 @@ export class TodolistService {
     if (!list) throw new BadRequestException('List not found');
     const { id: todolistId, status } = list;
     const jabber = new Jabber();
-    const promises = [];
     for (let i = 0; i < quantity; i++) {
       const name = jabber.createParagraph(wordCount);
-      promises.push(this.task.create({ name, userId, statusId: status[0].id, todolistId }));
+      await this.task.create({ name, userId, statusId: status[0].id, todolistId });
     }
-    await Promise.allSettled(promises);
   }
 }
