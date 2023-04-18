@@ -23,6 +23,7 @@ export class Document {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
   @Column({ default: true })
   isActive: boolean;
 
