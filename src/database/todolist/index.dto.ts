@@ -62,3 +62,17 @@ export class SeedListTaskDto {
   @ApiProperty()
   wordCount: number
 }
+
+export class SeedListDocDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({default:10})
+  quantityParentDoc: number;
+
+  @ApiProperty({default: 5})
+  docNameLength: number;
+
+  @ApiProperty({default: 20})
+  docContentLength: number;
+}

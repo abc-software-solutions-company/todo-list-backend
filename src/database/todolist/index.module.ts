@@ -10,6 +10,7 @@ import { FavoriteModule } from '../favorite/index.module';
 import { TodolistUserModule } from '../todolist-user/index.module';
 import { TaskModule } from '../task/index.module';
 import { TaskUserModule } from '../task-user/index.module';
+import { DocumentModule } from '../document/index.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TaskUserModule } from '../task-user/index.module';
     AuthModule,
     FavoriteModule,
     TodolistUserModule,
+    DocumentModule
   ],
   controllers: [TodolistController],
   providers: [TodolistService],

@@ -53,3 +53,11 @@ export interface ISeedListTask {
   wordCount: number;
   userId: string;
 }
+
+export interface ISeedListDoc {
+  id: string;
+  quantityParentDoc: number;
+  docNameLength: number;
+  docContentLength: number;
+  userId: string;
+}

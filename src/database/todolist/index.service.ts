@@ -19,6 +19,7 @@ import {
   ITodolistUpdate,
   ITodolistSeoOne,
   ISeedListTask,
+  ISeedListDoc,
 } from './index.type';
 import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
@@ -28,6 +29,7 @@ import { AuthService } from 'src/auth/index.service';
 import { TaskService } from '../task/index.service';
 import { TaskUserService } from '../task-user/index.service';
 import Jabber from 'jabber';
+import { DocumentService } from '../document/index.service';
 
 @Injectable()
 export class TodolistService {
@@ -37,6 +39,7 @@ export class TodolistService {
   constructor(
     @InjectRepository(Todolist) readonly repository: Repository<Todolist>,
     @Inject(forwardRef(() => TaskService)) readonly task: TaskService,
+    @Inject(forwardRef(() => DocumentService)) readonly document: DocumentService,
     readonly pool: PoolService,
     readonly status: StatusService,
     readonly favorite: FavoriteService,
@@ -372,15 +375,37 @@ export class TodolistService {
 
   async seedListTask(body: ISeedListTask) {
     const { id, quantity, wordCount, userId } = body;
-    if (!defineAll(id, quantity, wordCount)) throw new BadRequestException('Params not enough');
+    if (!defineAll(id,quantity,wordCount,userId)) throw new BadRequestException('Params not enough');
     if (isNaN(quantity) || isNaN(wordCount)) throw new BadRequestException('Quantity or Word count must be number')
     const list = await this.repository.findOne({ where: { id }, relations: { status: true } });
     if (!list) throw new BadRequestException('List not found');
     const { id: todolistId, status } = list;
     const jabber = new Jabber();
     for (let i = 0; i < quantity; i++) {
-      const name = jabber.createParagraph(wordCount);
+      const name = jabber.createWord(wordCount);
       await this.task.create({ name, userId, statusId: status[0].id, todolistId });
     }
+  }
+
+  async seedListDoc(body: ISeedListDoc) {
+    const {docContentLength,docNameLength,id,quantityParentDoc} = body;
+
+    if (!defineAll(docContentLength,docNameLength,id,quantityParentDoc)) throw new BadRequestException('Params not enough');
+    if (isNaN(docContentLength) || isNaN(docNameLength)  || isNaN(quantityParentDoc)) throw new BadRequestException('Some param must be number');
+
+    const list = await this.repository.findOne({ where: { id }, relations: { status: true } });
+    if (!list) throw new BadRequestException('List not found');
+
+    const { id: todolistId } = list;
+    const jabber = new Jabber();
+
+    const promises = [];
+    for (let i = 0; i < quantityParentDoc; i++) {
+      const parentDocName = jabber.createWord(docNameLength);
+      const docContent = jabber.createParagraph(docContentLength);
+      promises.push(this.document.create({name:parentDocName,todolistId,content: docContent}));
+    }
+
+    await Promise.allSettled(promises);
   }
 }
