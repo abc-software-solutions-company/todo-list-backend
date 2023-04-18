@@ -4,15 +4,14 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
 import { StatusService } from '../status/index.service';
-import { CreateTodolistDto, SeedListTaskDto, SyncTodolistDto, UpdateTodolistDto } from './index.dto';
+import { CreateTodolistDto, SeedListDocDto, SeedListTaskDto, SyncTodolistDto, UpdateTodolistDto } from './index.dto';
 import { TodolistService } from './index.service';
-import { ReindexAllDto } from './index.type';
 
 @Controller('todolists')
 @ApiBearerAuth()
 @ApiTags('TodoList')
 export class TodolistController {
-  constructor(private readonly service: TodolistService, private readonly status: StatusService) {}
+  constructor(private readonly service: TodolistService) {}
 
   @Get()
   @SkipThrottle()
@@ -94,9 +93,16 @@ export class TodolistController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/seed')
+  @Post('/seedTask')
   seedListTask(@Body() body: SeedListTaskDto, @Req() request: IRequest) {
     const {id: userId} = request.user;
     return this.service.seedListTask({...body, userId})
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/seedDoc')
+  seedListDoc(@Body() body: SeedListDocDto, @Req() request: IRequest) {
+    const {id: userId} = request.user;
+    return this.service.seedListDoc({...body, userId})
   }
 }
