@@ -56,6 +56,9 @@ export class UpdateTaskDto {
   isActive: boolean;
 
   @ApiProperty()
+  isFeature: boolean;
+
+  @ApiProperty()
   statusId: number;
 
   @ApiProperty()

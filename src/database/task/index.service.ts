@@ -84,6 +84,7 @@ export class TaskService {
       startDate,
       dueDate,
       isActive,
+      isFeature,
       attachment,
       comment,
       assignee,
@@ -158,6 +159,10 @@ export class TaskService {
 
       if (indexColumn !== undefined) {
         task.indexColumn = indexColumn;
+      }
+
+      if (isFeature !== undefined) {
+        task.isFeature = isFeature;
       }
 
       if (resetIndexColumn) {
