@@ -43,6 +43,7 @@ export interface ITaskUpdate extends ITaskGet {
   dueDate?: Date;
   priority?: string;
   isActive?: boolean;
+  isFeature?: boolean;
   isDone?: boolean;
   statusId: number;
   userId: string;

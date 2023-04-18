@@ -63,6 +63,9 @@ export class Task {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: false })
+  isFeature: boolean;
+
   @CreateDateColumn()
   createdDate: Date;
 
