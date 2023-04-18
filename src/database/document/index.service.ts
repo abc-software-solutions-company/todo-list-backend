@@ -31,7 +31,7 @@ export class DocumentService {
   async getDocumentTreeByTodolistId(todolistId: string): Promise<Document[]> {
     const documents = await this.repository.find({
       where: { todolistId, isActive: true },
-      order: { parentId: 'ASC', name: 'ASC' },
+      order: { createdAt: 'DESC' },
     });
     const tree = this.buildTree(documents, null);
     return tree;
