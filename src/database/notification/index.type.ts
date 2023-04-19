@@ -6,6 +6,7 @@ export interface INotificationCreate {
     | 'assigned-myself'
     | 'comment'
     | 'deleted-task'
+    | 'isFeature-task'
     | 'invited'
     | 'priority'
     | 'rename-task'

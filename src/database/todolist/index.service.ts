@@ -141,13 +141,14 @@ export class TodolistService {
         visibility,
         userId,
         taskSymbol,
-        tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId, order }) => ({
+        tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId, order, isFeature }) => ({
           id,
           name,
           assignees,
           priority,
           isDone,
           statusId,
+          isFeature,
           order,
         })),
         status,
@@ -175,7 +176,7 @@ export class TodolistService {
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'order'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'order', 'isFeature'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true } },
       order: { index: 'DESC' },
@@ -225,7 +226,7 @@ export class TodolistService {
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'indexColumn', 'order'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'indexColumn', 'order', 'isFeature'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true }, attachments: true },
       order: { indexColumn: 'ASC' },
