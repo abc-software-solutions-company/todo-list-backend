@@ -109,7 +109,7 @@ export class TaskService {
 
     if (!write) throw new ForbiddenException(`You can't update this todolist`);
 
-    if (defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive, indexColumn)) {
+    if (defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive, indexColumn, isFeature)) {
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
         task.name = name;
@@ -163,6 +163,30 @@ export class TaskService {
 
       if (isFeature !== undefined) {
         task.isFeature = isFeature;
+
+        if (someone.id !== reporterId) {
+          const isFeatureNotificationForReporter: INotificationCreate = {
+            content: task.name,
+            link: task.id,
+            type: 'isFeature-task',
+            recipientId: reporterId,
+            senderId: someone.id,
+          };
+
+          notifications.push(isFeatureNotificationForReporter);
+        }
+
+        if (assigneeId && assigneeId !== reporterId && assigneeId !== someone.id) {
+          const isFeatureNotificationForAssigee: INotificationCreate = {
+            content: task.name,
+            link: task.id,
+            type: 'isFeature-task',
+            recipientId: assigneeId,
+            senderId: someone.id,
+          };
+
+          notifications.push(isFeatureNotificationForAssigee);
+        }
       }
 
       if (resetIndexColumn) {
