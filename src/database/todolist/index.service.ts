@@ -226,7 +226,7 @@ export class TodolistService {
     });
 
     const taskRecords = this.task.repository.find({
-      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'createdDate', 'indexColumn', 'order', 'isFeature'],
+      select: ['id', 'name', 'isDone', 'statusId', 'index', 'priority', 'dueDate','storyPoint', 'indexColumn', 'order', 'isFeature'],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true }, attachments: true },
       order: { indexColumn: 'ASC' },
