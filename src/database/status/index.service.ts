@@ -12,8 +12,8 @@ export class StatusService {
   readonly defaultStatus: { name: string; color: string }[] = [
     { name: 'Backlog', color: '#78716C' },
     { name: 'To-Do', color: '#0EA5E9' },
-    { name: 'In-progress', color: '#F59E0B' },
-    { name: 'In-review', color: '#F43F5E' },
+    { name: 'In-Progress', color: '#F59E0B' },
+    { name: 'In-Review', color: '#F43F5E' },
     { name: 'In-QA', color: '#8B5CF6' },
     { name: 'Done', color: '#22C55E' },
   ];
