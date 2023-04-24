@@ -54,10 +54,10 @@ jobs:
       - name: Build,Start and Restart Web Application
         run: RUNNER_TRACKING_ID="" && yarn build && pm2 start "yarn start" --exp-backoff-restart-delay=100 && pm2 restart "yarn start" --exp-backoff-restart-delay=100
 
-      - name: Prune docker image trash
-        run: sudo docker rmi -f $(sudo docker images --filter "dangling=true" -q --no-trunc)
-        if: always()
+      # - name: Prune docker image trash
+      #   run: sudo docker rmi -f $(sudo docker images --filter "dangling=true" -q --no-trunc)
+      #   if: always()
 
-      - name: Prune docker container trash
-        run: sudo docker container prune -f --filter "until=24h"
-        if: always()
+      # - name: Prune docker container trash
+      #   run: sudo docker container prune -f --filter "until=24h"
+      #   if: always()
