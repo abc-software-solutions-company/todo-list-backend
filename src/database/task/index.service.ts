@@ -109,7 +109,9 @@ export class TaskService {
 
     if (!write) throw new ForbiddenException(`You can't update this todolist`);
 
-    if (defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive, indexColumn, isFeature)) {
+    if (
+      defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive, indexColumn, isFeature)
+    ) {
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
         task.name = name;
@@ -358,26 +360,17 @@ export class TaskService {
   }
 
   async createHelper({ todolistId, userId: TaskUserId, statusId }: ITaskCreateHepler) {
-    const [todolist, tasksLength, tasksLengthByStatus] = await Promise.all([
-      this.todolist.repository.findOne({
-        select: { id: true, visibility: true, userId: true },
-        where: { id: todolistId },
-        relations: { status: true },
-      }),
-      this.repository.count({ where: { todolistId } }),
-      this.repository.count({ where: { todolistId, statusId } }),
-    ]);
-
+    const todolist = await this.todolist.repository.findOne({
+      select: ['id', 'visibility', 'userId', 'tasks'],
+      where: { id: todolistId },
+      relations: { status: true, tasks: true },
+    });
     if (todolist.visibility !== this.todolist.visibilityList.public && todolist.userId !== TaskUserId)
       throw new MethodNotAllowedException();
-
-    const newTaskOrder = tasksLength > 0 ? tasksLength + 1 : 1;
-    const indexColumn = (tasksLengthByStatus + 1) * this.indexStep;
-
-    return {
-      order: newTaskOrder,
-      index: (tasksLength + 1) * this.indexStep,
-      indexColumn,
-    };
+    const order = todolist.tasks.length + 1;
+    const index = Number(Math.max(...todolist.tasks.map((e) => e.index))) + this.indexStep;
+    const indexColumn =
+      Number(Math.max(...todolist.tasks.filter((e) => e.statusId == statusId).map((e) => e.index))) + this.indexStep;
+    return { order, index, indexColumn };
   }
 }

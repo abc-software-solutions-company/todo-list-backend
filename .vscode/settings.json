@@ -1,4 +1,11 @@
 {
+  "prettier.useEditorConfig": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "scss.lint.unknownAtRules": "ignore",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
   "files.exclude": {
     "node_modules/": true,
     "dist/": true

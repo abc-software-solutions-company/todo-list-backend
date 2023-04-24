@@ -3,7 +3,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
-import { StatusService } from '../status/index.service';
 import { CreateTodolistDto, SeedListDocDto, SeedListTaskDto, SyncTodolistDto, UpdateTodolistDto } from './index.dto';
 import { TodolistService } from './index.service';
 
