@@ -368,9 +368,10 @@ export class TaskService {
     if (todolist.visibility !== this.todolist.visibilityList.public && todolist.userId !== TaskUserId)
       throw new MethodNotAllowedException();
     const order = todolist.tasks.length + 1;
-    const index = Number(Math.max(...todolist.tasks.map((e) => e.index))) + this.indexStep;
-    const indexColumn =
-      Number(Math.max(...todolist.tasks.filter((e) => e.statusId == statusId).map((e) => e.index))) + this.indexStep;
+    const index = Number(Math.max(...todolist.tasks.map((e) => e.index), 0)) + this.indexStep;
+    const statusIndexColumn = todolist.tasks.filter((e) => e.statusId == statusId).map((e) => e.indexColumn);
+    const maxIndexColumn = Number(Math.max(...statusIndexColumn, 0));
+    const indexColumn = maxIndexColumn + this.indexStep;
     return { order, index, indexColumn };
   }
 }
