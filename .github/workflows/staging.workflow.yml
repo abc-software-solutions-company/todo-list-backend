@@ -50,3 +50,11 @@ jobs:
           # Reference from offical Docker youtube channel: https://youtu.be/aNh8iShFXto
       - name: Build Docker and deployment
         run: sudo chmod +x docker-build.sh && sudo ./docker-build.sh
+
+      - name: Prune docker image trash
+        run: sudo docker rmi -f $(sudo docker images --filter "dangling=true" -q --no-trunc)
+        if: always()
+
+      - name: Prune docker container trash
+        run: sudo docker container prune -f --filter "until=24h"
+        if: always()
