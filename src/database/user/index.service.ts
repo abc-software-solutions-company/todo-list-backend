@@ -3,8 +3,10 @@ import { IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './index.entity';
 import { v4 } from 'uuid';
-import { IUserUpdate } from './index.type';
+import { ISeedUser, IUserUpdate } from './index.type';
 import { defineAll, defineAny } from 'src/utils/function';
+import { isBoolean } from 'class-validator';
+import Jabber from 'jabber';
 
 interface ICreate {
   name: string;
@@ -40,5 +42,19 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async seedUser({ quantity = 5, emailContainName = true }: ISeedUser) {
+    if (!defineAll(quantity, emailContainName)) throw new BadRequestException('Seed user Err param');
+    if (isNaN(quantity)) throw new BadRequestException('Quantity must be number');
+
+    const jabber = new Jabber();
+
+    for (let i = 0; i < quantity; i++) {
+      const name = await jabber.createWord(3);
+      const email = `${emailContainName && name.split(' ')[0]}_${await jabber.createEmail('gmail.com')}`;
+      await this.create({ email, name });
+    }
+    return 'Seed user data complete';
   }
 }
