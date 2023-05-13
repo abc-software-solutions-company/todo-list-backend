@@ -20,11 +20,11 @@ import { TodolistService } from '../todolist/index.service';
 import { UserService } from '../user/index.service';
 import { Task } from './index.entity';
 import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
+import { priorities } from 'src/utils/constants';
 
 @Injectable()
 export class TaskService {
   readonly indexStep: number = Math.pow(2, 30);
-  readonly priorities = { lowest: 'Lowest', low: 'Low', medium: 'Medium', high: 'High', highest: 'Highest' };
 
   constructor(
     @InjectRepository(Task) readonly repository: Repository<Task>,
@@ -60,12 +60,12 @@ export class TaskService {
   }
 
   async create(param: ITaskCreate) {
-    const { todolistId, userId, statusId } = param;
+    const { todolistId, userId, statusId, priority = priorities.medium } = param;
     if (!defineAll(param)) throw new BadRequestException('Create Task Error Param');
 
     const { index, indexColumn, order } = await this.createHelper({ todolistId, userId, statusId });
     const id = v4();
-    const task = this.repository.create({ id, ...param, index, indexColumn, statusId, order });
+    const task = this.repository.create({ id, ...param, index, indexColumn, statusId, order, priority });
 
     return this.repository.save(task);
   }
@@ -201,8 +201,7 @@ export class TaskService {
       }
 
       if (priority) {
-        if (!Object.values(this.priorities).includes(priority))
-          throw new MethodNotAllowedException('Error priority value');
+        if (!Object.values(priorities).includes(priority)) throw new MethodNotAllowedException('Error priority value');
 
         const beforePriority = JSON.stringify(task);
         task.priority = priority;
