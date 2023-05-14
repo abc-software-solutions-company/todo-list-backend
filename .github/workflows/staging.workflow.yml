@@ -52,9 +52,11 @@ jobs:
         run: sudo chmod +x docker-build.sh && sudo ./docker-build.sh
 
       - name: Prune docker image trash
+        continue-on-error: true
         run: sudo docker rmi -f $(sudo docker images --filter "dangling=true" -q --no-trunc)
         if: always()
 
       - name: Prune docker container trash
+        continue-on-error: true
         run: sudo docker container prune -f --filter "until=24h"
         if: always()

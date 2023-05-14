@@ -15,6 +15,7 @@ import { TaskUser } from '../task-user/index.entity';
 import { Todolist } from '../todolist/index.entity';
 import { User } from '../user/index.entity';
 import { Document } from '../document/index.entity';
+import { priorities } from 'src/utils/constants';
 
 @Entity()
 export class Task {
@@ -57,7 +58,7 @@ export class Task {
   @Column({ type: 'bigint', nullable: true })
   indexColumn: number;
 
-  @Column({ default: 'Medium' })
+  @Column({ default: priorities.medium })
   priority: string;
 
   @Column({ default: true })

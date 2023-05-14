@@ -23,13 +23,14 @@ import {
 } from './index.type';
 import { StatusService } from '../status/index.service';
 import { FavoriteService } from '../favorite/index.service';
-import { defineAll, defineAny } from 'src/utils/function';
+import { defineAll, defineAny, getRandomItemInArray, getRandomPropertyFromObject } from 'src/utils/function';
 import { TodolistUserService } from '../todolist-user/index.service';
 import { AuthService } from 'src/auth/index.service';
 import { TaskService } from '../task/index.service';
 import { TaskUserService } from '../task-user/index.service';
 import Jabber from 'jabber';
 import { DocumentService } from '../document/index.service';
+import { priorities } from 'src/utils/constants';
 
 @Injectable()
 export class TodolistService {
@@ -397,7 +398,13 @@ export class TodolistService {
     const jabber = new Jabber();
     for (let i = 0; i < quantity; i++) {
       const name = jabber.createWord(wordCount);
-      await this.task.create({ name, userId, statusId: status[0].id, todolistId });
+      await this.task.create({
+        name,
+        userId,
+        statusId: getRandomItemInArray(status).id,
+        priority: getRandomPropertyFromObject(priorities) as string,
+        todolistId,
+      });
     }
   }
 
