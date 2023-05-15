@@ -50,7 +50,7 @@ export class TodolistService {
   ) {}
 
   get() {
-    return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 100 });
+    return this.repository.findBy({ isActive: true });
   }
 
   async seoOne({ id }: ITodolistSeoOne) {
