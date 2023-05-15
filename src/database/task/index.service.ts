@@ -38,7 +38,7 @@ export class TaskService {
   ) {}
 
   get() {
-    return this.repository.find({ where: { isActive: true } });
+    return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 100 });
   }
 
   getOne({ id }: ITaskGet) {
