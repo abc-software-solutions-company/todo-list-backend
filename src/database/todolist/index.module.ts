@@ -15,6 +15,7 @@ import { DocumentModule } from '../document/index.module';
 @Module({
   imports: [
     forwardRef(() => TaskModule),
+    forwardRef(() => DocumentModule),
     TypeOrmModule.forFeature([Todolist]),
     PoolModule,
     StatusModule,
@@ -22,7 +23,6 @@ import { DocumentModule } from '../document/index.module';
     AuthModule,
     FavoriteModule,
     TodolistUserModule,
-    DocumentModule
   ],
   controllers: [TodolistController],
   providers: [TodolistService],

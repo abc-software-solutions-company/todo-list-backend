@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { Patch } from '@nestjs/common/decorators';
+import { Patch, Req } from '@nestjs/common/decorators';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateDocumentDto, UpdateDocumentDto } from './index.dto';
 import { DocumentService } from './index.service';
+import { IRequest } from 'src/utils/type';
 
 @ApiTags('document')
 @ApiBearerAuth()
@@ -27,8 +28,9 @@ export class DocumentController {
   @UseGuards(JwtAuthGuard)
   @Get('/tree/:todolistId')
   @SkipThrottle()
-  async getDocumentTreeByTodolistId(@Param('todolistId') todolistId: string) {
-    return this.service.getDocumentTreeByTodolistId(todolistId);
+  async getDocumentTreeByTodolistId(@Req() request: IRequest, @Param('todolistId') todolistId: string) {
+    const { id: userId } = request.user;
+    return this.service.getDocumentTreeByTodolistId(todolistId, userId);
   }
 
   @Get(':id')

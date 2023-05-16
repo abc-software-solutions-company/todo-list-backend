@@ -4,10 +4,14 @@ import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { Document } from './index.entity';
 import { IDocumentCreate, IDocumentGet, IDocumentUpdate } from './index.type';
+import { TodolistService } from '../todolist/index.service';
 
 @Injectable()
 export class DocumentService {
-  constructor(@InjectRepository(Document) readonly repository: Repository<Document>) {}
+  constructor(
+    @InjectRepository(Document) readonly repository: Repository<Document>,
+    readonly todolist: TodolistService,
+  ) {}
 
   async create(param: IDocumentCreate) {
     const id = v4();
@@ -28,11 +32,13 @@ export class DocumentService {
     return this.repository.save(result);
   }
 
-  async getDocumentTreeByTodolistId(todolistId: string): Promise<Document[]> {
+  async getDocumentTreeByTodolistId(todolistId: string, userId: string): Promise<Document[]> {
     const documents = await this.repository.find({
       where: { todolistId, isActive: true },
       order: { createdAt: 'DESC' },
     });
+    const { name: listName } = await this.todolist.getOne({ id: todolistId, userId });
+    console.log('🚀 ~ file: index.service.ts:41 ~ DocumentService ~ getDocumentTreeByTodolistId ~ listName:', listName);
     const tree = this.buildTree(documents, null);
     return tree;
   }
