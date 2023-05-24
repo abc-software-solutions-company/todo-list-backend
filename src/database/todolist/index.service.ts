@@ -270,7 +270,7 @@ export class TodolistService {
 
     tasks.forEach((e) => {
       e.assignees = e.assignees.filter((e) => e.isActive);
-      e.attachments = e.attachments.slice(0, 1).filter((e) => e.isActive);
+      e.attachments = e.attachments.filter((e) => e.isActive).slice(0,1)
     });
     status.forEach((e, idx) => {
       e.tasks = tasks.filter((e) => e.statusId == status[idx].id);
