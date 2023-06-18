@@ -2,7 +2,7 @@ name: Deploy Todolist Backend to Production
 
 on:
   push:
-    branches: ["release"]
+    branches: ['release']
 
 env:
   APP_ENV: ${{ secrets.PRODUCTION }}
@@ -39,25 +39,18 @@ jobs:
       - name: Remove .env_temp file
         run: rm -r -f .env_temp
 
-      - name: Install Yarn, PM2
-        run: npm install -g yarn pm2
-
-      - name: Install env-cmd
-        run: npm install -g env-cmd
-
-      - name: Install Node Module
-        run: yarn
+      - name: Install Yarn and env-cmd
+        run: npm install -g yarn env-cmd && yarn
 
       - name: Migrations
-        run: yarn typeorm migration:run -d src/configs/data-source.ts
+        continue-on-error: true
+        run:
+          yarn typeorm migration:run -d src/configs/data-source.ts
 
-      - name: Build,Start and Restart Web Application
-        run: RUNNER_TRACKING_ID="" && yarn build && pm2 start "yarn start" --exp-backoff-restart-delay=100 && pm2 restart "yarn start" --exp-backoff-restart-delay=100
+          # Reference from offical Docker youtube channel: https://youtu.be/aNh8iShFXto
+      - name: Build Docker and deployment
+        run: sudo chmod +x docker-build.sh && sudo ./docker-build.sh
 
-      # - name: Prune docker image trash
-      #   run: sudo docker rmi -f $(sudo docker images --filter "dangling=true" -q --no-trunc)
-      #   if: always()
-
-      # - name: Prune docker container trash
-      #   run: sudo docker container prune -f --filter "until=24h"
-      #   if: always()
+      - name: Prune docker cache all
+        continue-on-error: true
+        run: sudo docker system prune -f -a --volumes
