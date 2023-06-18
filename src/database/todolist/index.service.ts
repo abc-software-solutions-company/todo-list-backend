@@ -50,7 +50,7 @@ export class TodolistService {
   ) {}
 
   get() {
-    return this.repository.findBy({ isActive: true });
+    return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 30 });
   }
 
   async seoOne({ id }: ITodolistSeoOne) {
@@ -270,7 +270,7 @@ export class TodolistService {
 
     tasks.forEach((e) => {
       e.assignees = e.assignees.filter((e) => e.isActive);
-      e.attachments = e.attachments.filter((e) => e.isActive).slice(0,1)
+      e.attachments = e.attachments.filter((e) => e.isActive).slice(0, 1);
     });
     status.forEach((e, idx) => {
       e.tasks = tasks.filter((e) => e.statusId == status[idx].id);
