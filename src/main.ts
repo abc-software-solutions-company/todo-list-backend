@@ -10,7 +10,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const configService = app.get(ConfigService);
-  const config = new DocumentBuilder().setTitle('Todo List API').setVersion('').addBearerAuth().build();
+  const config = new DocumentBuilder().setTitle('Todooy API').setVersion('').addBearerAuth().build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 
