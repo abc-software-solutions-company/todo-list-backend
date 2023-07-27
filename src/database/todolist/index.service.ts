@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   MethodNotAllowedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -213,8 +214,12 @@ export class TodolistService {
       e.tasks = tasks.filter((e) => e.statusId == status[idx].id);
     });
 
-    if (todolist.visibility === this.visibilityList.private && userId !== todolist.userId)
-      throw new MethodNotAllowedException('Private list, you are not owner to view this');
+    const isPrivate =
+      todolist.visibility === this.visibilityList.private &&
+      userId !== todolist.userId &&
+      !members.map((e) => e.id).includes(userId);
+
+    if (isPrivate) throw new NotFoundException('Private list, only owner and member can see this list');
 
     return { ...todolist, favorite, status, members, tasks };
   }
