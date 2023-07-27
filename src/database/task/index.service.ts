@@ -105,10 +105,6 @@ export class TaskService {
     const assigneeId = !taskUser ? null : taskUser.userId;
     const reporterId = task.userId;
 
-    const write = task.todolist.visibility === this.todolist.visibilityList.public || task.todolist.userId === userId;
-
-    if (!write) throw new ForbiddenException(`You can't update this todolist`);
-
     if (
       defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive, indexColumn, isFeature)
     ) {
@@ -360,12 +356,11 @@ export class TaskService {
 
   async createHelper({ todolistId, userId: TaskUserId, statusId }: ITaskCreateHepler) {
     const todolist = await this.todolist.repository.findOne({
-      select: ['id', 'visibility', 'userId', 'tasks'],
+      select: ['id', 'visibility', 'userId', 'tasks', 'members'],
       where: { id: todolistId },
       relations: { status: true, tasks: true },
     });
-    if (todolist.visibility !== this.todolist.visibilityList.public && todolist.userId !== TaskUserId)
-      throw new MethodNotAllowedException();
+
     const order = todolist.tasks.length + 1;
     const index = Number(Math.max(...todolist.tasks.map((e) => e.index), 0)) + this.indexStep;
     const statusIndexColumn = todolist.tasks.filter((e) => e.statusId == statusId).map((e) => e.indexColumn);

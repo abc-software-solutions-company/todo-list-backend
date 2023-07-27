@@ -214,12 +214,19 @@ export class TodolistService {
       e.tasks = tasks.filter((e) => e.statusId == status[idx].id);
     });
 
-    const isPrivate =
-      todolist.visibility === this.visibilityList.private &&
-      userId !== todolist.userId &&
-      !members.map((e) => e.id).includes(userId);
+    const isPrivate = todolist.visibility === this.visibilityList.private;
+    const isListOwner = userId === todolist.userId;
+    const isMemberInList = members.map((e) => e.id).includes(userId);
 
-    if (isPrivate) throw new NotFoundException('Private list, only owner and member can see this list');
+    const haveAcessPermission = () => {
+      if (isPrivate) {
+        if (isListOwner || isMemberInList) return true;
+        return false;
+      }
+      return true;
+    };
+
+    if (!haveAcessPermission()) throw new NotFoundException('Private list, only owner and member can see this list');
 
     return { ...todolist, favorite, status, members, tasks };
   }
@@ -280,9 +287,20 @@ export class TodolistService {
     status.forEach((e, idx) => {
       e.tasks = tasks.filter((e) => e.statusId == status[idx].id);
     });
+    //TODO: In the future, must not duplicate this logic code
+    const isPrivate = todolist.visibility === this.visibilityList.private;
+    const isListOwner = userId === todolist.userId;
+    const isMemberInList = members.map((e) => e.id).includes(userId);
 
-    if (todolist.visibility === this.visibilityList.private && userId !== todolist.userId)
-      throw new MethodNotAllowedException('Private list, you are not owner to view this');
+    const haveAcessPermission = () => {
+      if (isPrivate) {
+        if (isListOwner || isMemberInList) return true;
+        return false;
+      }
+      return true;
+    };
+
+    if (!haveAcessPermission()) throw new NotFoundException('Private list, only owner and member can see this list');
 
     return { ...todolist, favorite, status, members, tasks };
   }
