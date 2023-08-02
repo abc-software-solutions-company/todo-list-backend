@@ -113,18 +113,8 @@ export class TodolistService {
       order: { favorites: { updatedDate: 'ASC' } },
     });
 
-    const checkVisibility = (list: Todolist) => {
-      if (list.visibility == this.visibilityList.private) {
-        if (userId == list.userId) return true;
-      }
-      if (list.visibility == this.visibilityList.public || list.visibility == this.visibilityList.readonly) return true;
-      return false;
-    };
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const response = todolistRecords
-      .filter((e) => checkVisibility(e))
-      .map(({ favorites, ...rest }) => ({ ...rest, favorite: true }));
+    const response = todolistRecords.map(({ favorites, ...rest }) => ({ ...rest, favorite: true }));
 
     return response;
   }
