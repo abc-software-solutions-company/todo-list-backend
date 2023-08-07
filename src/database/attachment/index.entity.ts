@@ -30,6 +30,9 @@ export class Attachment {
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
+  @Column({ type: 'text', default: 'image' })
+  type: string;
+
   @CreateDateColumn()
   createdDate: Date;
 
