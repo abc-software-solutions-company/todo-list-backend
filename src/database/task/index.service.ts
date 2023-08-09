@@ -87,6 +87,7 @@ export class TaskService {
       isFeature,
       attachment,
       comment,
+      type,
       assignee,
       indexColumn,
       resetIndexColumn,
@@ -106,7 +107,19 @@ export class TaskService {
     const reporterId = task.userId;
 
     if (
-      defineAny(name, index, description, storyPoint, startDate, dueDate, priority, isActive, indexColumn, isFeature)
+      defineAny(
+        name,
+        index,
+        description,
+        storyPoint,
+        startDate,
+        dueDate,
+        priority,
+        type,
+        isActive,
+        indexColumn,
+        isFeature,
+      )
     ) {
       if (name) {
         if (!name.trim()) throw new BadRequestException('Empty name');
@@ -145,6 +158,10 @@ export class TaskService {
 
       if (storyPoint !== undefined) {
         task.storyPoint = storyPoint;
+      }
+
+      if (type !== undefined) {
+        task.type = type;
       }
 
       if (startDate !== undefined) {
