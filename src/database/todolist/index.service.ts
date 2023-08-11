@@ -133,11 +133,12 @@ export class TodolistService {
         visibility,
         userId,
         taskSymbol,
-        tasks: tasks.map(({ id, name, assignees, priority, isDone, statusId, order, isFeature }) => ({
+        tasks: tasks.map(({ id, name, assignees, priority, type, isDone, statusId, order, isFeature }) => ({
           id,
           name,
           assignees,
           priority,
+          type,
           isDone,
           statusId,
           isFeature,
