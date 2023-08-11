@@ -8,3 +8,9 @@ export const AttachmentType = {
   image: 'image',
   file: 'file',
 };
+export enum TaskTypeEnum {
+  TASK = 'Task',
+  STORY = 'Story',
+  BUG = 'Bug',
+  SUB_TASK = 'Sub-task',
+}

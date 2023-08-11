@@ -1,3 +1,4 @@
+import { TaskTypeEnum } from 'src/utils/constants';
 import { IAttachmentCreate, IAttachmentUpdate } from '../attachment/index.type';
 import { ICommentCreate, ICommentUpdate } from '../comment/index.type';
 import { ITaskUserCreate } from '../task-user/index.type';
@@ -43,6 +44,7 @@ export interface ITaskUpdate extends ITaskGet {
   startDate?: Date;
   dueDate?: Date;
   priority?: string;
+  type?: TaskTypeEnum;
   isActive?: boolean;
   isFeature?: boolean;
   isDone?: boolean;

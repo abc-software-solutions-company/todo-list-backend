@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IAssignee, IAttachment, IComment } from './index.type';
+import { TaskTypeEnum, priorities } from 'src/utils/constants';
+import { IsOptional } from 'class-validator';
 
 export class CreateTaskDto {
   @ApiProperty()
@@ -8,7 +10,16 @@ export class CreateTaskDto {
   @ApiProperty()
   description: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    example: TaskTypeEnum.TASK,
+  })
+  @IsOptional()
+  type: TaskTypeEnum;
+
+  @ApiProperty({
+    example: '741w1',
+  })
   todolistId: string;
 
   @ApiProperty()
@@ -16,7 +27,9 @@ export class CreateTaskDto {
 }
 
 export class UpdateTaskDto {
-  @ApiProperty()
+  @ApiProperty({
+    example: '6c0aa128-1958-47bc-b06b-b20ddfc83354',
+  })
   id: string;
 
   @ApiProperty()
@@ -43,11 +56,19 @@ export class UpdateTaskDto {
   @ApiProperty()
   comment: IComment;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: priorities.medium,
+  })
   priority: string;
 
   @ApiProperty()
   assignee: IAssignee;
+
+  @ApiProperty({
+    type: String,
+    example: TaskTypeEnum.TASK,
+  })
+  type: TaskTypeEnum;
 
   @ApiProperty()
   isDone: boolean;

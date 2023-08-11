@@ -15,7 +15,7 @@ import { TaskUser } from '../task-user/index.entity';
 import { Todolist } from '../todolist/index.entity';
 import { User } from '../user/index.entity';
 import { Document } from '../document/index.entity';
-import { priorities } from 'src/utils/constants';
+import { TaskTypeEnum, priorities } from 'src/utils/constants';
 
 @Entity()
 export class Task {
@@ -60,6 +60,13 @@ export class Task {
 
   @Column({ default: priorities.medium })
   priority: string;
+
+  @Column({
+    type: 'enum',
+    enum: TaskTypeEnum,
+    default: TaskTypeEnum.TASK,
+  })
+  type: TaskTypeEnum;
 
   @Column({ default: true })
   isActive: boolean;
