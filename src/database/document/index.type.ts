@@ -1,7 +1,7 @@
 export interface IDocumentCreate {
   name: string;
   content?: string;
-  favorite?: boolean;
+  favorite?: number;
   parentId?: string;
   todolistId: string;
 }
@@ -12,6 +12,6 @@ export interface IDocumentUpdate {
   id: string;
   name?: string;
   content?: string;
-  favorite?: boolean;
+  favorite?: number;
   isActive?: boolean;
 }

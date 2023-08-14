@@ -8,7 +8,7 @@ export class CreateDocumentDto {
   content: string;
 
   @ApiProperty()
-  favorite: boolean;
+  favorite: number;
 
   @ApiProperty()
   parentId: string;
@@ -28,7 +28,7 @@ export class UpdateDocumentDto {
   content: string;
 
   @ApiProperty()
-  favorite: boolean;
+  favorite: number;
 
   @ApiProperty()
   isActive: boolean;

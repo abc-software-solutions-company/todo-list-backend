@@ -12,8 +12,8 @@ export class Document {
   @Column({ type: 'text', nullable: true })
   content: string;
 
-  @Column({ default: false })
-  favorite: boolean;
+  @Column({ nullable: true, default: null })
+  favorite: number | null;
 
   @Column({ nullable: true, default: null })
   parentId: string | null;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { Document } from './index.entity';
 import { IDocumentCreate, IDocumentGet, IDocumentUpdate } from './index.type';
@@ -28,10 +28,29 @@ export class DocumentService {
     return this.repository.save(result);
   }
 
+  async handleFavorite(documentId) {
+    const result = await this.repository.findOneBy({ id: documentId });
+    const lastDocument = await this.repository.find({
+      where: { favorite: Not(IsNull()), todolistId: result.todolistId },
+    });
+    if (result.favorite === null) result.favorite = result.favorite = lastDocument ? lastDocument.length + 1 : 1;
+    else result.favorite = null;
+    return this.repository.save(result);
+  }
+
   async getDocumentTreeByTodolistId(todolistId: string): Promise<Document[]> {
     const documents = await this.repository.find({
       where: { todolistId, isActive: true },
       order: { createdAt: 'DESC' },
+    });
+    const tree = this.buildTree(documents, null);
+    return tree;
+  }
+
+  async getDocumentsFavorite(todolistId: string): Promise<Document[]> {
+    const documents = await this.repository.find({
+      where: { todolistId, isActive: true, favorite: Not(IsNull()) },
+      order: { favorite: 'DESC' },
     });
     const tree = this.buildTree(documents, null);
     return tree;
