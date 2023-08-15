@@ -161,7 +161,6 @@ export class TodolistService {
   }
 
   async getOne({ id, userId }: ITodolistGetOne) {
-    console.log('🚀 ~ file: index.service.ts:171 ~ TodolistService ~ getOne ~ { id, userId }:', { id, userId });
     if (!defineAll(id)) throw new BadRequestException('Todolist getOne Err param');
 
     const todolistRecord = this.repository.findOne({
