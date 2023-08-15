@@ -11,6 +11,7 @@ import { UserModule } from '../user/index.module';
 import { TaskController } from './index.controller';
 import { Task } from './index.entity';
 import { TaskService } from './index.service';
+import { TodolistUserModule } from '../todolist-user/index.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TaskService } from './index.service';
     AttachmentModule,
     NotificationModule,
     TaskUserModule,
+    TodolistUserModule,
     StatusModule,
     AuthModule,
     UserModule,

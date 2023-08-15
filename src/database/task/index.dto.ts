@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IAssignee, IAttachment, IComment } from './index.type';
 import { TaskTypeEnum, priorities } from 'src/utils/constants';
-import { IsOptional } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskDto {
   @ApiProperty()
@@ -61,6 +61,13 @@ export class UpdateTaskDto {
   })
   priority: string;
 
+  @ApiProperty({
+    example: ['5553a2e8-183e-489c-8c30-196fc293c3e0', '6543400f-b694-4b5d-920b-8c066c529885'],
+  })
+  @IsArray()
+  @IsOptional()
+  relatedIds?: string[];
+
   @ApiProperty()
   assignee: IAssignee;
 
@@ -84,6 +91,20 @@ export class UpdateTaskDto {
 
   @ApiProperty()
   indexColumn: number;
+}
+
+export class FindOrtherTasksDto {
+  @ApiProperty({
+    example: '7712890e-5ee9-47cc-9de3-d937722be465',
+  })
+  @IsString()
+  taskId: string;
+
+  @ApiProperty({
+    example: '741w1',
+  })
+  @IsString()
+  todolistId: string;
 }
 
 export class ReindexAllDto {
