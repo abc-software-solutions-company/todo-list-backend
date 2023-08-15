@@ -44,6 +44,7 @@ export interface ITaskUpdate extends ITaskGet {
   startDate?: Date;
   dueDate?: Date;
   priority?: string;
+  relatedIds?: string[];
   type?: TaskTypeEnum;
   isActive?: boolean;
   isFeature?: boolean;

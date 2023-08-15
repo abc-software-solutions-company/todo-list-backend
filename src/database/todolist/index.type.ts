@@ -6,7 +6,7 @@ export interface ITodolistSeoOne {
 }
 
 export interface ITodolistGetOne extends ITodolistSeoOne {
-  userId: string;
+  userId?: string;
 }
 
 export interface ITodolistGetByUser {

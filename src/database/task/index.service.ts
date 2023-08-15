@@ -21,6 +21,7 @@ import { UserService } from '../user/index.service';
 import { Task } from './index.entity';
 import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
 import { priorities } from 'src/utils/constants';
+import { TodolistUserService } from '../todolist-user/index.service';
 
 @Injectable()
 export class TaskService {
@@ -32,6 +33,7 @@ export class TaskService {
     readonly attachment: AttachmentService,
     readonly comment: CommentService,
     readonly notification: NotificationService,
+    readonly member: TodolistUserService,
     readonly taskUser: TaskUserService,
     readonly status: StatusService,
     readonly user: UserService,
@@ -41,8 +43,8 @@ export class TaskService {
     return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 30 });
   }
 
-  getOne({ id }: ITaskGet) {
-    return this.repository.findOne({
+  async getOne({ id }: ITaskGet) {
+    const task = await this.repository.findOne({
       where: { id, isActive: true },
       relations: {
         status: true,
@@ -50,6 +52,7 @@ export class TaskService {
         attachments: { user: true },
         comments: { user: true },
         assignees: { user: true },
+        relatedTasks: { status: true, todolist: { status: true, members: { user: true } }, assignees: { user: true } },
         user: true,
       },
       order: {
@@ -57,6 +60,51 @@ export class TaskService {
         comments: { createdDate: 'ASC' },
       },
     });
+
+    const statusRecords = this.status.repository.find({
+      select: ['id', 'name', 'color', 'index'],
+      where: { todolistId: task.todolist.id, isActive: true },
+      order: { index: 'ASC' },
+    });
+
+    const memberRecords = this.member.repository.find({
+      select: ['todolistId', 'isActive'],
+      where: { todolistId: task.todolist.id, isActive: true },
+      relations: { user: true },
+    });
+
+    const promises = await Promise.all([statusRecords, memberRecords]);
+
+    const status = promises[0];
+    const members = promises[1].map(({ user }) => ({ id: user.id, name: user.name, email: user.email }));
+
+    const relatedTasks = task.relatedTasks.map((task) => {
+      return { ...task, todolist: { ...task.todolist, status, members } };
+    });
+
+    return { ...task, relatedTasks };
+  }
+
+  async findOrtherTasks({ taskId, todolistId }) {
+    const { relatedTasks } = await this.repository.findOne({
+      where: { id: taskId, isActive: true },
+      relations: { relatedTasks: true },
+    });
+
+    const { tasks } = await this.todolist.repository.findOne({
+      where: { id: todolistId, isActive: true, tasks: { isActive: true } },
+      relations: { tasks: true },
+      order: { tasks: { order: 'DESC' } },
+    });
+
+    const relatedTaskIds = relatedTasks.map(({ id }) => id);
+
+    const ortherTasks = tasks?.filter(({ id }) => {
+      if (taskId === id) return false;
+      return !relatedTaskIds.includes(id);
+    });
+
+    return ortherTasks;
   }
 
   async create(param: ITaskCreate) {
@@ -89,6 +137,7 @@ export class TaskService {
       comment,
       type,
       assignee,
+      relatedIds,
       indexColumn,
       resetIndexColumn,
     } = param;
@@ -100,7 +149,7 @@ export class TaskService {
 
     const task = await this.repository.findOne({
       where: { id },
-      relations: { todolist: { status: true } },
+      relations: { todolist: { status: true }, relatedTasks: true },
     });
 
     const assigneeId = !taskUser ? null : taskUser.userId;
@@ -115,6 +164,7 @@ export class TaskService {
         startDate,
         dueDate,
         priority,
+        relatedIds,
         type,
         isActive,
         indexColumn,
@@ -244,6 +294,15 @@ export class TaskService {
             senderId: someone.id,
           };
           notifications.push(priorityNotificationForAssignee);
+        }
+      }
+
+      if (relatedIds && relatedIds.length > 0) {
+        for (let i = 0; i < relatedIds.length; i++) {
+          const relatedTask = await this.repository.findOne({
+            where: { id: relatedIds[i] },
+          });
+          task.relatedTasks.push(relatedTask);
         }
       }
 

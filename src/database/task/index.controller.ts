@@ -3,7 +3,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IRequest } from 'src/utils/type';
-import { CreateTaskDto, ReindexAllDto, UpdateTaskDto } from './index.dto';
+import { CreateTaskDto, FindOrtherTasksDto, ReindexAllDto, UpdateTaskDto } from './index.dto';
 import { TaskService } from './index.service';
 
 @ApiTags('Tasks')
@@ -28,6 +28,12 @@ export class TaskController {
   @Post()
   create(@Body() body: CreateTaskDto, @Req() { user: { id: userId } }: IRequest) {
     return this.service.create({ ...body, userId });
+  }
+
+  @Post('find-orther-tasks')
+  @SkipThrottle()
+  async findOrtherTasks(@Body() findOrtherTaskDto: FindOrtherTasksDto) {
+    return this.service.findOrtherTasks(findOrtherTaskDto);
   }
 
   @UseGuards(JwtAuthGuard)

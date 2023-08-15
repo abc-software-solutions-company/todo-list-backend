@@ -7,6 +7,8 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Attachment } from '../attachment/index.entity';
 import { Comment } from '../comment/index.entity';
@@ -79,6 +81,10 @@ export class Task {
 
   @UpdateDateColumn()
   updatedDate: Date;
+
+  @ManyToMany(() => Task)
+  @JoinTable({ name: 'related_tasks' })
+  relatedTasks: Task[];
 
   @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'userId' })
