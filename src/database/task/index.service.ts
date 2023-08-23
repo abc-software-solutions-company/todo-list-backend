@@ -297,8 +297,8 @@ export class TaskService {
         }
       }
 
-      task.relatedTasks = [];
       if (relatedIds && relatedIds.length > 0) {
+        task.relatedTasks = [];
         for (let i = 0; i < relatedIds.length; i++) {
           const relatedTask = await this.repository.findOne({
             where: { id: relatedIds[i] },
