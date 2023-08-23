@@ -19,6 +19,8 @@ export interface ITodolistCreate extends ITodolistGetByUser {
   name: string;
   taskSymbol?: string;
   email?: string;
+  visibility?: string;
+  member?: ITodolistMember;
 }
 export type ITodolistMember = Omit<ITodolistUserCreate, 'todolistId'>;
 

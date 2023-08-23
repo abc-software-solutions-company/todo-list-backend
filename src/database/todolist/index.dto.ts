@@ -7,6 +7,15 @@ export class CreateTodolistDto {
 
   @ApiProperty()
   taskSymbol: string;
+
+  @ApiProperty()
+  taskSymBol?: string;
+
+  @ApiProperty()
+  visibility: string;
+
+  @ApiProperty()
+  member: ITodolistMember;
 }
 
 export class SyncTodolistDto {
@@ -57,22 +66,22 @@ export class SeedListTaskDto {
   id: string;
 
   @ApiProperty()
-  quantity: number
+  quantity: number;
 
   @ApiProperty()
-  wordCount: number
+  wordCount: number;
 }
 
 export class SeedListDocDto {
   @ApiProperty()
   id: string;
 
-  @ApiProperty({default:10})
+  @ApiProperty({ default: 10 })
   quantityParentDoc: number;
 
-  @ApiProperty({default: 5})
+  @ApiProperty({ default: 5 })
   docNameLength: number;
 
-  @ApiProperty({default: 20})
+  @ApiProperty({ default: 20 })
   docContentLength: number;
 }

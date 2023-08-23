@@ -72,9 +72,9 @@ export class TodolistController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() { name, taskSymbol }: CreateTodolistDto, @Req() request: IRequest) {
+  create(@Body() { name, taskSymbol, member, visibility }: CreateTodolistDto, @Req() request: IRequest) {
     const { id: userId, email } = request.user;
-    return this.service.create({ name, taskSymbol, userId, email });
+    return this.service.create({ name, taskSymbol, userId, email, member, visibility });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -94,14 +94,14 @@ export class TodolistController {
   @UseGuards(JwtAuthGuard)
   @Post('/seedTask')
   seedListTask(@Body() body: SeedListTaskDto, @Req() request: IRequest) {
-    const {id: userId} = request.user;
-    return this.service.seedListTask({...body, userId})
+    const { id: userId } = request.user;
+    return this.service.seedListTask({ ...body, userId });
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/seedDoc')
   seedListDoc(@Body() body: SeedListDocDto, @Req() request: IRequest) {
-    const {id: userId} = request.user;
-    return this.service.seedListDoc({...body, userId})
+    const { id: userId } = request.user;
+    return this.service.seedListDoc({ ...body, userId });
   }
 }

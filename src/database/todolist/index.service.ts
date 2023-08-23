@@ -297,14 +297,21 @@ export class TodolistService {
   }
 
   async create(param: ITodolistCreate) {
-    const { name, userId, email } = param;
+    const { name, userId, email, member } = param;
     if (!name || (name && !name.trim())) throw new MethodNotAllowedException('Empty name');
     const { id } = await this.pool.use();
-    const visibility = this.visibilityList.public;
+
+    const visibility = param.visibility || this.visibilityList.public;
+
     const todolistEntity = this.repository.create({ ...param, id, visibility });
+
     const todolist = await this.repository.save(todolistEntity);
     await this.status.init({ todolistId: id });
-    if (email) await this.member.set({ todolistId: id, ids: [userId] }, { nameOfTodolist: name, ownerId: userId });
+    if (email)
+      await this.member.set(
+        { todolistId: id, ids: [userId, ...member.ids] },
+        { nameOfTodolist: name, ownerId: userId },
+      );
     return todolist;
   }
 
