@@ -297,14 +297,12 @@ export class TaskService {
         }
       }
 
-      if (relatedIds && relatedIds.length > 0) {
-        task.relatedTasks = [];
-        for (let i = 0; i < relatedIds.length; i++) {
-          const relatedTask = await this.repository.findOne({
-            where: { id: relatedIds[i] },
-          });
-          task.relatedTasks.push(relatedTask);
-        }
+      if (relatedIds) {
+        const relatedTasks = relatedIds.map(async (id) => {
+          return await this.repository.findOne({ where: { id } });
+        });
+
+        task.relatedTasks = await Promise.all(relatedTasks);
       }
 
       if (isActive !== undefined) {
