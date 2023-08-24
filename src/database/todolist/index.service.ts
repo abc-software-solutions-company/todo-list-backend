@@ -302,16 +302,17 @@ export class TodolistService {
     const { id } = await this.pool.use();
 
     const visibility = param.visibility || this.visibilityList.public;
+    let memberIds = [userId];
 
     const todolistEntity = this.repository.create({ ...param, id, visibility });
 
     const todolist = await this.repository.save(todolistEntity);
     await this.status.init({ todolistId: id });
-    if (email)
-      await this.member.set(
-        { todolistId: id, ids: [userId, ...member.ids] },
-        { nameOfTodolist: name, ownerId: userId },
-      );
+    if (member) {
+      memberIds = [userId, ...member.ids];
+    }
+
+    if (email) await this.member.set({ todolistId: id, ids: memberIds }, { nameOfTodolist: name, ownerId: userId });
     return todolist;
   }
 
