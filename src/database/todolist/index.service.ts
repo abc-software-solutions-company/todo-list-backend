@@ -246,7 +246,7 @@ export class TodolistService {
       ],
       where: { todolistId: id, isActive: true },
       relations: { assignees: { user: true }, attachments: true },
-      order: { indexColumn: 'ASC' },
+      order: { indexColumn: 'ASC', attachments: { createdDate: 'ASC' } },
     });
 
     const favoriteRecord = this.favorite.repository.findOne({ where: { userId, todolistId: id, isActive: true } });
