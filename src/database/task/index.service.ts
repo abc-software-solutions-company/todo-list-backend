@@ -78,9 +78,11 @@ export class TaskService {
     const status = promises[0];
     const members = promises[1].map(({ user }) => ({ id: user.id, name: user.name, email: user.email }));
 
-    const relatedTasks = task.relatedTasks.map((task) => {
-      return { ...task, todolist: { ...task.todolist, status, members } };
-    });
+    const relatedTasks = task.relatedTasks
+      .filter((x) => x.isActive)
+      .map((task) => {
+        return { ...task, todolist: { ...task.todolist, status, members } };
+      });
 
     return { ...task, relatedTasks };
   }
