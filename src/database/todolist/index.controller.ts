@@ -29,7 +29,7 @@ export class TodolistController {
   @SkipThrottle()
   getByUser(@Req() request: IRequest) {
     const { id: userId } = request.user;
-    return this.service.getByUser({ userId });
+    return this.service.getAll({ userId });
   }
 
   @UseGuards(JwtAuthGuard)

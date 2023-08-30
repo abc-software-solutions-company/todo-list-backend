@@ -51,7 +51,8 @@ export class TodolistService {
   ) {}
 
   get() {
-    return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 30 });
+    const lists = this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 30 });
+    return lists;
   }
 
   async seoOne({ id }: ITodolistSeoOne) {
@@ -81,13 +82,13 @@ export class TodolistService {
     return { title, description };
   }
 
-  async getByUser({ userId }: ITodolistGetByUser) {
+  async getAll({ userId }: ITodolistGetByUser) {
     if (!defineAll(userId)) throw new BadRequestException('Todolist getByUser Err Param');
 
     const todolistRecords = await this.repository.find({
-      select: ['id', 'name', 'userId', 'visibility'],
-      where: { isActive: true, userId },
+      select: ['id', 'name', 'userId', 'taskSymbol', 'visibility'],
       relations: { favorites: true, members: { user: true } },
+      where: { isActive: true, userId, members: { isActive: true } },
       order: { createdDate: 'ASC' },
     });
 
@@ -122,10 +123,15 @@ export class TodolistService {
   async getMyTasks({ userId }: ITodolistGetByUser) {
     const todolists = await this.repository.find({
       select: ['id', 'name', 'userId', 'visibility', 'taskSymbol'],
-      where: { isActive: true, tasks: { isActive: true, assignees: { isActive: true, userId } } },
       relations: { members: { user: true }, tasks: { assignees: true }, status: true },
       order: { tasks: { index: 'DESC' } },
+      where: {
+        isActive: true,
+        members: { isActive: true },
+        tasks: { isActive: true, assignees: { isActive: true, userId } },
+      },
     });
+
     const pattern = ({ id, members, name, status, tasks, userId, visibility, taskSymbol }) => {
       return {
         id,
@@ -362,9 +368,7 @@ export class TodolistService {
       if (favorite !== undefined) {
         await this.favorite.set({ todolistId: id, userId, isActive: favorite });
       }
-      if (member) {
-        await this.member.set({ todolistId: id, ids: member.ids }, { nameOfTodolist: name, ownerId: userId });
-      }
+      await this.member.set({ todolistId: id, ids: member.ids }, { nameOfTodolist: name, ownerId: userId });
     }
 
     if (defineAll(statusId, statusIndex)) {
@@ -404,7 +408,6 @@ export class TodolistService {
         if (taskList[i].indexColumn == undefined) {
           taskList[i].indexColumn = (i + 1) * this.indexStep;
           await this.task.repository.save(taskList[i]);
-          console.log(`Task ${taskList[i].name} is done`);
         }
       }
     });

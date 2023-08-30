@@ -45,20 +45,20 @@ export class TaskService {
 
   async getOne({ id }: ITaskGet) {
     const task = await this.repository.findOne({
-      where: { id, isActive: true },
       relations: {
         status: true,
         todolist: { status: true, members: { user: true } },
         attachments: { user: true },
         comments: { user: true },
         assignees: { user: true },
-        relatedTasks: { status: true, todolist: { status: true, members: { user: true } }, assignees: { user: true } },
+        relatedTasks: { status: true, assignees: { user: true } },
         user: true,
       },
       order: {
         attachments: { createdDate: 'ASC' },
         comments: { createdDate: 'ASC' },
       },
+      where: { id, isActive: true },
     });
 
     const statusRecords = this.status.repository.find({
