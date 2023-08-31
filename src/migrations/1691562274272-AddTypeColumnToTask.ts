@@ -5,11 +5,13 @@ export class AddTypeColumnToTask1691562274272 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`CREATE TYPE "todolist"."task_type_enum" AS ENUM('Task', 'Story', 'Bug', 'Sub-task')`);
-    await queryRunner.query(`ALTER TABLE "task" ADD "type" "todolist"."task_type_enum" NOT NULL DEFAULT 'Task'`);
+    await queryRunner.query(
+      `ALTER TABLE "todolist"."task" ADD "type" "todolist"."task_type_enum" NOT NULL DEFAULT 'Task'`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "task" DROP COLUMN "type"`);
-    await queryRunner.query(`DROP TYPE "public"."task_type_enum"`);
+    await queryRunner.query(`ALTER TABLE "todolist"."task" DROP COLUMN "type"`);
+    await queryRunner.query(`DROP TYPE "todolist"."public"."task_type_enum"`);
   }
 }
