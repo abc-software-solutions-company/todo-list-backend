@@ -4,7 +4,7 @@
   "editor.formatOnSave": true,
   "scss.lint.unknownAtRules": "ignore",
   "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    "source.fixAll": "explicit"
   },
   "files.exclude": {
     "node_modules/": true,
