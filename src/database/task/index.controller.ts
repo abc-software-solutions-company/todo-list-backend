@@ -15,7 +15,7 @@ export class TaskController {
   @Get()
   @SkipThrottle()
   async get() {
-    return this.service.get();
+    return await this.service.get();
   }
 
   @Get(':id')

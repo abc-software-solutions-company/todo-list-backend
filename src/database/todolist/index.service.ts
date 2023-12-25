@@ -86,8 +86,8 @@ export class TodolistService {
     if (!defineAll(userId)) throw new BadRequestException('Todolist getByUser Err Param');
 
     const todolistRecords = await this.repository.find({
-      select: ['id', 'name', 'userId', 'taskSymbol', 'visibility'],
-      relations: { favorites: true, members: { user: true } },
+      // select: ['id', 'name', 'userId', 'taskSymbol', 'visibility'],
+      relations: { favorites: true, members: { user: true }, tasks: true },
       where: { isActive: true, userId, members: { isActive: true } },
       order: { createdDate: 'ASC' },
     });

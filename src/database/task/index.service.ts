@@ -22,6 +22,7 @@ import { Task } from './index.entity';
 import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
 import { priorities } from 'src/utils/constants';
 import { TodolistUserService } from '../todolist-user/index.service';
+import { TaskRepository } from './task.repo';
 
 @Injectable()
 export class TaskService {
@@ -37,10 +38,12 @@ export class TaskService {
     readonly taskUser: TaskUserService,
     readonly status: StatusService,
     readonly user: UserService,
+    readonly taskRepo: TaskRepository,
   ) {}
 
-  get() {
-    return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 30 });
+  async get() {
+    // return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 30 });
+    return await this.taskRepo.getAllTasks()
   }
 
   async getOne({ id }: ITaskGet) {
