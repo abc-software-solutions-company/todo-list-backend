@@ -13,7 +13,6 @@ export class TaskRepository extends Repository<Task> {
         super(Task, dataSource.createEntityManager());
     }
 
-
     async getAllTasks() {
         const taskRepository = this.dataSource.getRepository(Task);
         const tasks = await taskRepository

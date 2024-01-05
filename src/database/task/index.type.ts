@@ -7,6 +7,10 @@ export interface ITaskGet {
   id: string;
 }
 
+export interface ITaskSearch {
+  name: string;
+}
+
 export interface ITaskCreateHepler {
   todolistId: string;
   userId: string;
