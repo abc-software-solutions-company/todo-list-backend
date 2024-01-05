@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { defineAll, defineAny } from 'src/utils/function';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { AttachmentService } from '../attachment/index.service';
 import { CommentService } from '../comment/index.service';
@@ -19,9 +19,10 @@ import { TaskUserService } from '../task-user/index.service';
 import { TodolistService } from '../todolist/index.service';
 import { UserService } from '../user/index.service';
 import { Task } from './index.entity';
-import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler } from './index.type';
+import { ITaskGet, ITaskCreate, ITaskUpdate, ITaskReindexAll, ITaskCreateHepler, ITaskSearch } from './index.type';
 import { priorities } from 'src/utils/constants';
 import { TodolistUserService } from '../todolist-user/index.service';
+import { TaskRepository } from './task.repo';
 
 @Injectable()
 export class TaskService {
@@ -37,10 +38,12 @@ export class TaskService {
     readonly taskUser: TaskUserService,
     readonly status: StatusService,
     readonly user: UserService,
+    readonly taskRepo: TaskRepository,
   ) {}
 
-  get() {
-    return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 30 });
+  async get() {
+    // return this.repository.find({ where: { isActive: true }, order: { createdDate: 'DESC' }, take: 30 });
+    return await this.taskRepo.getAllTasks()
   }
 
   async getOne({ id }: ITaskGet) {
@@ -107,6 +110,14 @@ export class TaskService {
     });
 
     return ortherTasks;
+  }
+
+  async searchTask({ name }: ITaskSearch) {
+    return this.repository.find({
+      where: { name: ILike(`%${name}%`) },
+      order: { createdDate: 'DESC' },
+      take: 30,
+    });
   }
 
   async create(param: ITaskCreate) {

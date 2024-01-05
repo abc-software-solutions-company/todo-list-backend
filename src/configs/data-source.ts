@@ -34,7 +34,8 @@ const config: DataSourceOptions = {
     Notification,
     Document,
   ],
-  migrations: [process.env.NODE_ENV == 'product' ? 'src/migrations/*' : 'src/migrations-stage/*'],
+  // migrations: [process.env.NODE_ENV == 'product' ? 'src/migrations/*' : 'src/migrations-stage/*'],
+  migrations: ['src/migrations-hoa/*.ts'],
 };
 
 const postgresDataSource = new DataSource(config);

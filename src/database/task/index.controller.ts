@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Param, Post, Body, Req, Patch } from '@nestjs/common';
+import { Controller, UseGuards, Get, Param, Post, Body, Req, Patch, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -15,9 +15,15 @@ export class TaskController {
   @Get()
   @SkipThrottle()
   async get() {
-    return this.service.get();
+    return await this.service.get();
   }
 
+  @Get('search')
+  @SkipThrottle()
+  async search(@Query('name') name: string) {
+    return this.service.searchTask({ name });
+  }
+  
   @Get(':id')
   @SkipThrottle()
   async getOne(@Param('id') id: string) {

@@ -12,6 +12,7 @@ import { TaskController } from './index.controller';
 import { Task } from './index.entity';
 import { TaskService } from './index.service';
 import { TodolistUserModule } from '../todolist-user/index.module';
+import { TaskRepository } from './task.repo';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { TodolistUserModule } from '../todolist-user/index.module';
     UserModule,
   ],
   controllers: [TaskController],
-  providers: [TaskService],
+  providers: [TaskService, TaskRepository],
   exports: [TaskService],
 })
 export class TaskModule {}
